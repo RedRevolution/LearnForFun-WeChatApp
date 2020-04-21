@@ -1,0 +1,48 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/groupchat/groupchat",
+    "pages/coursetable/coursetable",
+    "pages/collection/collection",
+    "pages/user/user"
+  ],
+  "window": {
+    "backgroundColor": "#F6F6F6",
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#F6F6F6",
+    "navigationBarTitleText": "趣学北航",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "color": "#cdcdcd",
+    "selectedColor": "#ff520f",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页群聊",
+        "iconPath": "/images/icon/home-icon.png",
+        "selectedIconPath": "/images/icon/home-selectIcon.png"
+      },
+      {
+        "pagePath": "pages/coursetable/coursetable",
+        "text": "课表",
+        "iconPath": "/images/icon/fen-icon.png",
+        "selectedIconPath": "/images/icon/fen-selectIcon.png"
+      },
+      {
+        "pagePath": "pages/collection/collection",
+        "text": "收藏",
+        "iconPath": "/images/icon/collection-icon.png",
+        "selectedIconPath": "/images/icon/collection-selectIcon.png"
+      },
+      {
+        "pagePath": "pages/user/user",
+        "text": "我的",
+        "iconPath": "/images/icon/user-icon.png",
+        "selectedIconPath": "/images/icon/user-selectIcon.png"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
+  "style": "v2"
+}
