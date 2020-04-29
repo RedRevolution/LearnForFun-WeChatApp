@@ -10,22 +10,17 @@
 
 - 2020.4.22 01:18更新：创建了原生小程序，底部有导航栏Tarbar分为四块
   - 备注：若使用WePY框架（建议），该项目可能需要重新创建，但是文件结构大致可以按以下内容理解
+- 2020.4.29 14:00更新：WePY框架程序，分页4Tabbar，引入了vant-weapp UI组件
 
 
 
-## 1. 导入项目
+## 1. 开启项目
 
-将本项目`git clone `至本地，在微信开发者工具中导入整个文件夹
-
-AppID（小程序ID）：wxbe3bc73b7a961e66
-
-云开发环境名称：learnForFunEnv
-
-云开发环境ID：learnforfunid
-
-> 当前配额：基础版 1 资源均衡型有效期至2020-07-20
-
-
+- clone到本地之后，先使用`npm install`，本地会多出`node_module`文件夹，为开发组件做准备。（如果npm install失败再发文件压缩包）
+- 然后使用`wepy build --no-cache --watch`开始监听文件
+  - 此时目录下会多出`dist`文件夹，用微信开发者工具导入`dist`文件夹
+  - 此时修改本目录下`src`当中的文件，也就是wepy框架的文件，wepy会自动编译成`dist`当中的原生小程序。
+- `src/components`当中已经有vant组件库了，编译时（应当）也会自动编译进去的
 
 
 
