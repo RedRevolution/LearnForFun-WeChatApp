@@ -1,0 +1,47 @@
+<style lang="less">
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+</style>
+<template>
+  <view style="text-align: center">
+	 <text>{{wordData}}</text>
+     <!-- 此时的写法点击下面的字会弹出日历，但是真机操作会弹出之后立即关掉 -->
+     <van-cell title="选择单个日期点我弹出日历" value="{{ date }}" bind:click="onDisplay" />
+     <van-calendar show="{{ show }}" bind:close="onClose" bind:confirm="onConfirm" />
+  </view>
+
+</template>
+
+<script>
+// 页面逻辑代码部分
+import wepy from 'wepy'
+export default class Coursetable extends wepy.page {
+  data = {
+      date: '',
+    //   show: false,
+      wordData: 'Welcome!这个是课表和日程页面'
+  };
+  onDisplay() {
+    this.setData({ show: true });
+  };
+  onClose() {
+    this.setData({ show: false });
+  };
+  formatDate(date) {
+    date = new Date(date);
+    return `${date.getMonth() + 1}/${date.getDate()}`;
+  };
+  onConfirm(event) {
+    this.setData({
+      show: false,
+      date: this.formatDate(event.detail)
+    });
+  }
+}
+</script>

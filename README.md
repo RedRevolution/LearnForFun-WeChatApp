@@ -31,9 +31,9 @@ AppID（小程序ID）：wxbe3bc73b7a961e66
 
 ## 2. 前端页面简要介绍
 
-
-
 ### 使用开发框架WePY
+
+[入门Wepy框架注意事项：](http://www.dinglindong.club/2018/02/23/wepy%E6%A1%86%E6%9E%B6%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/)
 
 #### 使用WePY资源：
 

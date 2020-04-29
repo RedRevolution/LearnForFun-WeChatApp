@@ -1,0 +1,13 @@
+{
+  "description": "Learn for fun wechat miniprogram",
+  "setting": {
+    "urlCheck": true,
+    "es6": false,
+    "postcss": false,
+    "minified": false
+  },
+  "compileType": "miniprogram",
+  "appid": "wxbe3bc73b7a961e66",
+  "projectname": "learnforfun",
+  "miniprogramRoot": "./dist"
+}

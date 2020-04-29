@@ -1,0 +1,26 @@
+<style lang="less">
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+</style>
+<template>
+  <view style="text-align: center">
+	 <text>{{wordData}}</text>
+  </view>
+
+</template>
+
+<script>
+// 页面逻辑代码部分
+import wepy from 'wepy'
+export default class Me extends wepy.page {
+  data = {
+    wordData: 'Welcome! 这个是‘我的’页面'
+  }
+}
+</script>
