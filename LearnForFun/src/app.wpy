@@ -36,22 +36,32 @@ export default class extends wepy.app {
       navigationBarTextStyle: 'black'
     },
     tabBar:{
+      "color":"#666666",
+      "selectedColor":"#0984e3",
       list: [
         {
           pagePath: "pages/index",
-          text: "群聊首页"
+          text: "群聊首页",
+          'iconPath': 'images/home.png',
+          'selectedIconPath': 'images/home_select.png'
         },
         {
           pagePath: "pages/coursetable",
-          text: "课表和日程"
+          text: "课表和日程",
+          'iconPath': 'images/calendar.png',
+          'selectedIconPath': 'images/calendar_select.png'
         },
         {
           pagePath: "pages/collection",
-          text: "收藏"
+          text: "收藏",
+          'iconPath': 'images/heart.png',
+          'selectedIconPath': 'images/heart_select.png'
         },
         {
           pagePath: "pages/me",
-          text: "我的"
+          text: "我的",
+          'iconPath': 'images/user.png',
+          'selectedIconPath': 'images/user_select.png'
         }
       ]
     }

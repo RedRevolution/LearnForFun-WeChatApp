@@ -11,6 +11,7 @@
 - 2020.4.22 01:18更新：创建了原生小程序，底部有导航栏Tarbar分为四块
   - 备注：若使用WePY框架（建议），该项目可能需要重新创建，但是文件结构大致可以按以下内容理解
 - 2020.4.29 14:00更新：WePY框架程序，分页4Tabbar，引入了vant-weapp UI组件
+- 2020.4.30 00:50更新：新建images目录，加入众多png图片，配好tabbar颜色；可参考服装商城/深大的树洞2.0进行开发
 
 
 
@@ -38,15 +39,12 @@
 4. [We川大小程序 - 四川大学使用wepy开发的完善的校园综合小程序](https://github.com/mohuishou/scuplus-wechat)
 5. [基于wepy开发的仿微信聊天界面小程序](https://github.com/wepyjs/wepy-wechat-demo)
 
+#### 强烈推荐参考的wepy开发的小程序：
+
+- [微信服装商城 - 分为9个branch相当于可以一步一步学，结构清晰](https://github.com/weimingwill/fashion-mall)
+- [深大的树洞2.0  ](https://github.com/jas0ncn/szushudong)
 
 
-#### 原生小程序优秀示例（可以拿来利用的）🌟🌟🌟
-
-1. [微信小程序之小熊の日记](https://github.com/harveyqing/BearDiary) ：发布信息，Server端API支持，输入日记（对应于我们的知识帖子），拍照上传等
-
-2. [WeHalo 简约风 的微信小程序版博客](https://github.com/aquanlerou/WeHalo)：点赞，评论，云开发，数据库
-
-   
 
 ### UI组件 
 
