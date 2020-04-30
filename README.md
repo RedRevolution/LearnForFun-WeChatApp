@@ -8,10 +8,11 @@
 
 
 
-- 2020.4.22 01:18更新：创建了原生小程序，底部有导航栏Tarbar分为四块
+- 2020.4.22 01:18更新：创建了原生小程序，底部有导航栏Tarbar分为四块 (DM)
   - 备注：若使用WePY框架（建议），该项目可能需要重新创建，但是文件结构大致可以按以下内容理解
-- 2020.4.29 14:00更新：WePY框架程序，分页4Tabbar，引入了vant-weapp UI组件
-- 2020.4.30 00:50更新：新建images目录，加入众多png图片，配好tabbar颜色；可参考服装商城/深大的树洞2.0进行开发
+- 2020.4.29 14:00更新：WePY框架程序，分页4Tabbar，引入了vant-weapp UI组件 (DM)
+- 2020.4.30 00:50更新：新建images目录，加入众多png图片，配好tabbar颜色；可参考服装商城/深大的树洞2.0进行开发 (DM)
+- 2020.4.30 12:53更新：修改了顶部导航栏颜色和内容，颜色为北航蓝，内容与每页tabbar一致;补充可供参考的茄酱小程序链接 (DM)
 
 
 
@@ -38,6 +39,7 @@
 3. [Awesome for wepy ! 微信小程序组件化开发框架wepy开发资源汇总](https://github.com/aben1188/awesome-wepy)
 4. [We川大小程序 - 四川大学使用wepy开发的完善的校园综合小程序](https://github.com/mohuishou/scuplus-wechat)
 5. [基于wepy开发的仿微信聊天界面小程序](https://github.com/wepyjs/wepy-wechat-demo)
+6. [茄酱开源小程序](https://www.jiangqie.com/docs/kaiyuan/id1)
 
 #### 强烈推荐参考的wepy开发的小程序：
 
