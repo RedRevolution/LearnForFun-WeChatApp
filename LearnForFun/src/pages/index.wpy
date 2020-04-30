@@ -63,7 +63,7 @@
 
   export default class Index extends wepy.page {
     config = {
-      navigationBarTitleText: '官方群组页'
+      navigationBarTitleText: '趣学'
     }
     components = {
       panel: Panel,

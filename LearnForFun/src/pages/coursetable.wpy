@@ -22,6 +22,9 @@
 // 页面逻辑代码部分
 import wepy from 'wepy'
 export default class Coursetable extends wepy.page {
+  config = {
+    navigationBarTitleText: '课表和日程'
+  }
   data = {
       date: '',
     //   show: false,

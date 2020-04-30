@@ -19,6 +19,9 @@
 // 页面逻辑代码部分
 import wepy from 'wepy'
 export default class Me extends wepy.page {
+  config = {
+    navigationBarTitleText: '我的'
+  }
   data = {
     wordData: 'Welcome! 这个是‘我的’页面'
   }

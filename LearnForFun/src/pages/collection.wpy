@@ -19,8 +19,12 @@
 // 页面逻辑代码部分
 import wepy from 'wepy'
 export default class Collection extends wepy.page {
+  config = {
+      navigationBarTitleText: '收藏'
+    }
   data = {
     wordData: 'Welcome!这个是收藏页面'
   }
+
 }
 </script>

@@ -31,9 +31,10 @@ export default class extends wepy.app {
     ],
     window: {
       backgroundTextStyle: 'light',
-      navigationBarBackgroundColor: '#fff',
-      navigationBarTitleText: 'WeChat',
-      navigationBarTextStyle: 'black'
+      navigationBarBackgroundColor: '#0984e3',
+      navigationBarTitleText: '趣学',
+      navigationBarTextStyle: 'white'
+      
     },
     tabBar:{
       "color":"#666666",
@@ -41,7 +42,7 @@ export default class extends wepy.app {
       list: [
         {
           pagePath: "pages/index",
-          text: "群聊首页",
+          text: "趣学",
           'iconPath': 'images/home.png',
           'selectedIconPath': 'images/home_select.png'
         },
