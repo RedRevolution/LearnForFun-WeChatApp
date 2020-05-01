@@ -7,11 +7,77 @@
   justify-content: space-between;
   box-sizing: border-box;
 }
+.userbox {
+    padding-bottom: 30rpx;
+    min-height: 410rpx;
+}
+.userinfo {
+    padding-bottom: 20rpx;
+    text-align: center;
+}
+.useravatar {
+    text-align: center;
+    height: 240rpx;
+    clear: both;
+    padding-top: 80rpx;
+}
+.useravatar image {
+    height: 152rpx;
+    width: 152rpx;
+    border-radius: 152rpx;
+    border: 12rpx solid #FFF;
+    margin-bottom: 20rpx;
+}
+.userlogin {
+    height: 50rpx;
+    line-height: 50rpx;
+    font-size: 30rpx;
+    font-weight: 300;
+    color: white;
+}
+.listbox {
+    padding: 0;
+}
+
+.userlogout{
+  align-items: center;
+}
 </style>
 <template>
-  <view style="text-align: center">
+  <!-- <view style="text-align: center">
 	 <text>{{wordData}}</text>
+  </view> -->
+  <view style = "background:url('https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1588248123817&di=5288343f1b1c4f2129f221c1f6090d15&imgtype=0&src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com%2Fimages%2F20190726%2F73b9677fbc704e5294c8161d5058de95.jpeg') no-repeat;background-size: 750rpx 520rpx;background-position: 0 -120rpx;">
+    <view class ="userbox">
+    <view class = "userinfo">
+      <block wx:if="{{user}}">
+        <view class="useravatar">
+          <image src="{{user.avatar}}" mode="aspectFill"></image>
+        </view>
+        <view class="username">
+          <text>{{user.nickname}}</text>
+        </view>
+      </block>
+      <block wx:else>
+        <view class="useravatar">
+          <image src="/images/user_select.png" mode="aspectFill"></image>
+          <view class="userlogin"><navigator url="/pages/userlogin">立即登录</navigator></view>
+        </view>
+      </block>
+      
+    </view>
+    
   </view>
+
+  <view class="listbox">
+    <view class = "container">
+      <van-button plain type="info">退出登录</van-button>
+    </view>
+    
+    
+  </view>
+</view>
+  
 
 </template>
 
