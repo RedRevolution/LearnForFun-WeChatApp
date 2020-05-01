@@ -72,9 +72,10 @@ export default class extends wepy.app {
     userInfo: null
   }
 
-  constructor () {
-    super()
-    this.use('requestfix')
+  constructor() {
+      super()
+      this.use('requestfix')
+      this.use('promisify')
   }
 
   onLaunch() {

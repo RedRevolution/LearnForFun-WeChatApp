@@ -48,6 +48,35 @@
 
 
 
+## 3. 基于腾讯IM的通信
+
+将SDKAppID和密钥粘贴到指定位置：
+
+SDKAppID：1400362697
+
+密钥：80f2b4560bf4d2bebf4e33a6b199cb41b9c6742dbf8d070e71e38d9db0bb018b
+
+![img](https://sqimg.qq.com/qq_product_operations/tentcent_cloud/minp.png)
+
+1. 配置 `SDKAPPID` 和 `SECRETKEY`，获取方式参考：[密钥获取方法](https://cloud.tencent.com/document/product/269/36838#.E6.AD.A5.E9.AA.A41.EF.BC.9A.E5.88.9B.E5.BB.BA.E5.BA.94.E7.94.A8)
+
+   - 打开 `/debug/GeneraterUserSig.js` 文件
+   - 按图示填写相应配置后，保存文件
+
+   [![img](https://github.com/tencentyun/TIMSDK/raw/master/WXMini/_doc/2.png)](https://github.com/tencentyun/TIMSDK/blob/master/WXMini/_doc/2.png)
+
+2. 本地配置如下图所示
+
+   - 勾选ES6转ES5选项
+   - 勾选不检验合法域名选项
+   - 基础库版本 > 2.1.1
+
+   [![img](https://github.com/tencentyun/TIMSDK/raw/master/WXMini/_doc/4.png)](https://github.com/tencentyun/TIMSDK/blob/master/WXMini/_doc/4.png)
+
+
+
+
+
 ### UI组件 
 
 #### 1：Vant-weapp(漂亮的UI组件)🌟🌟
