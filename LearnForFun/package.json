@@ -18,9 +18,11 @@
   "license": "MIT",
   "dependencies": {
     "@vant/weapp": "^1.2.2",
+    "redux": "^4.0.5",
     "wepy": "^1.6.0",
     "wepy-async-function": "^1.4.4",
-    "wepy-com-toast": "^1.0.2"
+    "wepy-com-toast": "^1.0.2",
+    "wepy-redux": "^1.5.9"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.1",

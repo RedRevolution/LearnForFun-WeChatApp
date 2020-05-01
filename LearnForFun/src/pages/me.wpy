@@ -33,7 +33,6 @@
     line-height: 50rpx;
     font-size: 30rpx;
     font-weight: 300;
-    color: white;
 }
 .listbox {
     padding: 0;
@@ -44,18 +43,20 @@
 }
 </style>
 <template>
-  <!-- <view style="text-align: center">
-	 <text>{{wordData}}</text>
-  </view> -->
-  <view style = "background:url('https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1588248123817&di=5288343f1b1c4f2129f221c1f6090d15&imgtype=0&src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com%2Fimages%2F20190726%2F73b9677fbc704e5294c8161d5058de95.jpeg') no-repeat;background-size: 750rpx 520rpx;background-position: 0 -120rpx;">
+
+  <view style = "background:">
     <view class ="userbox">
     <view class = "userinfo">
-      <block wx:if="{{user}}">
-        <view class="useravatar">
-          <image src="{{user.avatar}}" mode="aspectFill"></image>
-        </view>
-        <view class="username">
-          <text>{{user.nickname}}</text>
+      <block wx:if="{{nickName}}">
+        <view class="header_content">
+            <van-image
+              round
+              width="10rem"
+              height="10rem"
+              src="{{ avatarUrl }}"
+            />
+          <view class="nickName">微信名：{{ nickName }}</view>
+          <view>学号：{{schoolNum}}</view>
         </view>
       </block>
       <block wx:else>
@@ -64,32 +65,78 @@
           <view class="userlogin"><navigator url="/pages/userlogin">立即登录</navigator></view>
         </view>
       </block>
-      
     </view>
-    
+    </view>
   </view>
 
   <view class="listbox">
     <view class = "container">
-      <van-button plain type="info">退出登录</van-button>
+      <view class="userlogin">
+        <navigator url="/pages/bindschoolnum"><van-button plain type="info">跳转到绑定学号界面</van-button></navigator>
+      </view>
     </view>
-    
-    
   </view>
-</view>
-  
+
+  <van-button plain type="info">退出登录</van-button>
+  <van-button plain type="info" class="refresh">刷新</van-button>
+
 
 </template>
 
 <script>
 // 页面逻辑代码部分
 import wepy from 'wepy'
+import api from '@/api/api'
 export default class Me extends wepy.page {
   config = {
     navigationBarTitleText: '我的'
   }
   data = {
-    wordData: 'Welcome! 这个是‘我的’页面'
+    avatarUrl: '',
+    nickName: '',
+    schoolNum:0,
+    wordData: '这个是‘我的’页面'
   }
+
+  methods = {
+    
+  }
+
+  async onLoad() {
+      let that = this
+      let userInfo = wepy.getStorageSync("userInfo")
+      that.avatarUrl = userInfo.avatarUrl
+      that.nickName = userInfo.nickName
+      // this.getUserInfo()  
+  }
+
+  refresh(){
+      let that = this
+      let userInfo = wepy.getStorageSync("userInfo")
+      that.avatarUrl = userInfo.avatarUrl
+      that.nickName = userInfo.nickName
+      wepy.switchTab({
+        url: '/pages/me'
+      })
+  }
+
+  // async getUserInfo(phone, code) {
+  //     let that = this
+  //     let userSpecialInfo = wepy.getStorageSync("userSpecialInfo") || {}
+  //     let openId = userSpecialInfo.openid
+  //     const json = await api.getUserInfo({
+  //       query: {
+  //         openId: openId
+  //       }
+  //     })
+
+  //     if (json.data.code === 0) {
+  //       this.bHideBind = (json.data.user != null && json.data.user.mobile.length > 0)
+  //       that.$apply()
+  //     } else {
+  //       tip.error(json.data.msg)
+  //     }
+  //     that.showLoading = false
+  //   }
 }
 </script>

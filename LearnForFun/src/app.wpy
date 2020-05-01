@@ -20,7 +20,13 @@ export default class extends wepy.app {
       'van-calendar': '/components/vant/calendar/index',
       'van-cell': '/components/vant/cell/index',
       'van-tabbar': '/components/vant/tabbar/index',
-      'van-tabbar-item': '/components/vant/tabbar-item/index'
+      'van-tabbar-item': '/components/vant/tabbar-item/index',
+      "van-cell": "/components/vant/cell/index",
+      "van-cell-group": "/components/vant/cell-group/index",
+      "van-icon": "/components/vant/icon/index",
+      "van-row": "/components/vant/row/index",
+      "van-col": "/components/vant/col/index",
+      "van-image": "/components/vant/image/index"
     },
     "pages": [
       'pages/index',
@@ -28,7 +34,8 @@ export default class extends wepy.app {
       'pages/coursetable', 
       'pages/collection',
       'pages/me',
-      'pages/userlogin'
+      'pages/userlogin',
+      'pages/bindschoolnum'
     ],
     window: {
       backgroundTextStyle: 'light',
@@ -70,7 +77,9 @@ export default class extends wepy.app {
   }
 
   globalData = {
-    userInfo: null
+    userInfo: {
+      
+    }
   }
 
   constructor() {

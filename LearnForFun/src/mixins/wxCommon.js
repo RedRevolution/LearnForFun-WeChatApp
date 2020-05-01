@@ -2,6 +2,12 @@ import wepy from 'wepy'
 
 export default class wxCommon extends wepy.mixin{
 
+  data = {
+    userInfo: null,
+    url: 'http://114.115.142.227:80',
+    app: 'appname'
+  }
+
     // 用户特有的请求头部token
   userRequest(url, method, data, cb) {
     const that = this

@@ -1,0 +1,72 @@
+<style lang="less">
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+.userbox {
+    padding-bottom: 30rpx;
+    min-height: 410rpx;
+}
+.userinfo {
+    padding-bottom: 20rpx;
+    text-align: center;
+}
+.useravatar {
+    text-align: center;
+    height: 240rpx;
+    clear: both;
+    padding-top: 80rpx;
+}
+.useravatar image {
+    height: 152rpx;
+    width: 152rpx;
+    border-radius: 152rpx;
+    border: 12rpx solid #FFF;
+    margin-bottom: 20rpx;
+}
+.userlogin {
+    height: 50rpx;
+    line-height: 50rpx;
+    font-size: 30rpx;
+    font-weight: 300;
+    color: white;
+}
+.listbox {
+    padding: 0;
+}
+
+.userlogout{
+  align-items: center;
+}
+</style>
+<template>
+
+</template>
+
+<script>
+// 页面逻辑代码部分
+import wepy from 'wepy'
+import api from '@/api/api'
+export default class Bind extends wepy.page {
+  config = {
+    navigationBarTitleText: '绑定学号'
+  }
+  data = {
+    avatarUrl: '',
+    nickName: '',
+    schoolNum:0,
+    wordData: 'Welcome! 这个是绑定学号界面'
+  }
+  onLoad() {
+      let that = this
+      let userInfo = wepy.getStorageSync("userInfo")
+      that.avatarUrl = userInfo.avatarUrl
+      that.nickName = userInfo.nickName
+  }
+
+}
+</script>

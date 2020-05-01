@@ -1,77 +1,52 @@
 
 <style lang="less">
-.container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  box-sizing: border-box;
-}
-.jiangqie-app-info {
-    padding: 50rpx 40rpx;
+  .header {
+    margin: 90rpx 0 90rpx 50rpx;
+    border-bottom: 1px solid #ccc;
     text-align: center;
+    width: 650rpx;
+    height: 300rpx;
+    line-height: 450rpx;
 }
 
-.jiangqie-app-info image {
-    height: 200rpx;
+.header image {
     width: 200rpx;
-    border-radius: 200rpx;
+    height: 200rpx;
 }
 
-.jiangqie-app-name {
-    font-size: 36rpx;
-    color: black;
-    font-weight: 500;
-    line-height: 80rpx;
+.content {
+    margin-left: 50rpx;
+    margin-bottom: 90rpx;
 }
 
-.jiangqie-app-slogan {
-    font-size: 32rpx;
-    color: black;
-    font-weight: 400;
-    line-height: 40rpx;
+.content text {
+    display: block;
+    color: #9d9d9d;
+    margin-top: 40rpx;
 }
 
-.jiangqie-login-btn {
-    padding: 30rpx 160rpx;
-}
-
-
-.jiangqie-login-btnl,
-.jiangqie-login-btnr {
-    height: 80rpx;
-    font-size: 30rpx;
-    color: #999;
-    font-weight: 400;
-    border-radius: 16rpx;
-    border: 2rpx solid #DDD;
-    margin-top: 30rpx;
-    background: #FFF
-
-}
-
-.jiangqie-login-btnr {
-    color: white;
-    background: #2ecc71;
+.bottom {
+    border-radius: 80rpx;
+    margin: 70rpx 50rpx;
+    font-size: 35rpx;
 }
 </style>
 <template>
-  <view>
-  <view class="jiangqie-login">
-    <view class="jiangqie-app-info">
-      <!--替换为小程序logo-->
-      <image src="/images/home_select.png" mode="aspectFill"></image>
-      <view class="jiangqie-app-name">{{title}}</view>
-      <view class="jiangqie-app-slogan">授权登录可查看更多内容</view>
+  <view wx:if="{{canIUse}}" >
+        <view class='header'>
+            <image src='/images/user_select.png'></image>
+        </view>
+ 
+        <view class='content'>
+            <view>申请获取以下权限</view>
+            <text>获得你的公开信息(昵称，头像等)</text>
+        </view>
+ 
+        <button class='bottom' type='primary' open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="bindGetUserInfo">
+            授权登录
+        </button>
     </view>
-    <view class="jiangqie-login-btn">
-      <button open-type="getUserInfo" bindgetuserinfo="handlerLoginClick" class="jiangqie-login-btnr">确定</button>
-      <button catchtap="handlerCancelClick" class="jiangqie-login-btnl">取消</button>
-      
-    </view>
-  </view>
-</view>
+  <view wx:else>请升级微信版本</view>
 
 </template>
 
@@ -79,15 +54,120 @@
  
 // 页面逻辑代码部分
 import wepy from 'wepy'
+import 'wepy-async-function'
+import api from '@/api/api'
 export default class Collection extends wepy.page {
 
   config = {
       navigationBarTitleText: '登录'
-    }
+  }
   data = {
     wordData: 'Welcome!这个是登录页面',
-    title:'趣学北航'
+    title:'趣学北航',
+    //判断小程序的API，回调，参数，组件等是否在当前版本可用。
+    canIUse: wx.canIUse('button.open-type.getUserInfo')
   }
+
+  async onLoad(){
+    var that = this;
+        // 查看是否授权
+        // wx.getSetting({
+        //     success: function(res) {
+        //         if (res.authSetting['scope.userInfo']) {
+        //             wx.getUserInfo({
+        //                 success: function(res) {
+        //                     // 用户已经授权过,不需要显示授权页面,所以不需要改变 isHide 的值
+        //                     // 根据自己的需求有其他操作再补充
+        //                     // 我这里实现的是在用户授权成功后，调用微信的 wx.login 接口，从而获取code
+        //                     wx.login({
+        //                         success: res => {
+        //                             // 获取到用户的 code 之后：res.code
+        //                             console.log("用户的code:" + res.code);
+        //                             // 可以传给后台，再经过解析获取用户的 openid
+        //                             // 或者可以直接使用微信的提供的接口直接获取 openid ，方法如下：
+        //                             // wx.request({
+        //                             //     // 自行补上自己的 APPID 和 SECRET
+        //                             //     url: 'https://api.weixin.qq.com/sns/jscode2session?appid=自己的APPID&secret=自己的SECRET&js_code=' + res.code + '&grant_type=authorization_code',
+        //                             //     success: res => {
+        //                             //         // 获取到用户的 openid
+        //                             //         console.log("用户的openid:" + res.data.openid);
+        //                             //     }
+        //                             // });
+        //                         }
+        //                     });
+        //                 }
+        //             });
+        //         } else {
+        //             // 用户没有授权
+        //             // 改变 isHide 的值，显示授权页面
+        //             that.setData({
+        //                 isHide: true
+        //             });
+        //         }
+        //     }
+        // });
+
+
+    let res = await wepy.getSetting()
+      if ((res.authSetting)['scope.userInfo']) {
+        let userInfo = wepy.getStorageSync("userInfo")
+
+        // GetUserInfo if userInfo does not exist in storage.
+        if (!userInfo.nickName) {
+          let data = await wepy.getUserInfo()
+          if (data) {
+            wepy.setStorageSync("userInfo", data.userInfo)
+          }
+
+          let res = await wepy.login()
+          if (res.code) {
+            let systemInfo = wepy.getSystemInfoSync()
+            wepy.setStorageSync("systemInfo", systemInfo)
+            // let rlt = await api.wxJsCode2Session({
+            //   query: {
+            //     jsCode: res.code,
+            //     nickName: data.userInfo.nickName
+            //   }
+            // })
+
+            // if (rlt.data.result) {
+            //   let data = rlt.data
+            //   if (data.data.openid) {
+            //     wepy.setStorageSync("userSpecialInfo", data.data)
+            //   }
+            // }
+          }
+        }
+        wepy.switchTab({
+          url: '/pages/me'
+        })
+      }
+  
+  }
+
+    async bindGetUserInfo(e) {
+        if (e.detail.errMsg === 'getUserInfo:ok') {
+            wepy.setStorageSync("userInfo", e.detail.userInfo)
+            let res = await wepy.login()
+            if (res.code) {
+                let systemInfo = wepy.getSystemInfoSync()
+                wepy.setStorageSync("systemInfo", systemInfo)
+
+                // 希望点按'允许'授权之后可以更新用户信息，包括昵称和头像
+                let data = await wepy.getUserInfo()
+                if (data) {
+                  wepy.setStorageSync("userInfo", data.userInfo)
+                }
+
+                console.log("用户的信息如下：");
+                console.log(e.detail.userInfo);
+                wepy.switchTab({
+                    url: '/pages/me'
+                })
+            }
+        }
+    }
+
 
 }
 </script>
