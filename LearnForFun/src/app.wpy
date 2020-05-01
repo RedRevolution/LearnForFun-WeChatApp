@@ -26,7 +26,8 @@ export default class extends wepy.app {
       "van-icon": "/components/vant/icon/index",
       "van-row": "/components/vant/row/index",
       "van-col": "/components/vant/col/index",
-      "van-image": "/components/vant/image/index"
+      "van-image": "/components/vant/image/index",
+      'van-popup':'/components/vant/popup/index'
     },
     "pages": [
       'pages/index',
@@ -35,7 +36,9 @@ export default class extends wepy.app {
       'pages/collection',
       'pages/me',
       'pages/userlogin',
-      'pages/bindschoolnum'
+      'pages/bindschoolnum',
+      'pages/schedule',
+      'pages/favorite'
     ],
     window: {
       backgroundTextStyle: 'light',

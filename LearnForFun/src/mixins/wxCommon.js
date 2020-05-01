@@ -30,7 +30,7 @@ export default class wxCommon extends wepy.mixin{
 
   checkNum(number) {
     //学号必须全都是数字
-    let numReg = /(^1[2|3|4|5|6|7|8|9]\d{6}$)|(^09\d{7}$)/
+    let numReg = /(^1[1|2|3|4|5|6|7|8|9|0]\d{6}$)|(^09\d{7}$)/
     // 学号
     if (!numReg.test(number)) {
       return false

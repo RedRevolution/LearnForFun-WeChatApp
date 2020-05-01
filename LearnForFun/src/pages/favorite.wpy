@@ -11,7 +11,7 @@
 
 </style>
 <template>
-    <import src="../templates/nodata/nodata.wxml" />
+  <!-- favorite页面 新创建 是空的 -->
   <view class = 'container'>
       <template is="jiangqie_nodata" />
   </view>
@@ -21,12 +21,12 @@
 <script>
 // 页面逻辑代码部分
 import wepy from 'wepy'
-export default class Collection extends wepy.page {
+export default class Favorite extends wepy.page {
   config = {
-      navigationBarTitleText: '收藏'
+      navigationBarTitleText: '喜欢'
     }
   data = {
-    wordData: 'Welcome!这个是收藏页面'
+    wordData: 'Welcome!这个是喜欢页面'
   }
 
 }

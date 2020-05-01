@@ -70,16 +70,25 @@
   </view>
 
   <view class="listbox">
-    <view class = "container">
+      <view class = "container">
       <view class="userlogin">
         <navigator url="/pages/bindschoolnum"><van-button plain type="info">跳转到绑定学号界面</van-button></navigator>
       </view>
     </view>
-  </view>
+      <view>
+        <van-cell title="我的日程" is-link  link-type="navigateTo"
+          url="/pages/schedule" />
+      </view>
+      <view>
+        <van-cell title="关于" is-link  link-type="navigateTo"
+              url="/pages/favorite" />
+      </view>
+      <view class = "container">
+          <van-button plain type="info">退出登录</van-button>
+          <van-button plain type="info" @tap="refresh">刷新</van-button>
+      </view>
 
-  <van-button plain type="info">退出登录</van-button>
-  <van-button plain type="info" @tap="refresh">刷新</van-button>
-
+    </view>
 
 </template>
 
@@ -110,6 +119,27 @@ export default class Me extends wepy.page {
       that.avatarUrl = userInfo.avatarUrl
       that.nickName = userInfo.nickName
       // this.getUserInfo()  
+
+      // 这个部分是想
+      wx.login({
+      success: res => {
+        // 发送 res.code 到后台换取 openId, sessionKey, unionId
+        // console.log(res)
+        var appid = 'wxbe3bc73b7a961e66'; //填写微信小程序appid 
+        var secret = 'd65ad3d9ee159c568200c30a3bb49baf'; //填写微信小程序secret 
+ 
+        //调用request请求api转换登录凭证 
+        wx.request({
+          url: 'https://api.weixin.qq.com/sns/jscode2session?appid='+appid+'&secret='+secret+'&grant_type=authorization_code&js_code=' + res.code,
+          header: {
+            'content-type': 'application/json'
+          },
+          success: function (res) {
+            console.log(res.data.openid) //获取openid 
+          }
+        }) 
+      }
+    })
   }
 
   refresh(){
