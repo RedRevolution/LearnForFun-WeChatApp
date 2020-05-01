@@ -27,14 +27,15 @@ export default class extends wepy.app {
       'pages/groupchat',
       'pages/coursetable', 
       'pages/collection',
-      'pages/me'
+      'pages/me',
+      'pages/userlogin'
     ],
     window: {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#0984e3',
       navigationBarTitleText: '趣学',
       navigationBarTextStyle: 'white'
-      
+
     },
     tabBar:{
       "color":"#666666",
