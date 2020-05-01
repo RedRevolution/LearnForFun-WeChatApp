@@ -19,8 +19,8 @@
   <!-- 这个页面为群组聊天页面首页，点击tarbar第一个“群聊”即可看到此页面 -->
   <view class="container">
     <view class="userinfo" @tap="handleViewTap">
-      <image class="userinfo-avatar" src="{{ userInfo.avatarUrl }}" background-size="cover"/>
-      <view class="userinfo-nickname">{{ userInfo.nickName }}</view>
+      <image class="userinfo-avatar" src="{{ avatarUrl }}" background-size="cover"/>
+      <view class="userinfo-nickname">{{ nickName }}</view>
     </view>
 
     <panel>
@@ -78,10 +78,12 @@
 
     data = {
       mynum: 20,
-      userInfo: {
-        nickName: '加载中...',
-        avatarUrl:'',
-      },
+      avatarUrl: '',
+      nickName: '',   // 微信昵称
+      schoolNum:0,    // 学号
+      realName:'',    // 真实姓名
+      openid:'',      // 不能提供真实的微信号所以只能用openid
+
       normalTitle: '原始标题',
       setTimeoutTitle: '标题三秒后会被修改',
       count: 0,
@@ -150,8 +152,8 @@
       let self = this
       let that = this
       let userInfo = wepy.getStorageSync("userInfo")
-      self.userInfo.avatarUrl = userInfo.avatarUrl
-      self.userInfo.nickName = userInfo.nickName
+      self.avatarUrl = userInfo.avatarUrl
+      self.nickName = userInfo.nickName
 
       this.$parent.getUserInfo(function (userInfo) {
         if (userInfo) {

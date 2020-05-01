@@ -20,11 +20,24 @@ export default class wxCommon extends wepy.mixin{
         'Cookie': wepy.getStorageSync('cookie')
       }
     }).then((res) => {
+      console.log(res.data)
       if (res.header['Set-Cookie'] != null) {
         wepy.setStorageSync('cookie', res.header['Set-Cookie'])
       }
       cb(res)
     })
+  }
+
+  checkNum(number) {
+    //学号必须全都是数字
+    let numReg = /(^1[2|3|4|5|6|7|8|9]\d{6}$)|(^09\d{7}$)/
+    // 学号
+    if (!numReg.test(number)) {
+      return false
+    } else {
+      return true
+    }
+
   }
 
 }

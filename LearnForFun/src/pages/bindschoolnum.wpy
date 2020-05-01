@@ -44,28 +44,121 @@
 }
 </style>
 <template>
-
+    <input placeholder="输入姓名" bindinput="inputName">
+    <input placeholder="输入学号" bindinput="inputNum">
+    <button @tap="create" class="button">绑定</button>
 </template>
 
 <script>
 // 页面逻辑代码部分
 import wepy from 'wepy'
 import api from '@/api/api'
+import wxCommon from '../mixins/wxCommon'
+
 export default class Bind extends wepy.page {
   config = {
     navigationBarTitleText: '绑定学号'
   }
   data = {
     avatarUrl: '',
-    nickName: '',
-    schoolNum:0,
+    nickName: '',   // 微信昵称
+    schoolNum:0,    // 学号
+    realName:'',    // 真实姓名
+    openid:'',      // 不能提供真实的微信号所以只能用openid
     wordData: 'Welcome! 这个是绑定学号界面'
   }
-  onLoad() {
+
+  mixins = [wxCommon]
+  
+  methods = {
+      inputName(e) {
+        this.realName = e.detail.value
+        this.$apply()
+      },
+      //参与者号码
+      inputNum(e) {
+        this.schoolNum = e.detail.value
+        this.$apply()
+      },
+      // 绑定学号函数, key: 'formalInfo'本地缓存真正json的四个字段的数据
+      create(){
+          const that = this 
+          if(this.checkNum(this.schoolNum)){ // url后面要加微信号，数据左侧是数据库字段，右侧是本地js的data
+              that.userRequest(
+                  '/api/user','post',   // 还没有加微信号
+                  {
+                      userId: that.schoolNum,
+                      userName: that.realName,
+                      wechatAccountId: 'Vanellope3' // 这里的account openid应当是userlogin授权之后获取的
+                  }, function(res) {
+                      if(res.data.userId == 0) {    // 这一步显然没有进行
+                          wepy.switchTab({
+                            url:'/pages/me'
+                          })
+                        //   wepy.setStorageSync('openid', xxx) 在授权页面搞
+                          wepy.setStorageSync("formalInfo", res.data)
+                      }
+                      wepy.showModal({
+                          title: '提示',
+                          content: '绑定成功！你的姓名：' + res.data.userName
+                      })
+                  }
+              )
+          } else {
+              wepy.showModal({
+                  title:'错误',
+                  content: '学号输入错误'
+              })
+          }
+      }
+  }
+
+  async onLoad(){   // 'userInfo'是腾讯授权的资料
       let that = this
       let userInfo = wepy.getStorageSync("userInfo")
       that.avatarUrl = userInfo.avatarUrl
       that.nickName = userInfo.nickName
+      
+      let formalInfo = wepy.getStorageSync('formalInfo')
+      that.realName = formalInfo.userName
+      that.schoolNum = formalInfo.userId
+      
+
+      // 一般进到绑定学号时要求已经进行了微信授权，所以在这个页面加载的第一次我们就尝试获取微信提供的唯一openid
+      // 自己创造了3个虚拟的openid: Vanellope1, Vanellope2, Vanellope3
+      //GET /api/user/{Id}
+      // 根据改 openid发送get请求查看数据库中是否已经绑定了学号，如果没有，则可以让学生点击“绑定”按钮create 发送post绑定 /api/user
+      let openid = wepy.getStorageSync("openid")
+      that.openid = openid  // Vanellope3
+      that.userRequest(
+            '/api/user/Vanellope3' ,'get',   // 还没有替换为openid，data部分可以留空
+              {
+                
+              }, function(res) {
+                    if(res.data.userId == 0) {
+                      
+                    } else {
+                        wepy.showModal({
+                            title: '提示',
+                            content: '你已经绑定过学号了～' + res.data.userName,
+                            success (res) {
+                                if (res.confirm) {
+                                console.log('用户点击确定')
+                                } else if (res.cancel) {
+                                console.log('用户点击取消')
+                                }
+                                
+                            }
+                        })
+                        wepy.switchTab({
+                            url:'/pages/me'  // 点按确定之后跳转
+                        })
+                    }
+                    
+                }
+        )
+
+
   }
 
 }

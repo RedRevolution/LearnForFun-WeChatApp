@@ -78,7 +78,7 @@
   </view>
 
   <van-button plain type="info">退出登录</van-button>
-  <van-button plain type="info" class="refresh">刷新</van-button>
+  <van-button plain type="info" @tap="refresh">刷新</van-button>
 
 
 </template>
@@ -95,6 +95,8 @@ export default class Me extends wepy.page {
     avatarUrl: '',
     nickName: '',
     schoolNum:0,
+    realName:'',    // 真实姓名
+    openid:'',      // 不能提供真实的微信号所以只能用openid
     wordData: '这个是‘我的’页面'
   }
 
