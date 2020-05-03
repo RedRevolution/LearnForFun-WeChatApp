@@ -1,26 +1,192 @@
 <style lang="less">
-.container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  box-sizing: border-box;
-}
+  .page {
+    position: fixed;
+    height: 100vh;
+    width: 100vw;
+    background: #e8e9d2;
+  }
+
+  .chats {
+    text-align: center;
+    margin: 10vh 10vh 10vw 10vw;
+    height: 65vh;
+    width: 80vw;
+    background-color: aliceblue;
+    overflow: auto;
+
+  }
+
+  .chatInput {
+    background: aliceblue;
+    height: 40rpx;
+    font-size: 20rpx;
+    padding: 10rpx;
+    width: 70vw;
+    margin-left: 15vw;
+    border-radius: 20rpx;
+    margin-bottom: 3vh;
+  }
+
+  .btn {
+    width: 70vw;
+    margin-left: 15vw;
+  }
 </style>
 <template>
-  <view style="text-align: center">
-	 <text>{{wordData}}</text>
+  <view class="page">
+    <view class="chats">
+      <repeat for="{{chats}}" item="item">
+        <view style="font-size: 20rpx;color: #ababab">{{item.time}}</view>
+        <view style="font-size: 25rpx;padding-bottom: 20rpx">{{item.text}}</view>
+      </repeat>
+    </view>
+    <view class="chatInput">
+      <input placeholder="请输入聊天内容" bindinput="userSay"/>
+    </view>
+    <button @tap="sendMessage" size="mini" class="btn">
+      发送消息
+    </button>
+    <!-- 点击发送消息会触发methods中的sendMessage()函数 -->
   </view>
-
 </template>
 
 <script>
-// 页面逻辑代码部分
-import wepy from 'wepy'
-export default class Groupchat extends wepy.page {
-  data = {
-    wordData: 'XX群组聊天界面，应当从官方首页点击了某一个群组进来'
+  import wepy from 'wepy'
+  // 监听是否打开的状态量
+  // 页面逻辑代码部分
+  // 页面注释，进入这个页面的时候应当发送ajax请求，使得在列表能列出最近的群组消息和群名字
+  // 点击某一个群组进去会建立websocket连接
+  let socketOpen = false    //页面全局变量，默认值为false
+  export default class chat extends wepy.page {
+    components = {}
+
+    mixins = []
+
+    data = {
+      say: '',
+      chats: [{time: '聊天开始', text: ''}]
+    }
+
+    methods = {
+      // 用户输入相关的内容
+      userSay(e) {
+        this.say = e.detail.value
+        this.$apply()
+      },
+      //  发送对话
+      sendMessage() {
+        let time = new Date()
+        this.chats = this.chats.concat([{time: time.toLocaleTimeString(), text: '我说：' + this.say}])
+        this.handleSendMessage()
+        this.$apply()
+      }
+    }
+
+    // 启动一个socket
+    startSocket() {
+      wepy.connectSocket({
+        url: 'ws://114.115.142.227:80/webSocket/123456/17373384/王珊珊'   // 这个url要换成服务器端的xx端口
+        // {groupId}/{userId}/{userName}
+      })
+    }
+
+    // 初始化要是连接成功了应当先查收消息，所以先调用receiveMessage
+    wssInit() {
+      const that = this
+      this.startSocket()    // 先用学号姓名建立连接，测试暂时连接可以成功
+      // 链接失败显示
+      wepy.onSocketError(function (res) {
+        socketOpen = false
+        console.log('WebSocket连接打开失败，请检查！', res)   //每隔两秒钟就重新发一次
+        setTimeout(() => {    // 可延时回调
+          that.startSocket()
+        }, 2000)
+      })
+      // 监听连接成功
+      wepy.onSocketOpen(function (res) {
+        socketOpen = true                 
+        console.log('WebSocket连接已打开！Res: ' + res)
+        //  接收服务器的信息
+        that.receiveMessage()
+      })
+    }
+
+    // 接收服务器的消息
+    receiveMessage() {
+      const that = this
+      if (socketOpen) {   // socketOpen在这里用到如果连接成功了才可以收发消息
+        console.log('正在读取socket服务器……')
+        wepy.onSocketMessage(function (res) {
+          let time = new Date()
+          console.log('收到服务器内容：', res)
+          let resData = JSON.parse(res.data)
+          console.log(resData)
+          if (resData.data) { // 服务器有内容不为null，那么在chats中追加一条
+            that.chats = that.chats.concat([{time: time.toLocaleTimeString(), text: '服务器说：' + resData.data}])
+            that.$apply()
+          }
+        })
+      } else {
+        //  未打开状态需要延时重新调用
+        console.log('服务器没有连接')
+        setTimeout(() => {
+          that.receiveMessage()
+        }, 2000)
+      }
+    }
+
+    // 向服务器发送消息
+    handleSendMessage() {
+      const that = this
+      console.log('尝试向服务器发送消息：' + that.say)
+      // 要先检查是否还是连通的才可以发送消息, wx是否换成wepy
+      // 链接失败显示
+      wx.onSocketError(function (res) {
+        socketOpen = false
+        console.log('准备向服务器发送消息时：WebSocket连接打开失败，请检查！', res)   //每隔两秒钟就重新发一次
+        setTimeout(() => {    // 可延时回调
+          that.startSocket()
+        }, 2000)
+      })
+      // 监听连接成功
+      wx.onSocketOpen(function (res) {
+        socketOpen = true                 
+        console.log('准备向服务器发送消息时：WebSocket连接已打开！')
+        // wepy.sendSocketMessage({
+        //   data: JSON.stringify({data: that.say})
+        // })
+      })
+      if (socketOpen) {
+        wepy.sendSocketMessage({
+          data: JSON.stringify({data: that.say})
+        })
+      }
+      
+      
+    }
+
+    events = {}
+
+    // 页面加载函数启动socket连接，当连接成功后，回复socket连接成功并且调用接收服务器
+    onLoad() {
+      const that = this
+      // 延迟启动socket
+      setTimeout(() => {
+        that.wssInit() //  wepy.onSocketOpen即为连接成功，会把socketOpen变量设置为true
+      }, 2000)
+
+      // that.realName = get
+      // that.schoolNum = get
+
+    }
+
+    onShow(){
+      const that = this
+      this.onLoad()
+    }
+
+    onHide() { 
+      wx.closeSocket();
+    }
   }
-}
 </script>

@@ -18,6 +18,7 @@
 - 2020.5.2 01:00: 加入课表整体框架页面，色彩配色，vant pop弹窗闪退问题(PG)
 - 2020.5.3 12:41: wx.login可以获取code，解决了自动刷新onshow问题，但是后台还无法返回openid(DM) 
 - 2020.5.3 14:30: app secret获取成功，openId成功绑定并导入数据库
+- 2020.5.3 22:30: websocket写了一个简单页面，尝试向后端建立连接onSocketOpen函数成功却无法connect failed
 
 ## 1. 开启项目
 

@@ -147,11 +147,16 @@ export default class Collection extends wepy.page {
                
                 console.log("用户的信息如下：");
                 console.log(e.detail.userInfo);
-                console.log(e.detail.openId); // 这条应该是无效的
 
-                // 授权完毕之后返回’我的‘页面
+                // 授权完毕之后返回’我的‘页面并强制刷新
                 wepy.switchTab({
-                    url: '/pages/me'
+                    url: '/pages/me',
+                    success: function (e) {  
+                      var page = getCurrentPages().pop();  
+                      if (page == undefined || page == null) return;  
+                      page.onLoad();  
+                    }  
+
                 })
             }
         }

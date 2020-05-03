@@ -25,6 +25,7 @@
 
     <panel>
       <view class="title" slot="title">这个页面是首页群聊嘤嘤</view>
+      <navigator url="/pages/groupchat"><van-button plain type="info">跳转到一个丑陋的聊天websocket测试页面</van-button></navigator>
     </panel>
     <panel>
       <view class="title" slot="title">测试并发网络请求</view>

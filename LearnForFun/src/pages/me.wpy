@@ -58,6 +58,11 @@
           <view class="nickName">微信名：{{ nickName }}</view>
           <view>学号：{{schoolNum}}</view>
           <view>姓名：{{realName}}</view>
+          <view class = "container">
+            <view class="userlogin">
+              <navigator url="/pages/bindschoolnum"><van-button plain type="info">跳转到绑定学号界面</van-button></navigator>
+            </view>
+          </view>
         </view>
       </block>
       <block wx:else>
@@ -71,11 +76,7 @@
   </view>
 
   <view class="listbox">
-      <view class = "container">
-      <view class="userlogin">
-        <navigator url="/pages/bindschoolnum"><van-button plain type="info">跳转到绑定学号界面</van-button></navigator>
-      </view>
-    </view>
+      
       <view>
         <van-cell title="我的日程" is-link  link-type="navigateTo"
           url="/pages/schedule" />
@@ -121,6 +122,8 @@ export default class Me extends wepy.page {
       that.avatarUrl = userInfo.avatarUrl
       that.nickName = userInfo.nickName
       // this.getUserInfo()  
+      that.realName = wepy.getStorageSync('realName') // 在userLogin里面要是成功绑定了那么会set到全局缓存里面
+      that.schoolNum = wepy.getStorageSync('schoolNum')
 
       
   }
@@ -132,6 +135,7 @@ export default class Me extends wepy.page {
       that.nickName = userInfo.nickName
       that.realName = wepy.getStorageSync('realName') // 在userLogin里面要是成功绑定了那么会set到全局缓存里面
       that.schoolNum = wepy.getStorageSync('schoolNum')
+      this.onLoad()
   }
 
 }
