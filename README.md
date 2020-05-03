@@ -17,7 +17,7 @@
 - 2020.5.1 22:24更新：完成userRequest封装，成功向后台post/get修改数据库或获取userInfo，但是由于微信端无法获取微信号，openid暂时还没获取(DM)
 - 2020.5.2 01:00: 加入课表整体框架页面，色彩配色，vant pop弹窗闪退问题(PG)
 - 2020.5.3 12:41: wx.login可以获取code，解决了自动刷新onshow问题，但是后台还无法返回openid(DM) 
-
+- 2020.5.3 14:30: app secret获取成功，openId成功绑定并导入数据库
 
 ## 1. 开启项目
 
@@ -51,7 +51,14 @@
 
 
 
-## 3. 基于腾讯IM的通信
+## 3. 即时聊天自己写websocket通信
+
+
+
+
+
+------
+【下面是腾讯IM的信息，暂时不用了】
 
 将SDKAppID和密钥粘贴到指定位置：
 
@@ -76,9 +83,7 @@ SDKAppID：1400362697
 
    [![img](https://github.com/tencentyun/TIMSDK/raw/master/WXMini/_doc/4.png)](https://github.com/tencentyun/TIMSDK/blob/master/WXMini/_doc/4.png)
 
-
-
-
+----
 
 ### UI组件 
 
