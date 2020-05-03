@@ -57,12 +57,13 @@
             />
           <view class="nickName">微信名：{{ nickName }}</view>
           <view>学号：{{schoolNum}}</view>
+          <view>姓名：{{realName}}</view>
         </view>
       </block>
       <block wx:else>
         <view class="useravatar">
           <image src="/images/user_select.png" mode="aspectFill"></image>
-          <view class="userlogin"><navigator url="/pages/userlogin">立即登录</navigator></view>
+          <view class="userlogin"><navigator url="/pages/userlogin">登录后才可查看学号信息哦</navigator></view>
         </view>
       </block>
     </view>
@@ -85,7 +86,6 @@
       </view>
       <view class = "container">
           <van-button plain type="info">退出登录</van-button>
-          <van-button plain type="info" @tap="refresh">刷新</van-button>
       </view>
 
     </view>
@@ -96,6 +96,8 @@
 // 页面逻辑代码部分
 import wepy from 'wepy'
 import api from '@/api/api'
+import wxCommon from '../mixins/wxCommon'
+
 export default class Me extends wepy.page {
   config = {
     navigationBarTitleText: '我的'
@@ -108,7 +110,7 @@ export default class Me extends wepy.page {
     openid:'',      // 不能提供真实的微信号所以只能用openid
     wordData: '这个是‘我的’页面'
   }
-
+  mixins = [wxCommon]
   methods = {
     
   }
@@ -124,51 +126,56 @@ export default class Me extends wepy.page {
       wx.login({
       success: res => {
         // 发送 res.code 到后台换取 openId, sessionKey, unionId
-        // console.log(res)
-        var appid = 'wxbe3bc73b7a961e66'; //填写微信小程序appid 
-        var secret = 'd65ad3d9ee159c568200c30a3bb49baf'; //填写微信小程序secret 
- 
-        //调用request请求api转换登录凭证 
-        wx.request({
-          url: 'https://api.weixin.qq.com/sns/jscode2session?appid='+appid+'&secret='+secret+'&grant_type=authorization_code&js_code=' + res.code,
-          header: {
-            'content-type': 'application/json'
-          },
-          success: function (res) {
-            console.log(res.data.openid) //获取openid 
-          }
-        }) 
+        console.log('测试能否获取到登录的code')
+        console.log(res)
+        console.log(res.code)
+        that.userRequest(
+            '/api/user/'+res.code ,'get', 
+              {
+                
+              }, function(res) {
+                    if(res.data.userId == 'unbound') {
+                      wepy.showModal({
+                            title: '提示',
+                            content: '你还没有绑定学号哦～',
+                            success (res) {
+                                if (res.confirm) {
+                                console.log('用户点击确定')
+                                } else if (res.cancel) {
+                                console.log('用户点击取消')
+                                }
+                            }
+                      })
+                      // 未绑定学号会返回 openid
+                      wepy.setStorageSync("openid", res.data.openid)
+
+                      wepy.navigateTo({
+                          url:'/pages/bindschoolnum'  // 点按确定之后跳转
+                      })
+
+                    } else { // 这个人已经绑定过了，会返回一个完整的User实例，缓存userId, userName作为全局缓存->schoolNum, realName
+                      wepy.setStorageSync("schoolNum", res.data.userId)
+                      wepy.setStorageSync("realName", res.data.userName)
+                      that.schoolNum = res.data.userId
+                      that.realName = res.data.userName
+                      // 无需提示，界面会显示这个学号和真实姓名
+                    }
+                    
+                }
+        )
+        
       }
     })
   }
 
-  refresh(){
+  onShow(){ // 每次点进来显示这个页面就相当于刷新一下，免得显示不了头像和昵称
       let that = this
       let userInfo = wepy.getStorageSync("userInfo")
       that.avatarUrl = userInfo.avatarUrl
       that.nickName = userInfo.nickName
-      wepy.switchTab({
-        url: '/pages/me'
-      })
+      that.realName = wepy.getStorageSync('realName')
+      that.schoolNum = wepy.getStorageSync('schoolNum')
   }
 
-  // async getUserInfo(phone, code) {
-  //     let that = this
-  //     let userSpecialInfo = wepy.getStorageSync("userSpecialInfo") || {}
-  //     let openId = userSpecialInfo.openid
-  //     const json = await api.getUserInfo({
-  //       query: {
-  //         openId: openId
-  //       }
-  //     })
-
-  //     if (json.data.code === 0) {
-  //       this.bHideBind = (json.data.user != null && json.data.user.mobile.length > 0)
-  //       that.$apply()
-  //     } else {
-  //       tip.error(json.data.msg)
-  //     }
-  //     that.showLoading = false
-  //   }
 }
 </script>

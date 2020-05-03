@@ -62,8 +62,8 @@ export default class Collection extends wepy.page {
       navigationBarTitleText: '登录'
   }
   data = {
-    wordData: 'Welcome!这个是登录页面',
-    title:'趣学北航',
+    wordData: 'Welcome!这个是微信授权页面',
+    title:'授权登录',
     //判断小程序的API，回调，参数，组件等是否在当前版本可用。
     canIUse: wx.canIUse('button.open-type.getUserInfo'), 
   }
@@ -86,19 +86,7 @@ export default class Collection extends wepy.page {
           if (res.code) {
             let systemInfo = wepy.getSystemInfoSync()
             wepy.setStorageSync("systemInfo", systemInfo)
-            // let rlt = await api.wxJsCode2Session({
-            //   query: {
-            //     jsCode: res.code,
-            //     nickName: data.userInfo.nickName
-            //   }
-            // })
-
-            // if (rlt.data.result) {
-            //   let data = rlt.data
-            //   if (data.data.openid) {
-            //     wepy.setStorageSync("userSpecialInfo", data.data)
-            //   }
-            // }
+            
           }
         }
         wepy.switchTab({

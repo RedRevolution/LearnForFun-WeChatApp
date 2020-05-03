@@ -72,42 +72,57 @@ export default class Bind extends wepy.page {
   
   methods = {
       inputName(e) {
-        this.realName = e.detail.value
+        this.realName = e.detail.value  // 表单存名字
         this.$apply()
       },
       //参与者号码
       inputNum(e) {
-        this.schoolNum = e.detail.value
+        this.schoolNum = e.detail.value // 表单存号码
         this.$apply()
       },
-      // 绑定学号函数, key: 'formalInfo'本地缓存真正json的四个字段的数据
+      // 绑定学号函数
       create(){
           const that = this 
           if(this.checkNum(this.schoolNum)){ // url后面要加微信号，数据左侧是数据库字段，右侧是本地js的data
               that.userRequest(
                   '/api/user','post',   // 还没有加微信号
                   {
+                      openId: that.openid, // openid应当是userlogin授权之后获取的，一旦加载这个页面openid变量就有了
                       userId: that.schoolNum,
-                      userName: that.realName,
-                      wechatAccountId: 'Vanellope3' // 这里的account openid应当是userlogin授权之后获取的
+                      userName: that.realName
                   }, function(res) {
-                      if(res.data.userId == 0) {    // 这一步显然没有进行
-                          wepy.switchTab({
+                      if(res.data == 0) {    // 这一步显然没有进行
+                        wepy.switchTab({
                             url:'/pages/me'
+                        })
+                      } else if (res.data == 'duplicate') {
+                          wepy.showModal({
+                            title: '提示',
+                            content: '学号/工号重复，请重新输入' + res.data.userName,
+                            success (res) {
+                                if (res.confirm) {
+                                console.log('用户点击确定')
+                                } else if (res.cancel) {
+                                console.log('用户点击取消')
+                                }
+                            }
+                        })
+                      } else if (res.data == 'success'){
+                          wepy.showModal({
+                            title: '提示',
+                            content: '绑定成功！你的姓名：' + that.realName + '\n你的学号：' + that.schoolNum
                           })
-                        //   wepy.setStorageSync('openid', xxx) 在授权页面搞
-                          wepy.setStorageSync("formalInfo", res.data)
+                          // 全局缓存
+                          wepy.setStorageSync("schoolNum", that.schoolNum)
+                          wepy.setStorageSync("realName", that.realName)
                       }
-                      wepy.showModal({
-                          title: '提示',
-                          content: '绑定成功！你的姓名：' + res.data.userName
-                      })
+                      
                   }
               )
           } else {
               wepy.showModal({
                   title:'错误',
-                  content: '学号输入错误'
+                  content: '学号格式输入错误'
               })
           }
       }
@@ -118,47 +133,13 @@ export default class Bind extends wepy.page {
       let userInfo = wepy.getStorageSync("userInfo")
       that.avatarUrl = userInfo.avatarUrl
       that.nickName = userInfo.nickName
-      
-      let formalInfo = wepy.getStorageSync('formalInfo')
-      that.realName = formalInfo.userName
-      that.schoolNum = formalInfo.userId
-      
 
-      // 一般进到绑定学号时要求已经进行了微信授权，所以在这个页面加载的第一次我们就尝试获取微信提供的唯一openid
-      // 自己创造了3个虚拟的openid: Vanellope1, Vanellope2, Vanellope3
-      //GET /api/user/{Id}
-      // 根据改 openid发送get请求查看数据库中是否已经绑定了学号，如果没有，则可以让学生点击“绑定”按钮create 发送post绑定 /api/user
+      // 一般进到绑定学号时要求已经进行了微信授权，此时openid已经在me.wpy获取好了
+      //GET /api/user/{code}
+      // 根据改 code 发送get请求查看数据库中是否已经绑定了学号，如果没有，则可以让学生点击“绑定”按钮create 发送post绑定 /api/user
       let openid = wepy.getStorageSync("openid")
-      that.openid = openid  // Vanellope3
-      that.userRequest(
-            '/api/user/Vanellope3' ,'get',   // 还没有替换为openid，data部分可以留空
-              {
-                
-              }, function(res) {
-                    if(res.data.userId == 0) {
-                      
-                    } else {
-                        wepy.showModal({
-                            title: '提示',
-                            content: '你已经绑定过学号了～' + res.data.userName,
-                            success (res) {
-                                if (res.confirm) {
-                                console.log('用户点击确定')
-                                } else if (res.cancel) {
-                                console.log('用户点击取消')
-                                }
-                                
-                            }
-                        })
-                        wepy.switchTab({
-                            url:'/pages/me'  // 点按确定之后跳转
-                        })
-                    }
-                    
-                }
-        )
-
-
+      that.openid = openid
+      
   }
 
 }
