@@ -64,7 +64,7 @@ export default class Bind extends wepy.page {
     nickName: '',   // 微信昵称
     schoolNum:0,    // 学号
     realName:'',    // 真实姓名
-    openid:'',      // 不能提供真实的微信号所以只能用openid
+    openId:'',      // 不能提供真实的微信号所以只能用openid
     wordData: 'Welcome! 这个是绑定学号界面'
   }
 
@@ -87,7 +87,7 @@ export default class Bind extends wepy.page {
               that.userRequest(
                   '/api/user','post',   // 还没有加微信号
                   {
-                      openId: that.openid, // openid应当是userlogin授权之后获取的，一旦加载这个页面openid变量就有了
+                      openId: that.openId, // openid应当是userlogin授权之后获取的，一旦加载这个页面openid变量就有了
                       userId: that.schoolNum,
                       userName: that.realName
                   }, function(res) {
@@ -98,15 +98,9 @@ export default class Bind extends wepy.page {
                       } else if (res.data == 'duplicate') {
                           wepy.showModal({
                             title: '提示',
-                            content: '学号/工号重复，请重新输入' + res.data.userName,
-                            success (res) {
-                                if (res.confirm) {
-                                console.log('用户点击确定')
-                                } else if (res.cancel) {
-                                console.log('用户点击取消')
-                                }
-                            }
+                            content: '学号/工号重复，请重新输入'
                         })
+                        // 返回“重复”时不应当进行缓存
                       } else if (res.data == 'success'){
                           wepy.showModal({
                             title: '提示',
@@ -137,9 +131,9 @@ export default class Bind extends wepy.page {
       // 一般进到绑定学号时要求已经进行了微信授权，此时openid已经在me.wpy获取好了
       //GET /api/user/{code}
       // 根据改 code 发送get请求查看数据库中是否已经绑定了学号，如果没有，则可以让学生点击“绑定”按钮create 发送post绑定 /api/user
-      let openid = wepy.getStorageSync("openid")
-      that.openid = openid
-      
+      let openId = wepy.getStorageSync("openid")
+      that.openId = openId
+      console.log("进入bindschoolNum页面！您的openid为" + openId)
   }
 
 }

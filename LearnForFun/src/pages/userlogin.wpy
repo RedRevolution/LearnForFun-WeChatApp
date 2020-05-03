@@ -56,6 +56,8 @@
 import wepy from 'wepy'
 import 'wepy-async-function'
 import api from '@/api/api'
+import wxCommon from '../mixins/wxCommon'
+
 export default class Collection extends wepy.page {
 
   config = {
@@ -67,6 +69,7 @@ export default class Collection extends wepy.page {
     //判断小程序的API，回调，参数，组件等是否在当前版本可用。
     canIUse: wx.canIUse('button.open-type.getUserInfo'), 
   }
+  mixins = [wxCommon]
 
   async onLoad(){
     var that = this;
@@ -76,6 +79,7 @@ export default class Collection extends wepy.page {
         let userInfo = wepy.getStorageSync("userInfo")
 
         // GetUserInfo if userInfo does not exist in storage.
+        // 下面这一部分有个鬼用
         if (!userInfo.nickName) {
           let data = await wepy.getUserInfo()
           if (data) {
@@ -86,7 +90,6 @@ export default class Collection extends wepy.page {
           if (res.code) {
             let systemInfo = wepy.getSystemInfoSync()
             wepy.setStorageSync("systemInfo", systemInfo)
-            
           }
         }
         wepy.switchTab({
@@ -95,25 +98,58 @@ export default class Collection extends wepy.page {
       }
   
   }
-
+    // 成功授权登录后发生的事情，不论学号是否已经存在服务器都要获得res.data.openid存在缓存里
     async bindGetUserInfo(e) {
+        let that = this
         if (e.detail.errMsg === 'getUserInfo:ok') {
             wepy.setStorageSync("userInfo", e.detail.userInfo)
             let res = await wepy.login()
             if (res.code) {
+                console.log('测试能否获取到登录的code')
+                console.log(res)
+                console.log(res.code)
+                that.userRequest(
+                    '/api/user/'+res.code ,'get', 
+                      {
+                        
+                      }, function(res) {
+                            if(res.data.userId == 'unbound') {
+                              wepy.showModal({
+                                    title: '提示',
+                                    content: '你还没有绑定学号哦～请去“我的”页面点击绑定学号',
+                                    success (res) {
+                                        if (res.confirm) {
+                                        console.log('用户点击确定')
+                                        } else if (res.cancel) {
+                                        console.log('用户点击取消')
+                                        }
+                                    }
+                              })
+                              // 未绑定学号会返回 openid
+                              console.log('我的openid应当为：' +res.data.openId)
+                              wepy.setStorageSync("openid", res.data.openId)  // 除了字符串，其余openId 一律大写I 
+
+                            } else { // 这个人已经绑定过了，会返回一个完整的User实例，缓存userId, userName作为全局缓存->schoolNum, realName
+                              wepy.setStorageSync("schoolNum", res.data.userId)
+                              wepy.setStorageSync("realName", res.data.userName)
+                              wepy.setStorageSync("openid", res.data.openId)
+                              that.schoolNum = res.data.userId
+                              that.realName = res.data.userName
+                              console.log("已经绑定过了，用户的信息如下："+ res.data.userName + ", 学号：" +res.data.userId);
+                            }
+                            
+                        }
+                  )
+                
                 let systemInfo = wepy.getSystemInfoSync()
                 wepy.setStorageSync("systemInfo", systemInfo)
 
-                // 希望点按'允许'授权之后可以获得腾讯提供的唯一openid
-                let data = await wepy.getUserInfo()
-                if (data) {
-                  wepy.setStorageSync("userInfo", data.userInfo)
-                }
-
+               
                 console.log("用户的信息如下：");
                 console.log(e.detail.userInfo);
-                console.log(e.detail.openid);
-                // 在这里获取openid并  wepy.setStorageSync("openid", data.userInfo)
+                console.log(e.detail.openId); // 这条应该是无效的
+
+                // 授权完毕之后返回’我的‘页面
                 wepy.switchTab({
                     url: '/pages/me'
                 })

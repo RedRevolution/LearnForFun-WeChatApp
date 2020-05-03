@@ -63,7 +63,7 @@
       <block wx:else>
         <view class="useravatar">
           <image src="/images/user_select.png" mode="aspectFill"></image>
-          <view class="userlogin"><navigator url="/pages/userlogin">登录后才可查看学号信息哦</navigator></view>
+          <view class="userlogin"><navigator url="/pages/userlogin">点我先登录后才可查看信息哦</navigator></view>
         </view>
       </block>
     </view>
@@ -122,50 +122,7 @@ export default class Me extends wepy.page {
       that.nickName = userInfo.nickName
       // this.getUserInfo()  
 
-      // 这个部分是想
-      wx.login({
-      success: res => {
-        // 发送 res.code 到后台换取 openId, sessionKey, unionId
-        console.log('测试能否获取到登录的code')
-        console.log(res)
-        console.log(res.code)
-        that.userRequest(
-            '/api/user/'+res.code ,'get', 
-              {
-                
-              }, function(res) {
-                    if(res.data.userId == 'unbound') {
-                      wepy.showModal({
-                            title: '提示',
-                            content: '你还没有绑定学号哦～',
-                            success (res) {
-                                if (res.confirm) {
-                                console.log('用户点击确定')
-                                } else if (res.cancel) {
-                                console.log('用户点击取消')
-                                }
-                            }
-                      })
-                      // 未绑定学号会返回 openid
-                      wepy.setStorageSync("openid", res.data.openid)
-
-                      wepy.navigateTo({
-                          url:'/pages/bindschoolnum'  // 点按确定之后跳转
-                      })
-
-                    } else { // 这个人已经绑定过了，会返回一个完整的User实例，缓存userId, userName作为全局缓存->schoolNum, realName
-                      wepy.setStorageSync("schoolNum", res.data.userId)
-                      wepy.setStorageSync("realName", res.data.userName)
-                      that.schoolNum = res.data.userId
-                      that.realName = res.data.userName
-                      // 无需提示，界面会显示这个学号和真实姓名
-                    }
-                    
-                }
-        )
-        
-      }
-    })
+      
   }
 
   onShow(){ // 每次点进来显示这个页面就相当于刷新一下，免得显示不了头像和昵称
@@ -173,7 +130,7 @@ export default class Me extends wepy.page {
       let userInfo = wepy.getStorageSync("userInfo")
       that.avatarUrl = userInfo.avatarUrl
       that.nickName = userInfo.nickName
-      that.realName = wepy.getStorageSync('realName')
+      that.realName = wepy.getStorageSync('realName') // 在userLogin里面要是成功绑定了那么会set到全局缓存里面
       that.schoolNum = wepy.getStorageSync('schoolNum')
   }
 
