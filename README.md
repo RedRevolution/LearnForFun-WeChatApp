@@ -19,6 +19,9 @@
 - 2020.5.3 12:41: wx.login可以获取code，解决了自动刷新onshow问题，但是后台还无法返回openid(DM) 
 - 2020.5.3 14:30: app secret获取成功，openId成功绑定并导入数据库
 - 2020.5.3 22:30: websocket写了一个简单页面，尝试向后端建立连接onSocketOpen函数成功却无法connect failed
+- 2020.5.4 23:59: 开发者工具可以成功发送短消息并存储到页面，但是真机调试由于没有ssl证书无法连接websocket(DM)
+
+
 
 ## 1. 开启项目
 

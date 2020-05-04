@@ -52,6 +52,7 @@
 
 <script>
   import wepy from 'wepy'
+  import wxCommon from '../mixins/wxCommon'
   // 监听是否打开的状态量
   // 页面逻辑代码部分
   // 页面注释，进入这个页面的时候应当发送ajax请求，使得在列表能列出最近的群组消息和群名字
@@ -64,16 +65,18 @@
 
     data = {
       say: '',
+      realName: '',
+      schoolNum: '',
       chats: [{time: '聊天开始', text: ''}]
     }
-
+    mixins = [wxCommon]
     methods = {
       // 用户输入相关的内容
       userSay(e) {
         this.say = e.detail.value
         this.$apply()
       },
-      //  发送对话
+      // 自己发送一条消息，服务器会返回一条一模一样的，这个我说的就显示为右侧的气泡
       sendMessage() {
         let time = new Date()
         this.chats = this.chats.concat([{time: time.toLocaleTimeString(), text: '我说：' + this.say}])
@@ -85,8 +88,8 @@
     // 启动一个socket
     startSocket() {
       wepy.connectSocket({
-        url: 'ws://114.115.142.227:80/webSocket/123456/17373384/王珊珊'   // 这个url要换成服务器端的xx端口
-        // {groupId}/{userId}/{userName}
+        url: 'ws://114.115.142.227:80/webSocket/123456/' + this.schoolNum + '/' + this.realName
+        // {groupId}/{userId}/{userName} 测试时群号暂时使用123456
       })
     }
 
@@ -97,7 +100,7 @@
       // 链接失败显示
       wepy.onSocketError(function (res) {
         socketOpen = false
-        console.log('WebSocket连接打开失败，请检查！', res)   //每隔两秒钟就重新发一次
+        console.log('WebSocket连接打开失败，请检查！', res.data)   //每隔两秒钟就重新发一次
         setTimeout(() => {    // 可延时回调
           that.startSocket()
         }, 2000)
@@ -105,7 +108,7 @@
       // 监听连接成功
       wepy.onSocketOpen(function (res) {
         socketOpen = true                 
-        console.log('WebSocket连接已打开！Res: ' + res)
+        console.log('WebSocket连接已打开！Res: ' + res.data)
         //  接收服务器的信息
         that.receiveMessage()
       })
@@ -118,12 +121,18 @@
         console.log('正在读取socket服务器……')
         wepy.onSocketMessage(function (res) {
           let time = new Date()
-          console.log('收到服务器内容：', res)
-          let resData = JSON.parse(res.data)
-          console.log(resData)
-          if (resData.data) { // 服务器有内容不为null，那么在chats中追加一条
-            that.chats = that.chats.concat([{time: time.toLocaleTimeString(), text: '服务器说：' + resData.data}])
-            that.$apply()
+          console.log('啦啦啦收到服务器内容：', res)
+          
+          if (res) { // 服务器有内容不为null，那么在chats中追加一条
+            // 如果服务器返回的名字是自己，那么不显示
+            // res.data 为 "王珊珊: 消息前有一个空格", 所以这里需要用英文冒号切割一下字符串
+            // let tmpName = res.data.split(":")
+            // console.log('发言人名字为' + tmpName[0] + '如果是自己，则不用再在弹框中显示了')
+            // if (tmpName[0] != that.realName) {
+              
+            // }
+            that.chats = that.chats.concat([{time: time.toLocaleTimeString(), text: '服务器说：' + res.data}])
+              that.$apply()     // apply之后本地变量就会被修改，那么聊天框内应该就会显示出服务器发回的消息
           }
         })
       } else {
@@ -141,24 +150,21 @@
       console.log('尝试向服务器发送消息：' + that.say)
       // 要先检查是否还是连通的才可以发送消息, wx是否换成wepy
       // 链接失败显示
-      wx.onSocketError(function (res) {
+      wepy.onSocketError(function (res) {
         socketOpen = false
-        console.log('准备向服务器发送消息时：WebSocket连接打开失败，请检查！', res)   //每隔两秒钟就重新发一次
+        console.log('准备向服务器发送消息时：WebSocket连接打开失败，请检查！', res.data)   //每隔两秒钟就重新发一次
         setTimeout(() => {    // 可延时回调
           that.startSocket()
         }, 2000)
       })
-      // 监听连接成功
-      wx.onSocketOpen(function (res) {
+      // 监听连接成功 注意，这两个函数除了第一次建立连接的时候会进行，这里写起来并不会再次执行这个函数，尚无解决方法
+      wepy.onSocketOpen(function (res) {
         socketOpen = true                 
-        console.log('准备向服务器发送消息时：WebSocket连接已打开！')
-        // wepy.sendSocketMessage({
-        //   data: JSON.stringify({data: that.say})
-        // })
+        console.log('准备向服务器发送消息时：WebSocket连接已打开！', res.data)
       })
       if (socketOpen) {
         wepy.sendSocketMessage({
-          data: JSON.stringify({data: that.say})
+          data: that.say  // 短消息都是string不用json格式
         })
       }
       
@@ -175,18 +181,31 @@
         that.wssInit() //  wepy.onSocketOpen即为连接成功，会把socketOpen变量设置为true
       }, 2000)
 
-      // that.realName = get
-      // that.schoolNum = get
+      // TODO: 第一次点进来的时候可以看到这个群的历史10条聊天记录，然后追加到chats这个数据里面去
+      // /api/group/message/{groupId}/{count}
+      // that.userRequest(
+      //               '/api/group/message/123456/10' ,'get', 
+      //                 {
+                        
+      //                 }, function(res) {
+      //                     console.log('第一次进入群聊页面，展示10条聊天记录. res: ', res)
+      //                     console.log(res.data)
+      //                 } 
+                          
+      //             )
 
     }
 
     onShow(){
       const that = this
-      this.onLoad()
+
+      // onload
+      that.realName = wepy.getStorageSync('realName')
+      that.schoolNum = wepy.getStorageSync('schoolNum')
     }
 
-    onHide() { 
-      wx.closeSocket();
-    }
+    // onHide() { 
+    //   wx.closeSocket();
+    // }
   }
 </script>
