@@ -135,7 +135,7 @@ export default class Collection extends wepy.page {
                               wepy.setStorageSync("openid", res.data.openId)
                               that.schoolNum = res.data.userId
                               that.realName = res.data.userName
-                              console.log("已经绑定过了，用户的信息如下："+ res.data.userName + ", 学号：" +res.data.userId);
+                              console.log("已经绑定过了，用户的信息如下："+ res.data.userName + ", 学号：" +res.data.userId + ", openid: " + res.data.openId);
                             }
                             
                         }

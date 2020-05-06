@@ -4,7 +4,7 @@ export default class wxCommon extends wepy.mixin{
 
   data = {
     userInfo: null,
-    url: 'http://114.115.142.227:80',
+    url: 'https://learn.wsscloud.cn',
     app: 'appname'
   }
 

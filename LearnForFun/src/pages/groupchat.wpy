@@ -3,7 +3,7 @@
     position: fixed;
     height: 100vh;
     width: 100vw;
-    background: #e8e9d2;
+    background:#dff9fb;
   }
 
   .chats {
@@ -31,6 +31,32 @@
     width: 70vw;
     margin-left: 15vw;
   }
+
+  .invite {
+  /* display: none; */
+  width: 250rpx;
+  font-size: 25rpx;
+  height: 50rpx;
+  line-height: 50rpx;
+  padding-left: 20rpx;
+  position: relative;
+  margin: 120rpx auto 0 35rpx;
+  background-color: #FFF0F5;
+  border: 1px solid #FFB5C5;
+  border-radius: 5px;
+}
+.invite:after {
+  content: '';
+  width: 20rpx;
+  height: 20rpx;
+  position: absolute;
+  top: -11rpx;
+  left: 20rpx;
+  transform: rotate(45deg);
+  background-color: #FFF0F5; // #0984e3
+  border: 1px #FFB5C5;
+  border-style: solid none none solid ;
+}
 </style>
 <template>
   <view class="page">
@@ -40,14 +66,17 @@
         <view style="font-size: 25rpx;padding-bottom: 20rpx">{{item.text}}</view>
       </repeat>
     </view>
+    <view class='invite'>
+        这是一个气泡样式哦～
+    </view>
     <view class="chatInput">
       <input placeholder="请输入聊天内容" bindinput="userSay"/>
     </view>
     <button @tap="sendMessage" size="mini" class="btn">
       发送消息
     </button>
-    <!-- 点击发送消息会触发methods中的sendMessage()函数 -->
-  </view>
+  </view> 
+
 </template>
 
 <script>
@@ -67,7 +96,11 @@
       say: '',
       realName: '',
       schoolNum: '',
-      chats: [{time: '聊天开始', text: ''}]
+      chats: [{
+        time: '聊天开始',  // 最顶部的小字
+        text: '',
+        name: ''  // 用于区分是自己发的还是对方发的
+      }]
     }
     mixins = [wxCommon]
     methods = {
@@ -76,10 +109,14 @@
         this.say = e.detail.value
         this.$apply()
       },
-      // 自己发送一条消息，服务器会返回一条一模一样的，这个我说的就显示为右侧的气泡
+      // 自己发送一条消息，服务器会返回一条一样的，这个我说的就显示为右侧的气泡
       sendMessage() {
         let time = new Date()
-        this.chats = this.chats.concat([{time: time.toLocaleTimeString(), text: '我说：' + this.say}])
+        this.chats = this.chats.concat([{
+          time: time.toLocaleTimeString(), 
+          text: '我说：' + this.say,
+          name: 'me'
+        }])
         this.handleSendMessage()
         this.$apply()
       }
@@ -88,9 +125,11 @@
     // 启动一个socket
     startSocket() {
       wepy.connectSocket({
-        url: 'ws://114.115.142.227:80/webSocket/123456/' + this.schoolNum + '/' + this.realName
+        url: 'wss://learn.wsscloud.cn/webSocket/123456/' + this.schoolNum + '/' + this.realName
         // {groupId}/{userId}/{userName} 测试时群号暂时使用123456
+        
       })
+      console.log(this.realName)
     }
 
     // 初始化要是连接成功了应当先查收消息，所以先调用receiveMessage
@@ -126,13 +165,16 @@
           if (res) { // 服务器有内容不为null，那么在chats中追加一条
             // 如果服务器返回的名字是自己，那么不显示
             // res.data 为 "王珊珊: 消息前有一个空格", 所以这里需要用英文冒号切割一下字符串
-            // let tmpName = res.data.split(":")
-            // console.log('发言人名字为' + tmpName[0] + '如果是自己，则不用再在弹框中显示了')
-            // if (tmpName[0] != that.realName) {
-              
-            // }
-            that.chats = that.chats.concat([{time: time.toLocaleTimeString(), text: '服务器说：' + res.data}])
+            let tmpName = res.data.split(":")
+            console.log('发言人名字为' + tmpName[0] + '如果是自己，则不用再在弹框中显示了')
+            if (tmpName[0] != that.realName) {
+              that.chats = that.chats.concat([{
+                time: time.toLocaleTimeString(), 
+                text: '服务器说：' + res.data,
+                name: tmpName[0]
+              }])
               that.$apply()     // apply之后本地变量就会被修改，那么聊天框内应该就会显示出服务器发回的消息
+            }
           }
         })
       } else {
@@ -176,6 +218,9 @@
     // 页面加载函数启动socket连接，当连接成功后，回复socket连接成功并且调用接收服务器
     onLoad() {
       const that = this
+      // onload
+      that.realName = wepy.getStorageSync('realName')
+      that.schoolNum = wepy.getStorageSync('schoolNum')
       // 延迟启动socket
       setTimeout(() => {
         that.wssInit() //  wepy.onSocketOpen即为连接成功，会把socketOpen变量设置为true
@@ -198,7 +243,6 @@
 
     onShow(){
       const that = this
-
       // onload
       that.realName = wepy.getStorageSync('realName')
       that.schoolNum = wepy.getStorageSync('schoolNum')

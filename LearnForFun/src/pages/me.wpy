@@ -135,7 +135,8 @@ export default class Me extends wepy.page {
       that.nickName = userInfo.nickName
       that.realName = wepy.getStorageSync('realName') // 在userLogin里面要是成功绑定了那么会set到全局缓存里面
       that.schoolNum = wepy.getStorageSync('schoolNum')
-      this.onLoad()
+      that.openId = wepy.getStorageSync('openid')
+      console.log("点击进到me页面："+ that.realName + ", 学号：" + that.schoolNum + ", openid: " + that.openId);
   }
 
 }
