@@ -21,15 +21,10 @@
       <view class="userinfo-nickname">{{ nickName }}</view>
   </view> 
   <!-- 这个页面为群组聊天页面首页，点击tarbar第一个“群聊”即可看到此页面 -->
-  <van-cell title="群聊名字（课程）" value="官方群组" size="large" label="描述信息：最近一条消息" is-link @tap="enterGroupchat"/>
-  <van-cell title="群聊名字课程" value="自建群组" size="large" label="描述信息：最近一条消息" is-link @tap="enterGroupchat"/>
-  <van-cell title="群聊名字（课程）" value="官方群组" size="large" label="描述信息：最近一条消息" is-link @tap="enterGroupchat"/>
-  <van-cell title="群聊名字课程" value="自建群组" size="large" label="描述信息：最近一条消息" is-link @tap="enterGroupchat"/>
-<!--   
-  <repeat for="{{chats}}" item="item">
-      <view style="font-size: 20rpx;color: #ababab">{{item.time}}</view>
-      <view style="font-size: 25rpx;padding-bottom: 20rpx">{{item.text}}</view>
-  </repeat> -->
+  <!-- 群组列表 注意传参 "自建群组/官方群组"使用三元表达式看groupId的开头是什么字母-->
+  <repeat for="{{grouplist}}" item="item">
+      <van-cell title="{{item.groupName}}" value="自建群组" size="large" label="描述信息：最近一条消息" data-groupid="{{item.groupId}}" is-link @tap="enterGroupchat"/>
+  </repeat>
 
 <!--   
   <view class="container">
@@ -54,6 +49,7 @@
   import Group from '../components/group'
   import Toast from 'wepy-com-toast'
   import testMixin from '../mixins/test'
+  import wxCommon from '../mixins/wxCommon'
 
   console.log('moduleA ignored: ', moduleA) // => moduleA ignored: {}
 
@@ -80,7 +76,56 @@
       schoolNum:0,    // 学号
       realName:'',    // 真实姓名
       openid:'',      // 不能提供真实的微信号所以只能用openid
-
+      grouplist:[     // 假数据，先搞4个假群
+        {
+          courseCode: '',
+          groupId:'123456',   // O 开头为官方群组，I开头为自创群组
+          groupIntrod:'',
+          groupName:'测试群组1',
+          groupOwnerId:'17373384',
+          groupOwnerName:'王珊珊'
+        },
+        {
+          courseCode: '',
+          groupId:'123456',   // O 开头为官方群组，I开头为自创群组
+          groupIntrod:'',
+          groupName:'测试群组2',
+          groupOwnerId:'17373384',
+          groupOwnerName:'王珊珊'
+        },
+        {
+          courseCode: '',
+          groupId:'123456',   // O 开头为官方群组，I开头为自创群组
+          groupIntrod:'',
+          groupName:'测试群组3',
+          groupOwnerId:'17373384',
+          groupOwnerName:'王珊珊'
+        },
+        {
+          courseCode: '',
+          groupId:'123456',   // O 开头为官方群组，I开头为自创群组
+          groupIntrod:'',
+          groupName:'测试群组4',
+          groupOwnerId:'17373384',
+          groupOwnerName:'王珊珊'
+        },
+        {
+          courseCode: '',
+          groupId:'123456',   // O 开头为官方群组，I开头为自创群组
+          groupIntrod:'',
+          groupName:'测试群组5',
+          groupOwnerId:'17373384',
+          groupOwnerName:'王珊珊'
+        },
+        {
+          courseCode: '',
+          groupId:'123456',   // O 开头为官方群组，I开头为自创群组
+          groupIntrod:'',
+          groupName:'测试群组5',
+          groupOwnerId:'17373384',
+          groupOwnerName:'王珊珊'
+        }
+      ],
       normalTitle: '原始标题',
       setTimeoutTitle: '标题三秒后会被修改',
       count: 0,
@@ -92,7 +137,8 @@
         return +new Date()
       }
     }
-
+    mixins = [wxCommon]
+    // Tap绑定的触发事件method
     methods = {
       plus () {
         this.mynum++
@@ -132,9 +178,11 @@
           })
         }
       },
-      enterGroupchat(groupId){ //点击进入特定群组，传参数为群号
+      enterGroupchat(e){ //点击进入特定群组，传参数为群号, 参数要全小写不能驼峰命名
+        console.log('即将进入群组，传进来的参数：'+e.currentTarget.dataset.groupid)
+        let enterGroupId = e.currentTarget.dataset.groupid
         wx.navigateTo({
-            url: '/pages/groupchat?groupId=123456', // ?id=2020&time=20200309
+            url: '/pages/groupchat?groupId='+enterGroupId, // ?id=2020&time=20200309
             events: {
               // 为指定事件添加一个监听器，获取被打开页面传送到当前页面的数据
               acceptDataFromOpenedPage: function(data) {
@@ -150,6 +198,7 @@
             }
         })
       }
+      
     }
 
     events = {
@@ -158,16 +207,71 @@
         console.log(`${this.$name} receive ${$event.name} from ${$event.source.$name}`)
       }
     }
+    // 获取该人加入的所有群组列表
+    getGroupList(){
+        let that = this
+        that.userRequest(
+          '/api/user/group/'+that.schoolNum ,'get',
+          {
+            
+          }, function(res) {  // 返回的是一个list? 里面全是Group实例
+            if(res.data.length == 0) { // 是官方群组 .groupId[0]=='O'
+              console.log("尚未加入任何群组")
+              console.log(res)
+              console.log(res.data)
+            } else {
+              let grouplist = res.data
+              console.log(grouplist)
+              // TODO:真实有群之后，把grouplist赋值为该函数的返回值
+
+            }      
+          }
+        )
+      }
+
+    // 新建一个自创群组, 这个函数放到一个新的页面去奥！！
+    createGroup() {
+      let that = this
+      that.userRequest(
+          '/api/user/group','post',
+          {
+            groupName:'',
+            groupOwnerId:'',
+            groupOwnerName:'',
+            courseCode:"unofficial"
+          }, function(res) {  
+            if(res.data.groupId!="failure") {
+              console.log("成功创建一个自创群组，群号为:" + res.data.groupId)
+              
+            } else {
+              wx.showModal({
+                title: '提示',
+                content: '创建群组失败！请检查网络',
+                success (res) {
+                  if (res.confirm) {
+                    console.log('用户点击确定')
+                  } else if (res.cancel) {
+                    console.log('用户点击取消')
+                  }
+                }
+              })
+            }      
+          }
+        )
+    }
+
 
     async onLoad() {
       let self = this
       let that = this
       let userInfo = wepy.getStorageSync("userInfo")
-      self.avatarUrl = userInfo.avatarUrl
-      self.nickName = userInfo.nickName
+      that.avatarUrl = userInfo.avatarUrl
+      that.nickName = userInfo.nickName
+      let schoolNum = wepy.getStorageSync("schoolNum")
+      that.schoolNum = schoolNum
 
       // 这里要补充：进到该页面时要发送请求获取已经加入的群
-
+      that.getGroupList();  // 调用函数时要写 that. 否则可能会报错 not defined
       
     }
 

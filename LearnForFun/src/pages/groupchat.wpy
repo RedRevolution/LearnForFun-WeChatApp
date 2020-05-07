@@ -1,36 +1,36 @@
 <style lang="less">
-  // .page {
-  //   position: fixed;
-  //   // height: 100vh;
-  //   // width: 100vw;
-  //   background:#dff9fb;
-  // }
+  .page {
+    position: fixed;
+    // height: 100vh;
+    // width: 100vw;
+    background:#dff9fb;
+  }
 
-  // .chats {
-  //   text-align: center;
-  //   margin: 10vh 10vh 10vw 10vw;
-  //   height: 65vh;
-  //   width: 80vw;
-  //   background-color: aliceblue;
-  //   overflow: auto;
+  .chats {
+    text-align: center;
+    margin: 10vh 10vh 10vw 10vw;
+    height: 65vh;
+    width: 80vw;
+    background-color: aliceblue;
+    overflow: auto;
 
-  // }
+  }
 
-  // .chatInput {
-  //   background: aliceblue;
-  //   height: 40rpx;
-  //   font-size: 20rpx;
-  //   padding: 10rpx;
-  //   width: 70vw;
-  //   margin-left: 15vw;
-  //   border-radius: 20rpx;
-  //   margin-bottom: 3vh;
-  // }
+  .chatInput {
+    background: aliceblue;
+    height: 40rpx;
+    font-size: 20rpx;
+    padding: 10rpx;
+    width: 70vw;
+    margin-left: 15vw;
+    border-radius: 20rpx;
+    margin-bottom: 3vh;
+  }
 
-  // .btn {
-  //   width: 70vw;
-  //   margin-left: 15vw;
-  // }
+  .btn {
+    width: 70vw;
+    margin-left: 15vw;
+  }
 
   .invite {
   /* display: none; */
@@ -57,6 +57,12 @@
   border: 1px #FFB5C5;
   border-style: solid none none solid ;
 }
+van-search {
+  width: 100%;
+  height: 100rpx;
+  position: fixed; 
+  bottom: 0;
+}
 </style>
 <template>
   <view class="page">
@@ -66,30 +72,26 @@
         <view style="font-size: 25rpx;padding-bottom: 20rpx">{{item.text}}</view>
       </repeat>
     </view>
-    <view class='invite'>
+    <!-- <view class='invite'>
         这是一个气泡样式哦～如果字太多了怎么办呢哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈好了
-    </view>
+    </view> -->
     <view class="chatInput">
       <input placeholder="请输入聊天内容" bindinput="userSay"/>
       <button @tap="sendMessage" size="mini" class="btn">发送消息</button>
     </view>
   </view> 
-  <van-search
+  <!-- <van-search
       value="{{ value }}"
-      label="地址"
+      
       placeholder="请输入搜索关键词"
-      use-action-slot
-      bind:change="onChange"
-      bind:search="onSearch"
-    >
-      <view slot="action" bind:tap="sendMessage">搜索</view>
-    </van-search>
-    <van-search
-      value="{{ value }}"
       shape="round"
       background="#4fc08d"
-      placeholder="请输入搜索关键词"
-    />
+      use-action-slot
+      @tap="sendMessage"
+      bindinput="userSay"
+    >
+      <view slot="action" bind:tap="sendMessage">发送</view>
+    </van-search> -->
 
 </template>
 
@@ -110,7 +112,7 @@
       say: '',
       realName: '',
       schoolNum: '',
-      groupId:'',
+      groupId:'', // groupId是一个字符串，O开头官方，I开头自创
       chats: [{
         time: '聊天开始',  // 最顶部的小字
         text: '',
@@ -140,11 +142,11 @@
     // 启动一个socket
     startSocket() {
       wx.connectSocket({
-        url: 'wss://learn.wsscloud.cn/webSocket/' + this.groupId + '/' + this.schoolNum + '/' + this.realName
-        // {groupId}/{userId}/{userName} 测试时群号暂时使用123456
+        url: 'wss://learn.wsscloud.cn/webSocket/' + this.groupId
+        // {groupId}测试时群号暂时使用123456
         
       })
-      console.log(this.realName)
+      console.log("即将启动一个socket，人员：" + this.realName)
     }
 
     // 初始化要是连接成功了应当先查收消息，所以先调用receiveMessage
@@ -220,12 +222,22 @@
         console.log('准备向服务器发送消息时：WebSocket连接已打开！', res)
       })
       if (socketOpen) {
+        console.log('socket is open! 可以发送！' + that.say)
+        var msg = {
+            content: that.say,
+            userId:that.schoolNum,
+            userName:that.realName
+          }
         wx.sendSocketMessage({
-          data: that.say  // 短消息都是string不用json格式
+          // data: that.say  // 短消息都是string不用json格式
+          data: JSON.stringify(msg)
+          // data:{
+          //   content: that.say,
+          //   userId:that.schoolNum,
+          //   userName:that.realName
+          // }
         })
       }
-      
-      
     }
 
     events = {}
@@ -241,7 +253,7 @@
         that.wssInit() //  wepy.onSocketOpen即为连接成功，会把socketOpen变量设置为true
       }, 2000)
       that.groupId = options.groupId  // 后面groupId还要用于请求websocket连接
-      console.log(options.groupId);  // 传进来的参数是groupId
+      console.log("进入了群聊！groupId为 " + options.groupId);  // 传进来的参数是groupId
 
       // TODO: 第一次点进来的时候可以看到这个群的历史10条聊天记录，然后追加到chats这个数据里面去
       // /api/group/message/{groupId}/{count}
