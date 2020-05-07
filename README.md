@@ -20,6 +20,7 @@
 - 2020.5.3 14:30: app secret获取成功，openId成功绑定并导入数据库
 - 2020.5.3 22:30: websocket写了一个简单页面，尝试向后端建立连接onSocketOpen函数成功却无法connect failed
 - 2020.5.4 23:59: 开发者工具可以成功发送短消息并存储到页面，但是真机调试由于没有ssl证书无法连接websocket(DM)
+- 2020.5.7 10:37: 做好了收藏页面，可供列表显示(PG)
 
 
 
@@ -55,9 +56,101 @@
 
 
 
-## 3. 即时聊天自己写websocket通信
+## 3. 如何使用封装userRequest发送ajax请求？
+
+WxCommon.js里已经写好域名和微信API函数，并封装成：
+
+`userRequest(url, method, data, cb)`，我们发送请求只需调用它即可
+
+### 前提条件
+
+1. 在`<script>`下面添加一条` import wxCommon from '../mixins/wxCommon'`
+2. 页面内部属性添加`mixins = [wxCommon]`，表示可以使用wxCommon内的函数
+
+### 发送数据post方法实例（用于修改数据库）
+
+```javascript
+let that = this
+that.userRequest(
+ '/api/user','post',   // '/api/user'是小红给的url，'post'是方法
+ {
+    openId: that.openId, 	//提供给后端的数据，左侧字段必须和数据库里一样
+    userId: that.schoolNum, // 右侧字段是当前页面的数据,在data里
+    userName: that.realName
+ }, function(res) {			// res是后端服务器返回的内容，res.data是真数据
+    if(res.data == 0) {  
+       wepy.switchTab({ 
+         url:'/pages/me'
+       })
+    } else if (res.data == 'duplicate') { 
+       wepy.showModal({ // 若返回的是一个字符串，res.data就是字符串
+         title: '提示',
+         content: '学号/工号重复，请重新输入'
+       })
+       // 返回“重复”时不应当进行缓存
+    } else if (res.data == 'success'){
+       wepy.showModal({
+         title: '提示',
+         content: '绑定成功！' 
+       })
+       // 进行全局缓存，双引号内相当于key，下次想取用学号schoolNum这个变量时，
+       // 则使用wepy.getStorageSync("schoolNum")
+       // 取真实姓名使用wepy.getStorageSync("realName")
+       wepy.setStorageSync("schoolNum", that.schoolNum)
+       wepy.setStorageSync("realName", that.realName)
+    }
+  }
+)
+```
 
 
+
+### 接收数据get方法实例（获取数据到本地缓存）
+
+```javascript
+that.userRequest(
+   '/api/user/'+res.code ,'get',//这里url后面加了code来决定请求什么，文档
+   {
+     // 由于是get方法，数据部分写一个大括号留空
+   }, function(res) {
+     if(res.data.userId == 'unbound') { // 返回数据分类讨论情况
+        wepy.showModal({
+          title: '提示',
+          content: '你还没有绑定学号哦～请去“我的”页面点击绑定学号',
+          success (res) {
+            if (res.confirm) {
+               console.log('用户点击确定')
+            } else if (res.cancel) {
+               console.log('用户点击取消')
+            }
+          }
+        })
+        // 未绑定学号会返回 openid
+        console.log('我的openid应当为：' +res.data.openId)
+        wepy.setStorageSync("openid", res.data.openId)  
+     } else { // 返回一个完整的User实例
+       //缓存userId, userName作为全局缓存->schoolNum, realName
+       wepy.setStorageSync("schoolNum", res.data.userId)
+       wepy.setStorageSync("realName", res.data.userName)
+       wepy.setStorageSync("openid", res.data.openId)
+       that.schoolNum = res.data.userId
+       that.realName = res.data.userName
+       // 一定要看文档写返回的是什么，如果是一个类实例 
+       // 要用res.data.xxattr获取该实例某属性
+     }                
+   }
+)
+```
+
+
+
+
+
+## 4. 即时聊天自己写websocket通信
+
+- 域名已经配置
+- SSL证书已经配置
+- 
 
 
 
