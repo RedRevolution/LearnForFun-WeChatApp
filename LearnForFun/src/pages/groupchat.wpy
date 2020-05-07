@@ -124,7 +124,7 @@
 
     // 启动一个socket
     startSocket() {
-      wepy.connectSocket({
+      wx.connectSocket({
         url: 'wss://learn.wsscloud.cn/webSocket/123456/' + this.schoolNum + '/' + this.realName
         // {groupId}/{userId}/{userName} 测试时群号暂时使用123456
         
@@ -137,17 +137,17 @@
       const that = this
       this.startSocket()    // 先用学号姓名建立连接，测试暂时连接可以成功
       // 链接失败显示
-      wepy.onSocketError(function (res) {
+      wx.onSocketError(function (res) {
         socketOpen = false
-        console.log('WebSocket连接打开失败，请检查！', res.data)   //每隔两秒钟就重新发一次
+        console.log('WebSocket连接打开失败，请检查！', res)   //每隔两秒钟就重新发一次
         setTimeout(() => {    // 可延时回调
           that.startSocket()
         }, 2000)
       })
       // 监听连接成功
-      wepy.onSocketOpen(function (res) {
+      wx.onSocketOpen(function (res) {
         socketOpen = true                 
-        console.log('WebSocket连接已打开！Res: ' + res.data)
+        console.log('WebSocket连接已打开！Res: ' + res)
         //  接收服务器的信息
         that.receiveMessage()
       })
@@ -158,7 +158,7 @@
       const that = this
       if (socketOpen) {   // socketOpen在这里用到如果连接成功了才可以收发消息
         console.log('正在读取socket服务器……')
-        wepy.onSocketMessage(function (res) {
+        wx.onSocketMessage(function (res) {
           let time = new Date()
           console.log('啦啦啦收到服务器内容：', res)
           
@@ -192,20 +192,20 @@
       console.log('尝试向服务器发送消息：' + that.say)
       // 要先检查是否还是连通的才可以发送消息, wx是否换成wepy
       // 链接失败显示
-      wepy.onSocketError(function (res) {
+      wx.onSocketError(function (res) {
         socketOpen = false
-        console.log('准备向服务器发送消息时：WebSocket连接打开失败，请检查！', res.data)   //每隔两秒钟就重新发一次
+        console.log('准备向服务器发送消息时：WebSocket连接打开失败，请检查！', res)   //每隔两秒钟就重新发一次
         setTimeout(() => {    // 可延时回调
           that.startSocket()
         }, 2000)
       })
       // 监听连接成功 注意，这两个函数除了第一次建立连接的时候会进行，这里写起来并不会再次执行这个函数，尚无解决方法
-      wepy.onSocketOpen(function (res) {
+      wx.onSocketOpen(function (res) {
         socketOpen = true                 
-        console.log('准备向服务器发送消息时：WebSocket连接已打开！', res.data)
+        console.log('准备向服务器发送消息时：WebSocket连接已打开！', res)
       })
       if (socketOpen) {
-        wepy.sendSocketMessage({
+        wx.sendSocketMessage({
           data: that.say  // 短消息都是string不用json格式
         })
       }
