@@ -17,11 +17,11 @@
 - 2020.5.1 22:24更新：完成userRequest封装，成功向后台post/get修改数据库或获取userInfo，但是由于微信端无法获取微信号，openid暂时还没获取(DM)
 - 2020.5.2 01:00: 加入课表整体框架页面，色彩配色，vant pop弹窗闪退问题(PG)
 - 2020.5.3 12:41: wx.login可以获取code，解决了自动刷新onshow问题，但是后台还无法返回openid(DM) 
-- 2020.5.3 14:30: app secret获取成功，openId成功绑定并导入数据库
-- 2020.5.3 22:30: websocket写了一个简单页面，尝试向后端建立连接onSocketOpen函数成功却无法connect failed
+- 2020.5.3 14:30: app secret获取成功，openId成功绑定并导入数据库(DM)
+- 2020.5.3 22:30: websocket写了一个简单页面，尝试向后端建立连接onSocketOpen函数成功却无法connect failed(DM)
 - 2020.5.4 23:59: 开发者工具可以成功发送短消息并存储到页面，但是真机调试由于没有ssl证书无法连接websocket(DM)
 - 2020.5.7 10:37: 做好了收藏页面，可供列表显示(PG)
-
+- 2020.5.7 22:40: websocket实时聊天功能接通，待美化(DM)
 
 
 ## 1. 开启项目
