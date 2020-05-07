@@ -27,7 +27,10 @@ export default class extends wepy.app {
       "van-row": "/components/vant/row/index",
       "van-col": "/components/vant/col/index",
       "van-image": "/components/vant/image/index",
-      'van-popup':'/components/vant/popup/index'
+      'van-popup':'/components/vant/popup/index',
+      "van-row": "/components/vant/row/index",
+      "van-col": "/components/vant/col/index",
+      "van-search": "/components/vant/search/index"
     },
     "pages": [
       'pages/index',

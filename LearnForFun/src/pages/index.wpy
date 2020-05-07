@@ -16,37 +16,33 @@
   }
 </style>
 <template>
-  <!-- 这个页面为群组聊天页面首页，点击tarbar第一个“群聊”即可看到此页面 -->
-  <view class="container">
-    <view class="userinfo" @tap="handleViewTap">
+  <view class="userinfo" @tap="handleViewTap">
       <image class="userinfo-avatar" src="{{ avatarUrl }}" background-size="cover"/>
       <view class="userinfo-nickname">{{ nickName }}</view>
-    </view>
+  </view> 
+  <!-- 这个页面为群组聊天页面首页，点击tarbar第一个“群聊”即可看到此页面 -->
+  <van-cell title="群聊名字（课程）" value="官方群组" size="large" label="描述信息：最近一条消息" is-link @tap="enterGroupchat"/>
+  <van-cell title="群聊名字课程" value="自建群组" size="large" label="描述信息：最近一条消息" is-link @tap="enterGroupchat"/>
+  <van-cell title="群聊名字（课程）" value="官方群组" size="large" label="描述信息：最近一条消息" is-link @tap="enterGroupchat"/>
+  <van-cell title="群聊名字课程" value="自建群组" size="large" label="描述信息：最近一条消息" is-link @tap="enterGroupchat"/>
+<!--   
+  <repeat for="{{chats}}" item="item">
+      <view style="font-size: 20rpx;color: #ababab">{{item.time}}</view>
+      <view style="font-size: 25rpx;padding-bottom: 20rpx">{{item.text}}</view>
+  </repeat> -->
 
-    <panel>
-      <view class="title" slot="title">这个页面是首页群聊嘤嘤</view>
-      <navigator url="/pages/groupchat"><van-button plain type="info">跳转到一个丑陋的聊天websocket测试页面</van-button></navigator>
-    </panel>
+<!--   
+  <view class="container">
+
+    
     <panel>
       <view class="title" slot="title">测试并发网络请求</view>
       <view>返回结果: <text>{{netrst}}</text></view>
       <button @tap="request" size="mini"> 点我发起10个请求 </button>
     </panel>
 
-    <panel>
-      <view class="title" slot="title">测试组件Repeat</view>
-      <repeat for="" index="index" item="item" key="key">
-        <group :grouplist="item" :indexa="index"></group>
-      </repeat>
-    </panel>
 
-    <panel>
-      <view class="title" slot="title">测试列表</view>
-      <list></list>
-    </panel>
-
-    <toast />
-  </view>
+  </view> -->
 </template>
 
 <script>
@@ -136,9 +132,23 @@
           })
         }
       },
-      counterEmit (...args) {
-        let $event = args[args.length - 1]
-        console.log(`${this.$name} receive ${$event.name} from ${$event.source.$name}`)
+      enterGroupchat(groupId){ //点击进入特定群组，传参数为群号
+        wx.navigateTo({
+            url: '/pages/groupchat?groupId=123456', // ?id=2020&time=20200309
+            events: {
+              // 为指定事件添加一个监听器，获取被打开页面传送到当前页面的数据
+              acceptDataFromOpenedPage: function(data) {
+                console.log(data)
+              },
+              someEvent: function(data) {
+                console.log(data)
+              }
+            },
+            success: function(res) {
+              // 通过eventChannel向被打开页面传送数据
+              res.eventChannel.emit('acceptDataFromOpenerPage', { data: 'test' })
+            }
+        })
       }
     }
 
@@ -156,20 +166,9 @@
       self.avatarUrl = userInfo.avatarUrl
       self.nickName = userInfo.nickName
 
-      this.$parent.getUserInfo(function (userInfo) {
-        if (userInfo) {
-          self.userInfo = userInfo
-        }
-        self.normalTitle = '标题已被修改'
+      // 这里要补充：进到该页面时要发送请求获取已经加入的群
 
-        self.setTimeoutTitle = '标题三秒后会被修改'
-        setTimeout(() => {
-          self.setTimeoutTitle = '到三秒了'
-          self.$apply()
-        }, 3000)
-
-        self.$apply()
-      })
+      
     }
 
   }
