@@ -1,0 +1,96 @@
+<style lang="less">
+</style>
+<template>
+<view>
+    <van-cell-group>
+    <van-field
+        value="{{newGroupName}}"
+        required
+        clearable
+        label="新群名"
+        icon="question-o"
+        placeholder="请输入新群组名称"
+        bind:click-icon="onClickIcon"
+    />
+
+    <van-field
+        value="{{ password }}"
+        type="password"
+        label="密码"
+        placeholder="请输入密码"
+        required
+        
+    />
+    <van-field
+        value="{{ message }}"
+        label="留言"
+        type="textarea"
+        placeholder="请输入留言"
+        autosize
+    />
+    </van-cell-group>
+    <van-button plain hairline type="info">信息填写无误，创建群组</van-button>
+    <!-- 该按钮绑定 -->
+</view>
+</template>
+<script>
+import wepy from 'wepy'
+import wxCommon from '../mixins/wxCommon'
+export default class createGroup extends wepy.page {
+    mixins = [wxCommon]
+    data = {
+        newGroupName:'',
+        groupOwnerId:'',
+        groupOwnerName:''
+    }
+    methods = {
+        
+    }
+    // 新建一个自创群组, 这个函数放到一个新的页面去奥！！
+    // * 兴趣小组:groupName,groupOwnerId,groupOwnerName,courseCode=="unofficial"; 
+    createGroup() {
+      let that = this
+      that.userRequest(
+          '/api/user/group','post',
+          {
+            groupName:'',
+            groupOwnerId:'',
+            groupOwnerName:'',
+            courseCode:"unofficial"
+          }, function(res) {  
+            if(res.data.groupId!="failure") {
+              console.log("成功创建一个自创群组，群号为:" + res.data.groupId)
+              
+            } else {
+              wx.showModal({
+                title: '提示',
+                content: '创建群组失败！请检查网络',
+                success (res) {
+                  if (res.confirm) {
+                    console.log('用户点击确定')
+                  } else if (res.cancel) {
+                    console.log('用户点击取消')
+                  }
+                }
+              })
+            }      
+          }
+        )
+    }
+
+    onClickIcon(){
+        console.log("点击了一下小问号！")
+    }
+
+    async onLoad() {
+      let that = this
+      let userInfo = wepy.getStorageSync("userInfo")
+      that.avatarUrl = userInfo.avatarUrl
+      that.nickName = userInfo.nickName
+
+    //创建群组的人信息
+      that.groupOwnerId = wepy.getStorageSync("schoolNum")
+      that.groupOwnerName = wepy.getStorageSync("realName")
+    }
+}
+</script>

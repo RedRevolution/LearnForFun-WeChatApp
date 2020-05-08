@@ -30,7 +30,8 @@ export default class extends wepy.app {
       'van-popup':'/components/vant/popup/index',
       "van-row": "/components/vant/row/index",
       "van-col": "/components/vant/col/index",
-      "van-search": "/components/vant/search/index"
+      "van-search": "/components/vant/search/index",
+      "van-field": "/components/vant/field/index"
     },
     "pages": [
       'pages/index',
@@ -41,7 +42,8 @@ export default class extends wepy.app {
       'pages/userlogin',
       'pages/bindschoolnum',
       'pages/schedule',
-      'pages/favorite'
+      'pages/favorite',
+      'pages/createGroup'
     ],
     window: {
       backgroundTextStyle: 'light',

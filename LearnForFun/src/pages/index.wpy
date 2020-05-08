@@ -229,36 +229,7 @@
         )
       }
 
-    // 新建一个自创群组, 这个函数放到一个新的页面去奥！！
-    createGroup() {
-      let that = this
-      that.userRequest(
-          '/api/user/group','post',
-          {
-            groupName:'',
-            groupOwnerId:'',
-            groupOwnerName:'',
-            courseCode:"unofficial"
-          }, function(res) {  
-            if(res.data.groupId!="failure") {
-              console.log("成功创建一个自创群组，群号为:" + res.data.groupId)
-              
-            } else {
-              wx.showModal({
-                title: '提示',
-                content: '创建群组失败！请检查网络',
-                success (res) {
-                  if (res.confirm) {
-                    console.log('用户点击确定')
-                  } else if (res.cancel) {
-                    console.log('用户点击取消')
-                  }
-                }
-              })
-            }      
-          }
-        )
-    }
+    
 
 
     async onLoad() {

@@ -1,8 +1,8 @@
 <style lang="less">
   .page {
     position: fixed;
-    // height: 100vh;
-    // width: 100vw;
+    height: 100vh;
+    width: 100vw;
     background:#dff9fb;
   }
 
@@ -32,37 +32,37 @@
     margin-left: 15vw;
   }
 
-  .invite {
-  /* display: none; */
-  width: 250rpx;
-  font-size: 25rpx;
-  height: 50rpx;
-  line-height: 50rpx;
-  padding-left: 20rpx;
-  position: relative;
-  margin: 120rpx auto 0 35rpx;
-  background-color: #FFF0F5;
-  border: 1px solid #FFB5C5;
-  border-radius: 5px;
-}
-.invite:after {
-  content: '';
-  width: 20rpx;
-  height: 20rpx;
-  position: absolute;
-  top: -11rpx;
-  left: 20rpx;
-  transform: rotate(45deg);
-  background-color: #FFF0F5; // #0984e3
-  border: 1px #FFB5C5;
-  border-style: solid none none solid ;
-}
-van-search {
-  width: 100%;
-  height: 100rpx;
-  position: fixed; 
-  bottom: 0;
-}
+//   .invite {
+//   /* display: none; */
+//   width: 250rpx;
+//   font-size: 25rpx;
+//   height: 50rpx;
+//   line-height: 50rpx;
+//   padding-left: 20rpx;
+//   position: relative;
+//   margin: 120rpx auto 0 35rpx;
+//   background-color: #FFF0F5;
+//   border: 1px solid #FFB5C5;
+//   border-radius: 5px;
+// }
+// .invite:after {
+//   content: '';
+//   width: 20rpx;
+//   height: 20rpx;
+//   position: absolute;
+//   top: -11rpx;
+//   left: 20rpx;
+//   transform: rotate(45deg);
+//   background-color: #FFF0F5; // #0984e3
+//   border: 1px #FFB5C5;
+//   border-style: solid none none solid ;
+// }
+// van-search {
+//   width: 100%;
+//   height: 100rpx;
+//   position: fixed; 
+//   bottom: 0;
+// }
 </style>
 <template>
   <view class="page">
@@ -72,9 +72,7 @@ van-search {
         <view style="font-size: 25rpx;padding-bottom: 20rpx">{{item.text}}</view>
       </repeat>
     </view>
-    <!-- <view class='invite'>
-        这是一个气泡样式哦～如果字太多了怎么办呢哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈好了
-    </view> -->
+    
     <view class="chatInput">
       <input placeholder="请输入聊天内容" bindinput="userSay"/>
       <button @tap="sendMessage" size="mini" class="btn">发送消息</button>
@@ -106,7 +104,6 @@ van-search {
   export default class chat extends wepy.page {
     components = {}
 
-    mixins = []
 
     data = {
       say: '',
