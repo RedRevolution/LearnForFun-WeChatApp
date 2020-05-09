@@ -136,7 +136,7 @@
                 <view class="flex-item kcb-item"   bindtap = "showPopup" data-index="{{index}}" style="margin-left:{{(item.xqj-1)*100}}rpx;margin-top:{{(item.sksj-1)*100+5}}rpx;height:{{item.skcd*100-5}}rpx;background-color:{{colorArrays[index%6]}}">
                     <!-- xqj代表星期几上课，sksj是上课时间，skcd上课长度，kcxx课程信息-->
                     <!--？？？？？？？-->
-                    <van-popup show="{{ show }}" bindtap="hidePopup">加入官方群组</van-popup>
+                    <van-popup show="{{ show }}" closeable bind:close= "onClose">加入官方群组</van-popup>
 
 
                     <view class="smalltext">{{item.kcxx}}</view>

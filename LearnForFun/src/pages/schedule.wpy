@@ -7,44 +7,98 @@
         justify-content: space-between;
         box-sizing: border-box;
     }
+
+    .todo-add {
+        position: fixed;
+        right: 50rpx;
+        /*bottom: 60rpx;*/
+        bottom: 5%;
+        width: 90rpx;
+        height: 90rpx;
+        margin-left: -45rpx;
+        border-radius: 50%;
+        font-size: 60rpx;
+        /*line-height: 90rpx;*/
+        text-align: center;
+        background-color: #0984e3;
+        /*box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);*/
+        color: #fff;
+    }
 </style>
 <template>
     <view style="text-align: center">
-        <text>{{wordData}}</text>
-        <!-- 此时的写法点击下面的字会弹出日历，但是真机操作会弹出之后立即关掉 -->
-        <van-cell title="选择单个日期点我弹出日历" value="{{ date }}" bind:click="onDisplay" />
-        <van-calendar show="{{ show }}" bind:close="onClose" bind:confirm="onConfirm" />
+        <van-cell title="点我弹出日历" value="{{ date }}" bind:click="onDisplay"/>
+        <van-calendar show="{{ show }}" bind:close="onClose" bind:confirm="onConfirm"/>
     </view>
+    <view>
+        <block wx:for="{{todos}}" wx:key="index">
+            <van-cell title="{{item.content}}" value="{{item.deadline}}"/>
+        </block>
+    </view>
+
+    <view class="todo-add" bindtap="handleAddTodo">+</view>
 
 </template>
 
 <script>
     // 页面逻辑代码部分
     import wepy from 'wepy'
+
     export default class Schedule extends wepy.page {
         config = {
             navigationBarTitleText: '我的日程'
         };
         data = {
             date: '',
-            //   show: false,
-            wordData: 'Welcome!这个是我的日程页面'
+            todos: [{
+                "content": "写作业",
+                "deadline": "2020-02-02 22:22",
+
+
+            },
+                {
+                    "content": "写作业写作业",
+                    "deadline": "2020-02-02 22:11",
+
+                }
+            ],
+            show: false,
         };
+
         onDisplay() {
-            this.setData({ show: true });
+            this.show = true;
         };
+
         onClose() {
-            this.setData({ show: false });
+            this.show = false;
         };
+
         formatDate(date) {
             date = new Date(date);
             return `${date.getMonth() + 1}/${date.getDate()}`;
         };
+
         onConfirm(event) {
-            this.setData({
-                show: false,
-                date: this.formatDate(event.detail)
-            });
+
+            this.show = false
+            this.date = this.formatDate(event.detail)
+
         }
+
+        handleAddTodo(e) {
+            wx.navigateTo({
+                url: '/pages/addTodo'
+            })
+        }
+
+        //处理修改日程 待补充
+        // handleTodoChange(e){
+        //     let uuid = e.currentTarget.dataset.uuid;
+        //     //console.log(todoStore.getTodo(uuid))
+        //     wx.navigateTo({
+        //         url: '/pages/addTodo/addTodo?uuid=' + uuid,
+        //
+        //     })
+        // }
     }
 </script>
