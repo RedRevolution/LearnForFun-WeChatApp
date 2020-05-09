@@ -4,13 +4,11 @@
     flex-direction: column;
     align-items: center;
   }
-
   .userinfo-avatar {
     width: 80rpx;
     height: 80rpx;
     border-radius: 50%;
   }
-
   .userinfo-nickname {
     color: #aaa;
   }
@@ -20,14 +18,20 @@
       <image class="userinfo-avatar" src="{{ avatarUrl }}" background-size="cover"/>
       <view class="userinfo-nickname">{{ nickName }}</view>
   </view> 
+  <van-nav-bar
+      title="我的群聊"
+      left-text="创建群聊"
+      right-text="加入群聊"
+      bind:click-left="gotoCreate"
+      bind:click-right="gotoJoin"
+  />
   <!-- 这个页面为群组聊天页面首页，点击tarbar第一个“群聊”即可看到此页面 -->
   <!-- 群组列表 注意传参 "自建群组/官方群组"使用三元表达式看groupId的开头是什么字母-->
-  <repeat for="{{grouplist}}" item="item">
-      <van-cell title="{{item.groupName}}" value="自建群组" size="large" label="描述信息：最近一条消息" data-groupid="{{item.groupId}}" is-link @tap="enterGroupchat"/>
-  </repeat>
-
-<!--   
-  <view class="container">
+    <repeat for="{{grouplist}}" item="item">
+        <van-cell title="{{item.groupName}}" value="自建群组" size="large" label="{{item.groupIntrod}}" data-groupid="{{item.groupId}}" is-link @tap="enterGroupchat"/>
+    </repeat>
+   
+  <!-- <view class="container">
 
     
     <panel>
@@ -37,7 +41,7 @@
     </panel>
 
 
-  </view> -->
+  </view>  -->
 </template>
 
 <script>
@@ -217,21 +221,30 @@
           }, function(res) {  // 返回的是一个list? 里面全是Group实例
             if(res.data.length == 0) { // 是官方群组 .groupId[0]=='O'
               console.log("尚未加入任何群组")
-              console.log(res)
-              console.log(res.data)
             } else {
               let grouplist = res.data
               console.log(grouplist)
               // TODO:真实有群之后，把grouplist赋值为该函数的返回值
-
+              that.grouplist = res.data
+              that.$apply()
             }      
           }
         )
       }
 
     
-
-
+    gotoCreate() {
+      console.log("点击了创建群聊")
+      wx.navigateTo({
+            url: '/pages/createGroup', // 不需要参数
+        })
+    }
+    gotoJoin() {
+      console.log("点击了加入群聊")
+      wx.showToast({ title: '点击按钮', icon: 'none' });
+    }
+    
+    
     async onLoad() {
       let self = this
       let that = this
@@ -244,6 +257,11 @@
       // 这里要补充：进到该页面时要发送请求获取已经加入的群
       that.getGroupList();  // 调用函数时要写 that. 否则可能会报错 not defined
       
+    }
+
+    onShow(){
+      let that = this
+      that.onLoad();
     }
 
   }

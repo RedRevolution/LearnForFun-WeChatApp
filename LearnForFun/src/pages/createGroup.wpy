@@ -1,4 +1,12 @@
 <style lang="less">
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
 </style>
 <template>
 <view>
@@ -11,40 +19,54 @@
         icon="question-o"
         placeholder="请输入新群组名称"
         bind:click-icon="onClickIcon"
+        @input="inputGroupName"
     />
+    <van-toast id="van-toast" />
 
-    <van-field
-        value="{{ password }}"
-        type="password"
-        label="密码"
-        placeholder="请输入密码"
-        required
-        
-    />
+    
     <van-field
         value="{{ message }}"
-        label="留言"
+        label="群简介"
         type="textarea"
-        placeholder="请输入留言"
+        clearable
+        placeholder="介绍一下这个小组吧～"
         autosize
+        @input="inputGroupIntrod"
     />
     </van-cell-group>
-    <van-button plain hairline type="info">信息填写无误，创建群组</van-button>
+    <hr>
+    <van-button type="info" block round @tap="createGroup">确认信息无误，创建群组</van-button>
     <!-- 该按钮绑定 -->
+    
 </view>
 </template>
 <script>
 import wepy from 'wepy'
 import wxCommon from '../mixins/wxCommon'
+
 export default class createGroup extends wepy.page {
+    config = {
+      navigationBarTitleText: '创建群组'
+    }
     mixins = [wxCommon]
     data = {
         newGroupName:'',
         groupOwnerId:'',
-        groupOwnerName:''
+        groupOwnerName:'',
+        groupIntrod:''  // 可选字段，不强制
     }
     methods = {
-        
+        inputGroupName(e){
+          this.newGroupName = e.detail
+          this.$apply()
+          console.log("此时newGroupName = " + this.newGroupName)
+
+        },
+        inputGroupIntrod(e){
+          this.groupIntrod = e.detail
+          this.$apply()
+          console.log("此时简介 = " + this.groupIntrod)
+        }
     }
     // 新建一个自创群组, 这个函数放到一个新的页面去奥！！
     // * 兴趣小组:groupName,groupOwnerId,groupOwnerName,courseCode=="unofficial"; 
@@ -53,13 +75,31 @@ export default class createGroup extends wepy.page {
       that.userRequest(
           '/api/user/group','post',
           {
-            groupName:'',
-            groupOwnerId:'',
-            groupOwnerName:'',
+            groupName:that.newGroupName,
+            groupOwnerId:that.groupOwnerId,
+            groupOwnerName:that.groupOwnerName,
+            groupIntrod:that.groupIntrod,
             courseCode:"unofficial"
           }, function(res) {  
-            if(res.data.groupId!="failure") {
-              console.log("成功创建一个自创群组，群号为:" + res.data.groupId)
+           
+            if(res.data =="success") {
+              console.log("成功创建一个自创群组!")
+              wx.showModal({
+                title: '提示',
+                content: '成功创建一个群组！回到主页即可查看',
+                cancelText:'好的',
+                confirmText:'返回首页',
+                success (res) {
+                  if (res.confirm) {
+                    console.log('用户点击返回首页')
+                    wepy.switchTab({
+                      url: '/pages/index'
+                    })
+                  } else if (res.cancel) {
+                    console.log('用户点击好的')
+                  }
+                }
+              })
               
             } else {
               wx.showModal({
@@ -80,6 +120,11 @@ export default class createGroup extends wepy.page {
 
     onClickIcon(){
         console.log("点击了一下小问号！")
+        wx.showToast({
+          title: '将创建兴趣群组，管理员为创建者，群名请设定与课程相关',
+          icon: 'none',
+          duration: 3000
+        })
     }
 
     async onLoad() {
@@ -92,5 +137,7 @@ export default class createGroup extends wepy.page {
       that.groupOwnerId = wepy.getStorageSync("schoolNum")
       that.groupOwnerName = wepy.getStorageSync("realName")
     }
+
+
 }
 </script>
