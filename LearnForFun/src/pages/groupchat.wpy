@@ -206,11 +206,6 @@
         wx.sendSocketMessage({
           // data: that.say  // 短消息都是string不用json格式
           data: JSON.stringify(msg)
-          // data:{
-          //   content: that.say,
-          //   userId:that.schoolNum,
-          //   userName:that.realName
-          // }
         })
       }
     }
@@ -224,10 +219,15 @@
         {             
         }, function(res) {
            console.log('获取该群信息', res)
-           console.log(res.data)
+           that.groupId = res.data.groupId
+           that.groupName = res.data.groupName
+           console.log("该群名字为："+res.data.groupName)
+           wx.setNavigationBarTitle({
+              title: that.groupName // 在顶部显示群名
+          })
          } 
       )
-      // TODO: groupName赋值
+     
     }
 
     // 页面加载函数启动socket连接，当连接成功后，回复socket连接成功并且调用接收服务器
@@ -256,9 +256,8 @@
 
 
       that.getGroupInfo()
-      wx.setNavigationBarTitle({
-        title: that.groupName 
-      })
+      console.log("getGroupInfo函数过后，该群名字为："+that.groupName)
+      
     }
 
     onShow(){
@@ -266,6 +265,9 @@
       // onload
       that.realName = wepy.getStorageSync('realName')
       that.schoolNum = wepy.getStorageSync('schoolNum')
+      wx.setNavigationBarTitle({
+        title: that.groupName 
+      })
     }
 
   }

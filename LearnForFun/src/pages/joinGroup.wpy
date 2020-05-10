@@ -65,7 +65,7 @@ export default class joinGroup extends wepy.page {
           that.userRequest(
           '/api/user/group/join/'+that.newGroupId+'/'+that.schoolNum,'get',
           {
-            
+            userId: that.schoolNum
           }, function(res) {  
             if(res.data =="success") {
               console.log("成功加入一个群组!")
