@@ -17,10 +17,6 @@
             autosize
             @input ="inputContent"
     />
-    <!--<view class = "field-index&#45;&#45;van-field van-cell van-cell&#45;&#45;required">-->
-        <!--<view class = "van-cell__title" style = "max-width: 90px;min-width:90px">你好-->
-    <!--</view>-->
-    <!--</view>-->
 
         <van-cell title = "日期" required>
 
@@ -37,7 +33,7 @@
 
         </van-cell>
 
-        <van-cell title = "时间" value-align = "left">
+        <van-cell title = "时间" value-align = "left"  required>
 
                 <picker mode = "time"  bindchange="handleTimeChange">
                     {{endTime ? endTime:"选择时间"}}
@@ -47,44 +43,6 @@
     <van-cell/>
     <van-button type="info" block round @tap="addTodo">创建日程</van-button>
 
-
-
-
-    <!--<van-popup-->
-            <!--show="{{ showdate }}"-->
-            <!--position="bottom"-->
-            <!--custom-style="height: 50%;"-->
-            <!--bind:close="onClose"-->
-    <!--&gt;-->
-
-    <!--</van-popup>-->
-
-    <!--<van-field-->
-            <!--value="{{ message }}"-->
-            <!--label="结束日期"-->
-            <!--type="textarea"-->
-            <!--required-->
-            <!--clearable-->
-            <!--bind:input="showDate"-->
-            <!--placeholder="选择结束日期"-->
-            <!--autosize-->
-            <!--@input="inputOver"-->
-    <!--/>-->
-    <!--<van-field-->
-            <!--value="{{ message }}"-->
-            <!--label="结束"-->
-            <!--type="textarea"-->
-            <!--clearable-->
-            <!--placeholder="选择结束时间"-->
-            <!--autosize-->
-            <!--@input="inputOver"-->
-    <!--/>-->
-    <!--<van-popup-->
-            <!--show="{{ show }}"-->
-            <!--position="bottom"-->
-            <!--custom-style="height: 20%;"-->
-            <!--bind:close="onClose"-->
-    <!--/>-->
 
 </template>
 <script>
@@ -97,7 +55,7 @@
         mixins = [wxCommon]
         data = {
             word : "创建日程",
-            showdate:false,
+            // showdate:false,
             content: '',
             endDate: '',
             endTime: '',
@@ -111,10 +69,10 @@
             console.log("待提交时间："+that.endDate+'T'+that.endTime+':00')
 
 
-            if(that.content==''||that.endDate=='') {
+            if(that.content==''||that.endDate==''||that.endTime=='') {
                 wx.showModal({
                     title: '无法创建日程',
-                    content: '日程内容或日期不能为空',
+                    content: '日程内容、日期或时间不能为空',
                     showCancel: false,
                 })
             }
@@ -128,12 +86,13 @@
                         id:0
 
                     }, function(res) {
-
                         if(res.data == "success") {
                             console.log("成功添加一条日程!");
 
-                            wx.showToast({ title: '创建成功' })
                             wx.navigateBack()
+                            wx.showToast({ title: '创建成功' ,
+                                    icon:'success'
+                            })
                         }
                         else if(res.data == "error") {
                             console.log("创建日程失败！");
@@ -163,12 +122,12 @@
             this.content = e.detail;
             this.$apply()
         };
-        showDate() {
-            this.showdate = true;
-        };
-        onClose() {
-            this.showdate = false;
-        };
+        // showDate() {
+        //     this.showdate = true;
+        // };
+        // onClose() {
+        //     this.showdate = false;
+        // };
         handleDateChange(e) {
             console.log("选择的日期"+e.detail.value);
             this.endDate = e.detail.value;
