@@ -151,6 +151,9 @@ export default class Collection extends wepy.page {
                   success (res) {
                     if (res.confirm) {
                       console.log('用户点击确定')
+                      // wx.navigateBack({
+                      //   delta: 1
+                      // })
                       wx.reLaunch({
                           url: '/pages/me',
                       })

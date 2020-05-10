@@ -8,7 +8,7 @@
 
   .chats {
     text-align: center;
-    margin: 5vh 5vh 5vw 5vw;
+    margin: 1vh 5vh 5vw 5vw;
     height: 80vh;
     width: 90vw;
     background-color:white;
@@ -18,62 +18,41 @@
 
   .chatInput {
     background: white;
-    height: 40rpx;
-    font-size: 20rpx;
+    height: 50rpx;
+    font-size: 35rpx;
     padding: 10rpx;
     width: 70vw;
-    margin-left: 15vw;
+    margin-left: 1vw;
     border-radius: 20rpx;
     margin-bottom: 3vh;
   }
 
   .btn {
-    width: 70vw;
-    margin-left: 15vw;
+    width: 10vw;
+    // margin-left: 70vw;
   }
-
-.invite {
-  /* display: none; */
-  width: 300rpx;
-  font-size: 30rpx;
-  height: 50rpx;
-  line-height: 50rpx;
-  padding-left: 20rpx;
-  position: relative;
-  margin: 120rpx auto 0 35rpx;
-  background-color: #FFF0F5;
-  border: 1px solid #FFB5C5;
-  border-radius: 5px;
-}
-.invite:after {
-  content: '';
-  width: 20rpx;
-  height: 20rpx;
-  position: absolute;
-  top: -11rpx;
-  left: 20rpx;
-  transform: rotate(45deg);
-  background-color: #FFF0F5;
-  border: 1px #FFB5C5;
-  border-style: solid none none solid ;
-}
 </style>
 <template>
+  <!-- <van-nav-bar
+      title="我的群聊"
+      left-text="创建群聊"
+      right-text="加入群聊"
+      bind:click-left=""
+      bind:click-right="gotoGroupInfo"
+      safe-area-inset-top="false"
+  /> -->
   <view class="page">
     <view class="chats">
       <repeat for="{{chats}}" item="item">
         <view style="font-size: 20rpx;color: #ababab">{{item.time}}</view>
         <view style="font-size: 25rpx;padding-bottom: 20rpx">{{item.text}}</view>
       </repeat>
-      <view class='invite'>
-        这是一个测试气泡
-      </view>
     </view>
     
     <view class="chatInput">
       <input placeholder="请输入聊天内容" value="{{say}}" bindinput="userSay"/>
     </view>
-    <button @tap="sendMessage" size="mini" class="btn">发送消息</button>
+    <van-button @tap="sendMessage" >发送</van-button>
   </view> 
  
 
@@ -90,8 +69,9 @@
   let socketOpen = false    //页面全局变量，默认值为false
   export default class chat extends wepy.page {
     components = {}
-
-
+    config = {
+      navigationBarTitleText: '群聊'
+    }
     data = {
       say: '',
       realName: '',
@@ -115,7 +95,7 @@
         let time = new Date()
         this.chats = this.chats.concat([{
           time: time.toLocaleTimeString(), 
-          text: '我说：' + this.say,
+          text: '我：' + this.say,
           name: 'me'
         }])
         this.handleSendMessage()
@@ -172,7 +152,7 @@
             if (tmpName[0] != that.realName) {
               that.chats = that.chats.concat([{
                 time: time.toLocaleTimeString(), 
-                text: '服务器说：' + res.data,
+                text: '' + res.data,
                 name: tmpName[0]
               }])
               that.$apply()     // apply之后本地变量就会被修改，那么聊天框内应该就会显示出服务器发回的消息
@@ -253,6 +233,12 @@
                           
       //             )
 
+
+      // 第一次进来的时候还应该发一个请求获取群组信息（群名字）
+      // TODO
+      //wx.setNavigationBarTitle({
+        //   title: '该群组名字' 
+        // })
     }
 
     onShow(){
@@ -262,8 +248,5 @@
       that.schoolNum = wepy.getStorageSync('schoolNum')
     }
 
-    // onHide() { 
-    //   wx.closeSocket();
-    // }
   }
 </script>

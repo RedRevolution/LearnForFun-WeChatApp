@@ -45,7 +45,8 @@ export default class extends wepy.app {
       'pages/schedule',
       'pages/favorite',
       'pages/createGroup',
-      'pages/addTodo'
+      'pages/addTodo',
+      'pages/joinGroup'
     ],
     window: {
       backgroundTextStyle: 'light',

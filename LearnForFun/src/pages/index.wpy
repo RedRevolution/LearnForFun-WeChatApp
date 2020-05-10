@@ -24,6 +24,7 @@
       right-text="加入群聊"
       bind:click-left="gotoCreate"
       bind:click-right="gotoJoin"
+      safe-area-inset-top="false"
   />
   <!-- 这个页面为群组聊天页面首页，点击tarbar第一个“群聊”即可看到此页面 -->
   <!-- 群组列表 注意传参 "自建群组/官方群组"使用三元表达式看groupId的开头是什么字母-->
@@ -162,7 +163,7 @@
       enterGroupchat(e){ //点击进入特定群组，传参数为群号, 参数要全小写不能驼峰命名
         console.log('即将进入群组，传进来的参数：'+e.currentTarget.dataset.groupid)
         let enterGroupId = e.currentTarget.dataset.groupid
-        wx.navigateTo({
+        wx.navigateTo({ // 不能用 redirectTo
             url: '/pages/groupchat?groupId='+enterGroupId, // ?id=2020&time=20200309
             events: {
               // 为指定事件添加一个监听器，获取被打开页面传送到当前页面的数据
@@ -213,12 +214,14 @@
     gotoCreate() {
       console.log("点击了创建群聊")
       wx.navigateTo({
-            url: '/pages/createGroup', // 不需要参数
-        })
+        url: '/pages/createGroup', // 不需要参数
+      })
     }
     gotoJoin() {
       console.log("点击了加入群聊")
-      wx.showToast({ title: '点击按钮', icon: 'none' });
+      wx.navigateTo({
+        url: '/pages/joinGroup', // 不需要参数
+      })
     }
 
     showPopup() {

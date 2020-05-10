@@ -1,0 +1,128 @@
+<style lang="less">
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+</style>
+<template>
+<view>
+    <van-cell-group>
+    <van-field
+        value="{{newGroupName}}"
+        required
+        clearable
+        label="群ID"
+        icon="question-o"
+        placeholder="请输入所加入的群ID"
+        bind:click-icon="onClickIcon"
+        @input="inputGroupId"
+    />
+
+    </van-cell-group>
+    <hr>
+    <van-cell/>
+    <van-button type="info" block round @tap="joinGroup">确认ID无误，加入群组</van-button>
+    <!-- 该按钮绑定 -->
+    
+</view>
+</template>
+<script>
+import wepy from 'wepy'
+import wxCommon from '../mixins/wxCommon'
+
+export default class createGroup extends wepy.page {
+    config = {
+      navigationBarTitleText: '加入群组'
+    }
+    mixins = [wxCommon]
+    data = {
+        newGroupId:'',
+        schoolNum:'',
+        realName:''     // 即将要加入群组的人的信息
+    }
+    methods = {
+        inputGroupId(e){
+          this.newGroupId = e.detail
+          this.$apply()
+          console.log("要加入的群组GroupId = " + this.newGroupId)
+        }
+    }
+    // 新建一个自创群组, 这个函数放到一个新的页面去奥！！
+    // * 兴趣小组:groupName,groupOwnerId,groupOwnerName,courseCode=="unofficial"; 
+    joinGroup() {
+      let that = this
+      if(that.newGroupId.length == 0) {
+        wx.showToast({
+            title: '群ID不可以留空哦',
+            icon: 'none',
+            duration: 2000
+        })
+      } else {
+          that.userRequest(
+          '/api/user/group/join/'+that.newGroupId+'/'+that.schoolNum,'get',
+          {
+            
+          }, function(res) {  
+            if(res.data =="success") {
+              console.log("成功加入一个群组!")
+              wx.showModal({
+                title: '提示',
+                content: '成功加入一个群组！回到主页即可查看',
+                cancelText:'好的',
+                confirmText:'返回首页',
+                success (res) {
+                  if (res.confirm) {
+                    console.log('用户点击返回首页')
+                    wepy.switchTab({
+                      url: '/pages/index'
+                    })
+                  } else if (res.cancel) {
+                    console.log('用户点击好的')
+                  }
+                }
+              })
+              
+            } else {
+              console.log(res)
+              wx.showModal({
+                title: '提示',
+                content: '加入群组失败！请检查网络',
+                success (res) {
+                  if (res.confirm) {
+                    console.log('用户点击确定')
+                  } else if (res.cancel) {
+                    console.log('用户点击取消')
+                  }
+                }
+              })
+            }      
+          }
+        )
+      }
+      
+    }
+
+    onClickIcon(){
+        console.log("点击了一下小问号！")
+        wx.showToast({
+          title: '群ID唯一，I开头为兴趣群组，O开头为官方群组，请仔细核对',
+          icon: 'none',
+          duration: 3000
+        })
+    }
+
+    onLoad() {
+      let that = this
+    
+        //要加入群组的人信息
+      that.schoolNum = wepy.getStorageSync("schoolNum")
+      that.realName = wepy.getStorageSync("realName")
+    }
+
+
+}
+</script>
