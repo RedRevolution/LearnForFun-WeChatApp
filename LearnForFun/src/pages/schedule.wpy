@@ -31,7 +31,7 @@
         <van-calendar show="{{ show }}" bind:close="onClose" bind:confirm="onConfirm"/>
     </view>
     <view>
-        <block wx:for="{{todos}}" wx:key="index">
+        <block wx:for="{{todolist}}" wx:key="index">
             <van-cell title="{{item.content}}" value="{{item.deadline}}"/>
         </block>
     </view>
@@ -43,27 +43,35 @@
 <script>
     // 页面逻辑代码部分
     import wepy from 'wepy'
+    import wxCommon from '../mixins/wxCommon'
+
 
     export default class Schedule extends wepy.page {
         config = {
             navigationBarTitleText: '我的日程'
         };
+        mixins = [wxCommon]
         data = {
             date: '',
-            todos: [{
-                "content": "写作业",
-                "deadline": "2020-02-02 22:22",
-
-
-            },
-                {
-                    "content": "写作业写作业",
-                    "deadline": "2020-02-02 22:11",
-
-                }
+            schoolNum:'',
+            todolist: [
+            //     {
+            //     "content": "写作业",
+            //     "deadline": "2020-02-02 22:22",
+            //
+            //
+            // },
+            //     {
+            //         "content": "写作业写作业",
+            //         "deadline": "2020-02-02 22:11",
+            //
+            //     }
             ],
             show: false,
         };
+        onShow() {
+            getTodoList();
+        }
 
         onDisplay() {
             this.show = true;
@@ -72,6 +80,7 @@
         onClose() {
             this.show = false;
         };
+
 
         formatDate(date) {
             date = new Date(date);
@@ -84,6 +93,30 @@
             this.date = this.formatDate(event.detail)
 
         }
+        getTodoList(){
+            let that = this
+            that.userRequest(
+                '/api/user/timetable/'+that.schoolNum ,'get',
+                {
+
+                }, function(res) {  // 返回的是一个list? 里面全是Group实例
+                    if(res.data.length == 0) { // 是官方群组 .groupId[0]=='O'
+                        console.log("没有已创建日程")
+                    } else {
+                        let todolist = res.data
+                        console.log(todolist)
+                        that.todolist = res.data
+                        //修改datetime格式"2020-02-02 22:22"
+                        for(var i in that.todolist) {
+                            that.todolist[i].deadline = that.todolist[i].deadline.substr(0,10)+" "+that.todolist[i].deadline.substr(11,5);
+                        }
+                        console.log("输出日程时间："+that.todolist[0].deadline)
+                        that.$apply()
+                    }
+                }
+            )
+        }
+
 
         handleAddTodo(e) {
             wx.navigateTo({
@@ -100,5 +133,19 @@
         //
         //     })
         // }
+
+        async onLoad() {
+            let that = this
+            let schoolNum = wepy.getStorageSync("schoolNum")
+            that.schoolNum = schoolNum
+            that.getTodoList();  // 调用函数时要写 that. 否则可能会报错 not defined
+
+        }
+        onShow() {
+            let that = this
+            that.onLoad()
+        }
+
+
     }
 </script>
