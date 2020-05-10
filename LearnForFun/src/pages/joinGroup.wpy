@@ -34,7 +34,7 @@
 import wepy from 'wepy'
 import wxCommon from '../mixins/wxCommon'
 
-export default class createGroup extends wepy.page {
+export default class joinGroup extends wepy.page {
     config = {
       navigationBarTitleText: '加入群组'
     }
@@ -86,20 +86,19 @@ export default class createGroup extends wepy.page {
                 }
               })
               
+            } else if (res.data =="exist"){
+              console.log(res)
+              wx.showModal({
+                title: '提示',
+                content: '你已经加入过这个群了',
+              })
             } else {
               console.log(res)
               wx.showModal({
                 title: '提示',
-                content: '加入群组失败！请检查网络',
-                success (res) {
-                  if (res.confirm) {
-                    console.log('用户点击确定')
-                  } else if (res.cancel) {
-                    console.log('用户点击取消')
-                  }
-                }
+                content: '加入失败，请检查网络',
               })
-            }      
+            }
           }
         )
       }

@@ -1,0 +1,63 @@
+<style lang="less">
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+</style>
+<template>
+<view>
+
+    
+</view>
+</template>
+<script>
+import wepy from 'wepy'
+import wxCommon from '../mixins/wxCommon'
+
+export default class groupInfo extends wepy.page {
+    config = {
+      navigationBarTitleText: '群详情页'
+    }
+    mixins = [wxCommon]
+    data = {
+        groupName:'',       // 群名
+        groupId:'',
+        courseCode:'',
+        groupIntrod:'',
+        groupOwnerName:''  // 群主
+    }
+    methods = {
+    // 一键复制群号，群邀请信息
+    // 群管理员（创建群组的人）
+    // 跳转到groupShare
+    // 跳转到postShare
+    // 退出群组按钮
+    }
+    
+    getGroupInfo(){ // /api/group/{groupId}
+      let that = this
+      that.userRequest(
+        '/api/group/'+that.groupId ,'get', 
+        {             
+        }, function(res) {
+           console.log('获取该群信息', res)
+           console.log(res.data)
+         } 
+      )
+      // TODO：一堆赋值！
+    }
+
+    async onLoad() {
+        wx.setNavigationBarTitle({
+            title: '记得设置成该群名字' 
+        })
+        // 
+    }
+
+
+}
+</script>

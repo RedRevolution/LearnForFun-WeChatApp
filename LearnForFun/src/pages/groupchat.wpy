@@ -16,20 +16,19 @@
 
   }
 
-  .chatInput {
-    background: white;
-    height: 50rpx;
-    font-size: 35rpx;
-    padding: 10rpx;
-    width: 70vw;
-    margin-left: 1vw;
-    border-radius: 20rpx;
-    margin-bottom: 3vh;
-  }
+  // .chatInput {
+  //   background: white;
+  //   height: 50rpx;
+  //   font-size: 35rpx;
+  //   padding: 10rpx;
+  //   width: 70vw;
+  //   margin-left: 1vw;
+  //   border-radius: 20rpx;
+  //   margin-bottom: 3vh;
+  // }
 
   .btn {
-    width: 10vw;
-    // margin-left: 70vw;
+    margin-right: 10vw;
   }
 </style>
 <template>
@@ -48,11 +47,20 @@
         <view style="font-size: 25rpx;padding-bottom: 20rpx">{{item.text}}</view>
       </repeat>
     </view>
-    
+<!--     
     <view class="chatInput">
       <input placeholder="请输入聊天内容" value="{{say}}" bindinput="userSay"/>
-    </view>
-    <van-button @tap="sendMessage" >发送</van-button>
+    </view> -->
+    <van-search
+      value="{{ say }}"
+      label="输入"
+      use-action-slot
+      background="#4fc08d"
+      bind:change="userSay"
+    >
+      <view slot="action" @tap="sendMessage">发送</view>
+    </van-search>
+    
   </view> 
  
 
@@ -77,6 +85,7 @@
       realName: '',
       schoolNum: '',
       groupId:'', // groupId是一个字符串，O开头官方，I开头自创
+      groupName:'',
       chats: [{
         time: '聊天开始',  // 最顶部的小字
         text: '',
@@ -87,7 +96,8 @@
     methods = {
       // 用户输入相关的内容
       userSay(e) {
-        this.say = e.detail.value
+        this.say = e.detail
+        console.log("此时newGroupName = " + this.say)
         this.$apply()
       },
       // 自己发送一条消息，服务器会返回一条一样的，这个我说的就显示为右侧的气泡
@@ -207,6 +217,19 @@
 
     events = {}
 
+    getGroupInfo(){ // /api/group/{groupId}
+      let that = this
+      that.userRequest(
+        '/api/group/'+that.groupId ,'get', 
+        {             
+        }, function(res) {
+           console.log('获取该群信息', res)
+           console.log(res.data)
+         } 
+      )
+      // TODO: groupName赋值
+    }
+
     // 页面加载函数启动socket连接，当连接成功后，回复socket连接成功并且调用接收服务器
     onLoad(options) {
       const that = this
@@ -218,27 +241,24 @@
         that.wssInit() //  wepy.onSocketOpen即为连接成功，会把socketOpen变量设置为true
       }, 2000)
       that.groupId = options.groupId  // 后面groupId还要用于请求websocket连接
-      console.log("进入了群聊！groupId为 " + options.groupId);  // 传进来的参数是groupId
+      console.log("进入了群聊！groupId为 " + this.groupId);  // 传进来的参数是groupId
 
       // TODO: 第一次点进来的时候可以看到这个群的历史10条聊天记录，然后追加到chats这个数据里面去
       // /api/group/message/{groupId}/{count}
       // that.userRequest(
-      //               '/api/group/message/123456/10' ,'get', 
-      //                 {
-                        
-      //                 }, function(res) {
-      //                     console.log('第一次进入群聊页面，展示10条聊天记录. res: ', res)
-      //                     console.log(res.data)
-      //                 } 
-                          
-      //             )
+      //   '/api/group/message/123456/10' ,'get', 
+      //   {             
+      //   }, function(res) {
+      //      console.log('第一次进入群聊页面，展示10条聊天记录. res: ', res)
+      //      console.log(res.data)
+      //    }               
+      // )
 
 
-      // 第一次进来的时候还应该发一个请求获取群组信息（群名字）
-      // TODO
-      //wx.setNavigationBarTitle({
-        //   title: '该群组名字' 
-        // })
+      that.getGroupInfo()
+      wx.setNavigationBarTitle({
+        title: that.groupName 
+      })
     }
 
     onShow(){
