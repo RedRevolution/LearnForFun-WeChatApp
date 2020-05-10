@@ -103,11 +103,10 @@ export default class Collection extends wepy.page {
         let that = this
         if (e.detail.errMsg === 'getUserInfo:ok') {
             wepy.setStorageSync("userInfo", e.detail.userInfo)
-            let res = await wepy.login()
+            let res = await wx.login()  // 去掉 await ，函数名前去掉 async
             if (res.code) {
                 console.log('测试能否获取到登录的code')
                 console.log(res)
-                console.log(res.code)
                 that.userRequest(
                     '/api/user/'+res.code ,'get', 
                       {
@@ -144,20 +143,24 @@ export default class Collection extends wepy.page {
                 let systemInfo = wepy.getSystemInfoSync()
                 wepy.setStorageSync("systemInfo", systemInfo)
 
-               
                 console.log("用户的信息如下：");
                 console.log(e.detail.userInfo);
-
-                // 授权完毕之后返回’我的‘页面并强制刷新
-                wepy.switchTab({
-                    url: '/pages/me',
-                    success: function (e) {  
-                      var page = getCurrentPages().pop();  
-                      if (page == undefined || page == null) return;  
-                      page.onLoad();  
-                    }  
-
+                wx.showModal({
+                  title: '提示',
+                  content: '登录成功！点击确定回到我的界面',
+                  success (res) {
+                    if (res.confirm) {
+                      console.log('用户点击确定')
+                      wx.reLaunch({
+                          url: '/pages/me',
+                      })
+                    } else if (res.cancel) {
+                      console.log('用户点击取消')
+                    }
+                  }
                 })
+
+                
             }
         }
     }

@@ -21,7 +21,6 @@
         bind:click-icon="onClickIcon"
         @input="inputGroupName"
     />
-    <van-toast id="van-toast" />
 
     
     <van-field
@@ -35,6 +34,7 @@
     />
     </van-cell-group>
     <hr>
+    <van-cell/>
     <van-button type="info" block round @tap="createGroup">确认信息无误，创建群组</van-button>
     <!-- 该按钮绑定 -->
     

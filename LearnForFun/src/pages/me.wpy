@@ -122,13 +122,14 @@ export default class Me extends wepy.page {
       that.avatarUrl = userInfo.avatarUrl
       that.nickName = userInfo.nickName
       // this.getUserInfo()  
+
       that.realName = wepy.getStorageSync('realName') // 在userLogin里面要是成功绑定了那么会set到全局缓存里面
       that.schoolNum = wepy.getStorageSync('schoolNum')
 
       
   }
 
-  onShow(){ // 每次点进来显示这个页面就相当于刷新一下，免得显示不了头像和昵称
+  async onShow(){ // 每次点进来显示这个页面就相当于刷新一下，免得显示不了头像和昵称
       let that = this
       let userInfo = wepy.getStorageSync("userInfo")
       that.avatarUrl = userInfo.avatarUrl

@@ -87,6 +87,7 @@ export default class extends wepy.app {
   }
 
   globalData = {
+    global_text:'我是一个全局变量',
     userInfo: {
       
     }

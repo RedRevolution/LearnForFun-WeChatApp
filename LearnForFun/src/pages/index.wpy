@@ -30,26 +30,7 @@
     <repeat for="{{grouplist}}" item="item">
         <van-cell title="{{item.groupName}}" value="自建群组" size="large" label="{{item.groupIntrod}}" data-groupid="{{item.groupId}}" is-link @tap="enterGroupchat"/>
     </repeat>
-
-    <van-cell title="点击我触发弹框！" is-link bind:click="showPopup" />
-    <van-button type="primary" block bind:click="showPopup">块级元素</van-button>
-    <van-popup
-      show="{{ show }}"
-      round
-      position="bottom"
-      custom-style="height: 20%"
-      bind:close="onClose"
-    >这里是弹出的内容哦～</van-popup>
-   
-  <view class="container">
-
-    <panel>
-      <view class="title" slot="title">测试并发网络请求</view>
-      <view>返回结果: <text>{{netrst}}</text></view>
-      <button @tap="request" size="mini"> 点我发起10个请求 </button>
-    </panel>
-
-  </view> 
+ 
 </template>
 
 <script>
@@ -177,20 +158,7 @@
 
         this.$broadcast('index-broadcast', 1, 3, 4)
       },
-      request () {
-        let self = this
-        let i = 10
-        let map = ['MA==', 'MQo=', 'Mg==', 'Mw==', 'NA==', 'NQ==', 'Ng==', 'Nw==', 'OA==', 'OQ==']
-        while (i--) {
-          wepy.request({
-            url: 'https://www.madcoder.cn/tests/sleep.php?time=1&t=css&c=' + map[i] + '&i=' + i,
-            success: function (d) {
-              self.netrst += d.data + '.'
-              self.$apply()
-            }
-          })
-        }
-      },
+      
       enterGroupchat(e){ //点击进入特定群组，传参数为群号, 参数要全小写不能驼峰命名
         console.log('即将进入群组，传进来的参数：'+e.currentTarget.dataset.groupid)
         let enterGroupId = e.currentTarget.dataset.groupid
