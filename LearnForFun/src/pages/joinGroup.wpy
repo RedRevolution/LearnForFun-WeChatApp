@@ -10,9 +10,9 @@
 </style>
 <template>
 <view>
-    <van-cell-group>
+    <van-cell-group title="群ID极速加入">
     <van-field
-        value="{{newGroupName}}"
+        value="{{newGroupId}}"
         required
         clearable
         label="群ID"
@@ -23,10 +23,41 @@
     />
 
     </van-cell-group>
+    <van-tag round plain type="warning">无风险提示，直接入群</van-tag>
     <hr>
     <van-cell/>
-    <van-button type="info" block round @tap="joinGroup">确认ID无误，加入群组</van-button>
+    <van-button block round @tap="joinGroup" type="warning">确认ID无误，加入群组</van-button>
     <!-- 该按钮绑定 -->
+    <van-cell-group title="查找群组加入">
+    <van-field
+        value="{{keyword}}"
+        required
+        clearable
+        label="查找"
+        icon="question-o"
+        placeholder="请输入查找关键字"
+        bind:click-icon="onClickIcon2"
+        @input="inputSearchInfo"
+    />
+    
+    <van-tag plain type="primary">群组名</van-tag>
+    <van-tag plain type="primary">创建者名</van-tag>
+    <van-tag plain type="primary">课程代码</van-tag>
+    
+    <van-button type="info" block round @tap="searchGroup">搜索群组</van-button>
+
+    </van-cell-group>
+    <repeat for="{{searchResult}}" item="item">
+        <view wx:if="{{item.groupId[0]=='O'}}">
+            <van-cell title="{{item.groupName}}" value="官方" size="large" label="{{item.groupIntrod}}"
+         data-groupid="{{item.groupId}}" is-link @tap="joinGroupBySearch"/>
+        </view>
+        <view wx:else>
+            <van-cell title="{{item.groupName}}" value="自建" size="large" label="{{item.groupIntrod}}"
+         data-groupid="{{item.groupId}}" is-link @tap="joinGroupBySearch"/>
+        </view>
+        
+    </repeat>
     
 </view>
 </template>
@@ -42,13 +73,20 @@ export default class joinGroup extends wepy.page {
     data = {
         newGroupId:'',
         schoolNum:'',
-        realName:''     // 即将要加入群组的人的信息
+        realName:'',     // 即将要加入群组的人的信息
+        keyword:'',
+        searchResult:[]
     }
     methods = {
         inputGroupId(e){
           this.newGroupId = e.detail
           this.$apply()
           console.log("要加入的群组GroupId = " + this.newGroupId)
+        },
+        inputSearchInfo(e){
+          this.keyword = e.detail
+          this.$apply()
+          console.log("要查找的群关键字：" + this.keyword)
         }
     }
     // 新建一个自创群组, 这个函数放到一个新的页面去奥！！
@@ -62,8 +100,42 @@ export default class joinGroup extends wepy.page {
             duration: 2000
         })
       } else {
-          that.userRequest(
-          '/api/user/group/join/'+that.newGroupId+'/'+that.schoolNum,'get',
+          wx.showModal({
+            title: '提示',
+            content: '确定加入该群组吗？',
+            success (res) {
+              if (res.confirm) {
+                console.log('用户点击确定')
+                that.joinRequest(that.newGroupId)
+              } else if (res.cancel) {
+                console.log('用户点击取消')
+              }
+            }
+          })
+      }
+    }
+
+    joinGroupBySearch(e){
+      let that = this
+      let joinGroupId = e.currentTarget.dataset.groupid
+      wx.showModal({
+          title: '提示',
+          content: '确定加入该群组吗？',
+          success (res) {
+            if (res.confirm) {
+              console.log('用户点击确定')
+              that.joinRequest(joinGroupId)
+            } else if (res.cancel) {
+              console.log('用户点击取消')
+            }
+          }
+        })
+    }
+
+    joinRequest(groupId){
+      let that = this
+      that.userRequest(
+          '/api/user/group/join/'+groupId+'/'+that.schoolNum,'get',
           {
             userId: that.schoolNum
           }, function(res) {  
@@ -101,14 +173,40 @@ export default class joinGroup extends wepy.page {
             }
           }
         )
-      }
-      
+    }
+
+    searchGroup(){
+      let that = this
+      that.userRequest(
+          '/api/user/group/search/'+that.keyword,'get',
+          {
+          }, function(res) {  
+            if(res.data.length != 0) {
+              console.log("找到了群组!", res)
+              that.searchResult = res.data
+            } else {
+              console.log(res)
+              wx.showModal({
+                title: '提示',
+                content: '找不到相关群组哦～换个关键词试试呢',
+              })
+            }
+          }
+        )
     }
 
     onClickIcon(){
         console.log("点击了一下小问号！")
         wx.showToast({
           title: '群ID唯一，I开头为兴趣群组，O开头为官方群组，请仔细核对',
+          icon: 'none',
+          duration: 3000
+        })
+    }
+    onClickIcon2(){
+        console.log("点击了一下小问号2！")
+        wx.showToast({
+          title: '暂支持群组名、创建者名、课程代码查找群组',
           icon: 'none',
           duration: 3000
         })
