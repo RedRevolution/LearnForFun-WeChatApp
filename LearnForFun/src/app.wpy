@@ -1,12 +1,12 @@
 <style lang="less">
-.container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  box-sizing: border-box;
-}
+// .container {
+//   height: 100%;
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   justify-content: space-between;
+//   box-sizing: border-box;
+// }
 </style>
 
 <script>
@@ -32,7 +32,13 @@ export default class extends wepy.app {
       "van-col": "/components/vant/col/index",
       "van-search": "/components/vant/search/index",
       "van-field": "/components/vant/field/index",
-      "van-nav-bar": "/components/vant/nav-bar/index"
+      "van-nav-bar": "/components/vant/nav-bar/index",
+      "van-panel": "/components/vant/panel/index",
+      "van-card": "/components/vant/card/index",
+      "van-goods-action": "/components/vant/goods-action/index",
+      "van-goods-action-icon": "/components/vant/goods-action-icon/index",
+      "van-goods-action-button": "/components/vant/goods-action-button/index",
+      "van-tag": "/components/vant/tag/index"
     },
     "pages": [
       'pages/index',

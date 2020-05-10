@@ -29,7 +29,8 @@
   <!-- 这个页面为群组聊天页面首页，点击tarbar第一个“群聊”即可看到此页面 -->
   <!-- 群组列表 注意传参 "自建群组/官方群组"使用三元表达式看groupId的开头是什么字母-->
     <repeat for="{{grouplist}}" item="item">
-        <van-cell title="{{item.groupName}}" value="自建群组" size="large" label="{{item.groupIntrod}}" data-groupid="{{item.groupId}}" is-link @tap="enterGroupchat"/>
+        <van-cell title="{{item.groupName}}" value="自建群组" size="large" label="{{item.groupIntrod}}"
+         data-groupid="{{item.groupId}}" data-groupname="{{item.groupName}}" is-link @tap="enterGroupchat"/>
     </repeat>
  
 </template>
@@ -161,10 +162,12 @@
       },
       
       enterGroupchat(e){ //点击进入特定群组，传参数为群号, 参数要全小写不能驼峰命名
+      // 这个e就是data-groupid在html中写得参数
         console.log('即将进入群组，传进来的参数：'+e.currentTarget.dataset.groupid)
         let enterGroupId = e.currentTarget.dataset.groupid
+        let enterGroupName = e.currentTarget.dataset.groupname
         wx.navigateTo({ // 不能用 redirectTo
-            url: '/pages/groupchat?groupId='+enterGroupId, // ?id=2020&time=20200309
+            url: '/pages/groupchat?groupId='+enterGroupId+'&groupName='+enterGroupName, 
             events: {
               // 为指定事件添加一个监听器，获取被打开页面传送到当前页面的数据
               acceptDataFromOpenedPage: function(data) {

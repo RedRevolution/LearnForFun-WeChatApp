@@ -15,32 +15,18 @@
     overflow: auto;
 
   }
-
-  // .chatInput {
-  //   background: white;
-  //   height: 50rpx;
-  //   font-size: 35rpx;
-  //   padding: 10rpx;
-  //   width: 70vw;
-  //   margin-left: 1vw;
-  //   border-radius: 20rpx;
-  //   margin-bottom: 3vh;
-  // }
-
-  .btn {
-    margin-right: 10vw;
-  }
+ .myicon{
+   position: fixed;
+   width:42px;
+   height:42px;
+  top: 30px;
+  right: 20px;
+ }
 </style>
 <template>
-  <!-- <van-nav-bar
-      title="我的群聊"
-      left-text="创建群聊"
-      right-text="加入群聊"
-      bind:click-left=""
-      bind:click-right="gotoGroupInfo"
-      safe-area-inset-top="false"
-  /> -->
+  
   <view class="page">
+    <van-icon name="setting-o" size="30px" class="myicon" @tap="enterGroupInfo"/>
     <view class="chats">
       <repeat for="{{chats}}" item="item">
         <view style="font-size: 20rpx;color: #ababab">{{item.time}}</view>
@@ -55,7 +41,7 @@
       value="{{ say }}"
       label="输入"
       use-action-slot
-      background="#4fc08d"
+      background="#c8d6e5"
       bind:change="userSay"
     >
       <view slot="action" @tap="sendMessage">发送</view>
@@ -111,6 +97,25 @@
         this.handleSendMessage()
         this.say = '' // 用于清空输入框
         this.$apply()
+      },
+      enterGroupInfo(e){
+        let that = this
+        wx.navigateTo({ // 不能用 redirectTo
+            url: '/pages/groupInfo?groupId='+that.groupId+'&groupName='+that.groupName, // ?id=2020&time=20200309
+            events: {
+              // 为指定事件添加一个监听器，获取被打开页面传送到当前页面的数据
+              acceptDataFromOpenedPage: function(data) {
+                console.log(data)
+              },
+              someEvent: function(data) {
+                console.log(data)
+              }
+            },
+            success: function(res) {
+              // 通过eventChannel向被打开页面传送数据
+              res.eventChannel.emit('acceptDataFromOpenerPage', { data: 'test' })
+            }
+        })
       }
     }
 
@@ -219,17 +224,10 @@
         {             
         }, function(res) {
            console.log('获取该群信息', res)
-           that.groupId = res.data.groupId
-           that.groupName = res.data.groupName
-           console.log("该群名字为："+res.data.groupName)
-           wx.setNavigationBarTitle({
-              title: that.groupName // 在顶部显示群名
-          })
+           wepy.setStorageSync(that.groupId, res.data)  // 全局缓存
          } 
       )
-     
     }
-
     // 页面加载函数启动socket连接，当连接成功后，回复socket连接成功并且调用接收服务器
     onLoad(options) {
       const that = this
@@ -241,23 +239,12 @@
         that.wssInit() //  wepy.onSocketOpen即为连接成功，会把socketOpen变量设置为true
       }, 2000)
       that.groupId = options.groupId  // 后面groupId还要用于请求websocket连接
-      console.log("进入了群聊！groupId为 " + this.groupId);  // 传进来的参数是groupId
-
-      // TODO: 第一次点进来的时候可以看到这个群的历史10条聊天记录，然后追加到chats这个数据里面去
-      // /api/group/message/{groupId}/{count}
-      // that.userRequest(
-      //   '/api/group/message/123456/10' ,'get', 
-      //   {             
-      //   }, function(res) {
-      //      console.log('第一次进入群聊页面，展示10条聊天记录. res: ', res)
-      //      console.log(res.data)
-      //    }               
-      // )
-
-
-      that.getGroupInfo()
-      console.log("getGroupInfo函数过后，该群名字为："+that.groupName)
-      
+      that.groupName = options.groupName
+      wx.setNavigationBarTitle({
+        title: options.groupName // 在顶部显示群名
+      })
+      console.log("进入了群聊！groupId为 " + this.groupId+", groupName为 " + this.groupName);  // 传进来的参数是groupId, groupName
+      that.getGroupInfo() // 缓存到全局缓存中
     }
 
     onShow(){
