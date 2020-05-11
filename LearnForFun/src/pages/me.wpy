@@ -85,10 +85,6 @@
         <van-cell title="关于" is-link  link-type="navigateTo"
               url="/pages/favorite" />
       </view>
-      <view class = "container">
-          <van-button plain type="info">退出登录</van-button>
-      </view>
-
     </view>
 
 </template>
