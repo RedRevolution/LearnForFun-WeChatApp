@@ -31,11 +31,11 @@
         <van-calendar show="{{ show }}" bind:close="onClose" bind:confirm="onConfirm"/>
     </view>
     <view>
-        <block wx:for="{{todolist}}" wx:key="index">
-            <van-cell title="{{item.content}}" label="{{item.deadline}}" >
-                <van-icon name="edit"  size="46rpx" @tap="handleEditTodo" data-timetable = "{{item}}"/>
-            </van-cell>
-        </block>
+        <repeat for="{{todolist}}" item="item">
+        <van-cell title="{{item.content}}" size="large" label="{{item.deadline}}">
+            <van-icon name="edit"  size="46rpx" @tap="handleEditTodo" data-timetable = "{{item}}"/>
+        </van-cell>
+        </repeat>
     </view>
 
     <view class="todo-add" @tap="handleAddTodo">+</view>
@@ -71,10 +71,7 @@
             ],
             show: false,
         };
-        onShow() {
-            getTodoList();
-        }
-
+       
         onDisplay() {
             this.show = true;
         };
@@ -104,6 +101,8 @@
                 }, function(res) {  // 返回的是一个list? 里面全是Group实例
                     if(res.data.length == 0) { // 是官方群组 .groupId[0]=='O'
                         console.log("没有已创建日程")
+                        that.todolist = res.data
+                        that.$apply()
                     } else {
                         let todolist = res.data
                         console.log(todolist)
@@ -186,7 +185,8 @@
         }
         onShow() {
             let that = this
-            that.onLoad()
+            // that.onLoad()
+            that.getTodoList();
         }
 
 
