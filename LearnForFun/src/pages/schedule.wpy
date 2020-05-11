@@ -33,7 +33,7 @@
     <view>
         <block wx:for="{{todolist}}" wx:key="index">
             <van-cell title="{{item.content}}" label="{{item.deadline}}" >
-                <van-icon name="edit"  size="46rpx" @click="handleEditTodo" data-editid = "{{item.id}}"/>
+                <van-icon name="edit"  size="46rpx" @click="handleEditTodo" data-timetable = "{{item}}"/>
             </van-cell>
         </block>
     </view>
@@ -128,10 +128,11 @@
         //处理修改日程 待补充
         handleEditTodo(e){
             let that = this;
-            let editid = e.currentTarget.dataset.editid;
-            console.log("要编辑日程的id："+editid);
+            let timetable = e.currentTarget.dataset.timetable;
+            console.log("要编辑日程的id："+timetable.id);
             wx.navigateTo({
-                url: '/pages/editTodo?editid='+editid
+                //传入一个timetable对象
+                url: '/pages/editTodo?timetable='+JSON.stringify(timetable),
 
             })
         }
