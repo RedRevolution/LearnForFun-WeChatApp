@@ -130,18 +130,16 @@ export default class groupInfo extends wepy.page {
     }
     
     enterFile(){
-      wx.showToast({
-        title: '功能尚未开发，敬请期待',
-        icon: 'none',
-        duration: 2000
+      let that=this
+      wx.navigateTo({
+        url:'/pages/fileShare?groupId='+that.groupId+'&groupName='+that.groupName
       })
     }
 
     enterKnow(){
-      wx.showToast({
-        title: '功能尚未开发，敬请期待',
-        icon: 'none',
-        duration: 2000
+      let that=this
+      wx.navigateTo({
+        url:'/pages/knowledgeShare?groupId='+that.groupId+'&groupName='+that.groupName
       })
     }
 

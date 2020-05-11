@@ -2,53 +2,86 @@
 
 </style>
 <template>
+    <view style="text-align: center">
+        <van-cell title="{{groupName}}">
 
-<van-cell value="前往查看" size="large" icon="orders-o" is-link>
-  <view slot="title">
-    <view class="van-cell-text">知识模块1</view>
-    <van-tag plain color="#ff9f43">仅支持txt</van-tag>
-  </view>
-</van-cell>
-<van-cell value="前往查看" size="large" icon="cluster-o" is-link>
-  <view slot="title">
-    <view class="van-cell-text">知识模块2</view>
-    <van-tag plain color="#ff9f43">暂不能做富文本</van-tag>
-  </view>
-</van-cell>
+        </van-cell>
+    </view>
+    <view>
+        <repeat for="{{sharelist}}" item="item">
+            <block wx:if="{{item.shareId[0]=='K'}}">
+                <van-cell title="{{item.topic}}" value="{{item.userName}}" size="large" label="{{item.content}}">
+                </van-cell>
+            </block>
+        </repeat>
+    </view>
 
-
+    <!--<van-cell value="前往查看" size="large" icon="orders-o" is-link>-->
+    <!--<view slot="title">-->
+    <!--<view class="van-cell-text">知识模块1</view>-->
+    <!--<van-tag plain color="#ff9f43">仅支持txt</van-tag>-->
+    <!--</view>-->
+    <!--</van-cell>-->
+    <!--<van-cell value="前往查看" size="large" icon="cluster-o" is-link>-->
+    <!--<view slot="title">-->
+    <!--<view class="van-cell-text">知识模块2</view>-->
+    <!--<van-tag plain color="#ff9f43">暂不能做富文本</van-tag>-->
+    <!--</view>-->
+    <!--</van-cell>-->
 
 </template>
 <script>
-import wepy from 'wepy'
-import wxCommon from '../mixins/wxCommon'
+    import wepy from 'wepy'
+    import wxCommon from '../mixins/wxCommon'
 
-export default class knowledgeShare extends wepy.page {
-    config = {
-      navigationBarTitleText: '知识分享'
+    export default class KnowledgeShare extends wepy.page {
+        config = {
+            navigationBarTitleText: '知识分享'
+        }
+        mixins = [wxCommon]
+        data = {
+            userId: '',
+            userName: '',
+            groupName: '',       // 群名
+            groupId: '',
+            sharelist: []
+        }
+        methods = {}
+
+        getShareList() {
+            let that = this
+            that.userRequest(
+                '/api/group/share/' + that.groupId, 'get',
+                {}, function (res) {  // 返回的是一个list? 里面全是Share实例
+                    if (res.data.length == 0) {
+                        console.log("没有知识分享")
+                        that.sharelist = res.data
+                        that.$apply()
+                    } else {
+                        let sharelist = res.data
+                        console.log(sharelist)
+                        that.sharelist = res.data
+                        that.$apply()
+                    }
+                }
+            )
+        }
+
+
+        async onLoad(options) {
+            let that = this;
+            that.groupId = options.groupId
+            that.groupName = options.groupName
+
+            that.getShareList();
+        }
+
+        onShow() {
+            let that = this
+            // that.onLoad()
+            that.getShareList();
+        }
+
+
     }
-    mixins = [wxCommon]
-    data = {
-        schoolNum:'',
-        groupName:'',       // 群名
-        groupId:'',
-        courseCode:'',
-        groupIntrod:'',
-        groupOwnerName:'',  // 群主
-        isOfficial:'官方'
-    }
-    methods = {
-    
-      
-    }
-    
-    
-
-    async onLoad(options) {
-        // 参数传入 groupId
-
-    }
-
-
-}
 </script>
