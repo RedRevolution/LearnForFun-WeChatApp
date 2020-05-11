@@ -43,7 +43,7 @@
 <script>
     import wepy from 'wepy'
     import wxCommon from '../mixins/wxCommon'
-    export default class AddTodo extends wepy.page {
+    export default class editTodo extends wepy.page {
         config = {
             navigationBarTitleText: "修改日程"
         }
@@ -67,7 +67,7 @@
             //     var timetable = JSON.parse(options.timetable);
             //     console.log("userid="+timetable.userId)
             // }
-            console.log("跳转到修改日程页面 id="+timetable.id)
+            console.log("跳转到修改日程页面啦！ id="+timetable.id)
             console.log("userid="+timetable.userId)
             console.log("content="+timetable.content)
             console.log("ddl="+timetable.deadline)

@@ -33,12 +33,12 @@
     <view>
         <block wx:for="{{todolist}}" wx:key="index">
             <van-cell title="{{item.content}}" label="{{item.deadline}}" >
-                <van-icon name="edit"  size="46rpx" @click="handleEditTodo" data-timetable = "{{item}}"/>
+                <van-icon name="edit"  size="46rpx" @tap="handleEditTodo" data-timetable = "{{item}}"/>
             </van-cell>
         </block>
     </view>
 
-    <view class="todo-add" bindtap="handleAddTodo">+</view>
+    <view class="todo-add" @tap="handleAddTodo">+</view>
 
 </template>
 
