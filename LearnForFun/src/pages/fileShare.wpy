@@ -1,0 +1,54 @@
+<style lang="less">
+
+</style>
+<template>
+
+<van-cell value="前往查看" size="large" icon="orders-o" is-link>
+  <view slot="title">
+    <view class="van-cell-text">资料1</view>
+    <van-tag plain color="#ff9f43">仅支持URL</van-tag>
+  </view>
+</van-cell>
+<van-cell value="前往查看" size="large" icon="cluster-o" is-link>
+  <view slot="title">
+    <view class="van-cell-text">资料2</view>
+    <van-tag plain color="#ff9f43">暂不能上传文件</van-tag>
+  </view>
+</van-cell>
+
+
+
+</template>
+<script>
+import wepy from 'wepy'
+import wxCommon from '../mixins/wxCommon'
+
+export default class fileShare extends wepy.page {
+    config = {
+      navigationBarTitleText: '资料分享'
+    }
+    mixins = [wxCommon]
+    data = {
+        schoolNum:'',
+        groupName:'',       // 群名
+        groupId:'',
+        courseCode:'',
+        groupIntrod:'',
+        groupOwnerName:'',  // 群主
+        isOfficial:'官方'
+    }
+    methods = {
+    
+      
+    }
+    
+    
+
+    async onLoad(options) {
+        // 参数传入 groupId
+
+    }
+
+
+}
+</script>

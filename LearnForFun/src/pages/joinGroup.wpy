@@ -184,6 +184,7 @@ export default class joinGroup extends wepy.page {
             if(res.data.length != 0) {
               console.log("找到了群组!", res)
               that.searchResult = res.data
+              that.$apply()
             } else {
               console.log(res)
               wx.showModal({

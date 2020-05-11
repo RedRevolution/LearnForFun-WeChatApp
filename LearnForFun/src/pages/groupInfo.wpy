@@ -22,19 +22,19 @@
 <van-cell title="群组介绍" value="{{groupIntrod}}" size="large" ></van-cell>
 <van-cell title="群创建者" value="{{groupOwnerName}}" size="large" ></van-cell>
 
-<van-cell value="前往查看" size="large" icon="orders-o" is-link>
+<van-cell value="前往查看" size="large" icon="orders-o" is-link @tap="enterFile">
   <view slot="title">
     <view class="van-cell-text">资料分享模块</view>
     <van-tag plain color="#ff9f43">仅支持URL</van-tag>
   </view>
 </van-cell>
-<van-cell value="前往查看" size="large" icon="cluster-o" is-link>
+<van-cell value="前往查看" size="large" icon="cluster-o" is-link @tap="enterKnow">
   <view slot="title">
     <view class="van-cell-text">知识分享模块</view>
     <van-tag plain color="#ff9f43">纯文本输入</van-tag>
   </view>
 </van-cell>
-<van-cell value="前往发布" size="large" icon="apps-o" is-link>
+<van-cell value="前往发布" size="large" icon="apps-o" is-link @tap="gotoPost">
   <view slot="title">
     <view class="van-cell-text">我要发布分享</view>
     <van-tag plain type="primary">资料</van-tag>
@@ -129,6 +129,29 @@ export default class groupInfo extends wepy.page {
       }
     }
     
+    enterFile(){
+      wx.showToast({
+        title: '功能尚未开发，敬请期待',
+        icon: 'none',
+        duration: 2000
+      })
+    }
+
+    enterKnow(){
+      wx.showToast({
+        title: '功能尚未开发，敬请期待',
+        icon: 'none',
+        duration: 2000
+      })
+    }
+
+    gotoPost(){
+      wx.showToast({
+        title: '功能尚未开发，敬请期待',
+        icon: 'none',
+        duration: 2000
+      })
+    }
     
 
     async onLoad(options) {
