@@ -59,6 +59,7 @@ export default class groupInfo extends wepy.page {
     }
     mixins = [wxCommon]
     data = {
+        schoolNum:'',
         groupName:'',       // 群名
         groupId:'',
         courseCode:'',
@@ -82,17 +83,57 @@ export default class groupInfo extends wepy.page {
             })
           }
         })
-      }
+      },
     // 群管理员（创建群组的人）
     // 跳转到groupShare
     // 跳转到postShare
-    // 退出群组按钮
+    // 退出群组按
+      onClickQuit(){ // 
+        let that = this
+        wx.showModal({
+          title: '提示',
+          content: '确定要退出该群组吗？',
+          success (res) {
+            if (res.confirm) {
+              console.log('用户点击确定')
+              that.userRequest(
+                '/api/user/group/exit/'+that.groupId + '/' + that.schoolNum,'get', 
+                { 
+                  userId:that.schoolNum        
+                }, function(res) {
+                  if(res.data == 'success') {
+                    wx.showToast({
+                      title: '已退出群组',
+                      icon: 'success',
+                      duration: 2000
+                    })
+                    wx.switchTab({
+                      url: '/pages/index'
+                    })
+                  } else {
+                    wx.showToast({
+                      title: '退出失败，请稍后再试',
+                      icon: 'none',
+                      duration: 2000
+                    })
+                  }
+                } 
+              )
+            } else if (res.cancel) {
+              console.log('用户点击取消')
+            }
+          }
+        })
+
+        
+      }
     }
     
     
 
     async onLoad(options) {
       let that = this
+      that.schoolNum = wepy.getStorageSync("schoolNum")
         wx.setNavigationBarTitle({
             title: options.groupName 
         })
