@@ -113,9 +113,12 @@
         }
 
 
-        async onLoad() {
+        async onLoad(options) {
             let that = this;
             that.userId = wepy.getStorageSync("schoolNum");
+            if(options.editid) {
+                console.log("跳转到修改日程页面 id="+options.editid)
+            }
         };
         inputContent(e) {
             console.log("日程内容" + e.detail);

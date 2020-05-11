@@ -32,7 +32,9 @@
     </view>
     <view>
         <block wx:for="{{todolist}}" wx:key="index">
-            <van-cell title="{{item.content}}" value="{{item.deadline}}"/>
+            <van-cell title="{{item.content}}" label="{{item.deadline}}" >
+                <van-button type = "warning" size="small" @click="handleDeleteTodo" data-delid = "{{item.id}}">删除</van-button>
+            </van-cell>
         </block>
     </view>
 
@@ -110,7 +112,6 @@
                         for(var i in that.todolist) {
                             that.todolist[i].deadline = that.todolist[i].deadline.substr(0,10)+" "+that.todolist[i].deadline.substr(11,5);
                         }
-                        console.log("输出日程时间："+that.todolist[0].deadline)
                         that.$apply()
                     }
                 }
@@ -125,14 +126,54 @@
         }
 
         //处理修改日程 待补充
-        // handleTodoChange(e){
-        //     let uuid = e.currentTarget.dataset.uuid;
-        //     //console.log(todoStore.getTodo(uuid))
-        //     wx.navigateTo({
-        //         url: '/pages/addTodo/addTodo?uuid=' + uuid,
-        //
-        //     })
-        // }
+        handleEditTodo(e){
+            let that = this;
+            let editid = e.currentTarget.dataset.editid;
+            console.log("要编辑日程的id："+editid);
+            wx.navigateTo({
+                url: '/pages/addTodo?editid=' + editid,
+
+            })
+        }
+        handleDeleteTodo(e){
+            let that = this;
+            let delid = e.currentTarget.dataset.delid;
+            wx.showModal({
+                title:'提示',
+                content:'确定要删除该日程吗？',
+                success(sm) {
+                    if (sm.confirm) {
+                        console.log('用户点击确定删除,id = '+delid)
+                        // 用户点击了确定 可以调用删除方法了
+                        that.userRequest(
+                            '/api/user/timetable/delete/'+delid ,'get',
+                            {
+                                timetableId:delid
+                            }, function(res) {
+                                if(res.data == "success") {
+                                    console.log("成功删除一条日程!");
+                                    wx.showToast({ title: '删除成功' ,
+                                        icon:'success'
+                                    })
+                                }
+                                else {
+                                    console.log("删除日程失败");
+                                    wx.showModal({
+                                        title: '提示',
+                                        content:'删除失败！',
+                                        showCancel: false
+                                    })
+                                }
+                            }
+                        )
+
+                    } else if (sm.cancel) {
+                        console.log('用户点击取消')
+                    }
+                }
+            })
+        }
+
 
         async onLoad() {
             let that = this
