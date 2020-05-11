@@ -139,8 +139,7 @@
   <view class="page">
     <van-button type="normal" block @tap="enterGroupInfo">查看群详情</van-button>
     
-    <scroll-view class="chats" scroll-into-view="{{toView}}" scroll-with-animation="true" 
-      upper-threshold="100" scroll-y="true" enable-back-to-top="true">
+    <view class="chats">
       <repeat for="{{chats}}" item="item" id="item{{index}}">
         <!-- <view style="font-size: 20rpx;color: #ababab">{{item.time}}</view> -->
         
@@ -165,7 +164,7 @@
         </view>
       </repeat>
   
-    </scroll-view>
+    </view>
     
 <!--     
     <view class="chatInput">
@@ -319,13 +318,10 @@
             that.toView = `item${that.chats.length - 1}`
             that.$apply()
             console.log("滚动底部toView："+that.toView)
-            that.cache = that.chats
-            that.$apply()     // apply之后本地变量就会被修改，那么聊天框内应该就会显示出服务器发回的消息
             // 为了自动返回底部
             // 每收到一条消息就缓存一下
-            wepy.setStorageSync(that.groupId+"rec", that.cache)
+            wepy.setStorageSync(that.groupId+"rec", JSON.stringify(that.chats))
             console.log("此时chats:" + that.chats)
-            console.log("缓存了cache:" + that.cache)
             
           }
         })
@@ -376,12 +372,10 @@
       // 第一次进入页面的时候加载
       let that = this
       let record = wepy.getStorageSync(that.groupId+"rec")
-      console.log("进入页面加载的缓存："+record)
-      for (let i = 0; i < record.length; i++) {
-        const element = record[i];
-        console.log(element.text)
-      }
-      that.chats = record
+      let cache = JSON.parse(record)
+      console.log("进入页面加载的缓存："+JSON.parse(record))
+      
+      that.chats = cache
       that.$apply()
     }
 
