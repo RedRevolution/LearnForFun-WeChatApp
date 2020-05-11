@@ -1,0 +1,195 @@
+<style lang="less">
+
+</style>
+<template>
+    <view><van-cell title="{{word}}"/></view>
+
+    <van-cell-group>
+
+        <van-field
+                value="{{ content }}"
+                label="标题"
+                type="textarea"
+                required
+                clearable
+                input-align = "right"
+                placeholder="输入日程标题"
+                autosize
+                @input = "inputContent"
+
+        />
+
+        <van-cell title = "日期" required>
+
+            <picker mode = "date" start="2000-01-01" bindchange="handleDateChange">
+                {{endDate ? endDate:"选择日期"}}
+            </picker>
+        </van-cell>
+
+        <van-cell title = "时间" value-align = "left"  required>
+            <picker mode = "time"  bindchange="handleTimeChange">
+                {{endTime ? endTime:"选择时间"}}
+            </picker>
+        </van-cell>
+    </van-cell-group>
+    <van-cell/>
+    <view style="margin-bottom:4rpx">
+        <van-button type="info" block round @click="handleEditTodo">确认修改</van-button>
+    </view>
+
+    <van-button type="warning" block round @click="handleDeleteTodo">删除日程</van-button>
+
+</template>
+<script>
+    import wepy from 'wepy'
+    import wxCommon from '../mixins/wxCommon'
+    export default class AddTodo extends wepy.page {
+        config = {
+            navigationBarTitleText: "修改日程"
+        }
+        mixins = [wxCommon]
+        data = {
+            word : "修改日程",
+            // showdate:false,
+            content: '',
+            endDate: '',
+            endTime: '',
+            userId: '',
+            editId:0   //待编辑日程的id
+        }
+
+        async onLoad(options) {
+            let that = this;
+            var timetable = JSON.parse(options.timetable);
+            that.userId = timetable.userId
+            // if(options.editid) {
+            //     console.log("跳转到修改日程页面 id="+options.editid)
+            //     var timetable = JSON.parse(options.timetable);
+            //     console.log("userid="+timetable.userId)
+            // }
+            console.log("跳转到修改日程页面 id="+timetable.id)
+            console.log("userid="+timetable.userId)
+            console.log("content="+timetable.content)
+            console.log("ddl="+timetable.deadline)
+
+            that.editId=timetable.id;
+            that.content=timetable.content;
+            that.endDate=timetable.deadline.substr(0,10);
+            that.endTime=timetable.deadline.substr(11,5);
+            console.log("enddate="+that.endDate)
+            console.log("endtime="+that.endTime)
+
+        };
+        inputContent(e) {
+            console.log("修改后日程内容:" + e.detail);
+            this.content = e.detail;
+            this.$apply()
+        };
+        // showDate() {
+        //     this.showdate = true;
+        // };
+        // onClose() {
+        //     this.showdate = false;
+        // };
+        handleDateChange(e) {
+            console.log("选择的日期"+e.detail.value);
+            this.endDate = e.detail.value;
+            this.$apply()
+        };
+        handleTimeChange(e) {
+            console.log("选择的时间"+e.detail.value);
+            this.endTime = e.detail.value;
+            this.$apply()
+        };
+        handleEditTodo() {
+            let that = this;
+            console.log("待提交内容："+that.content)
+            console.log("待提交学号："+that.userId)
+            console.log("待提交时间："+that.endDate+'T'+that.endTime+':00')
+
+            if(that.content==''||that.endDate==''||that.endTime=='') {
+                wx.showModal({
+                    title: '无法提交修改',
+                    content: '日程内容、日期或时间不能为空',
+                    showCancel: false,
+                })
+            }
+            else{
+                that.userRequest(
+                    '/api/user/timetable/modify','post',
+                    {
+                        content:that.content,
+                        deadline:that.endDate+'T'+that.endTime+':00',
+                        userId:that.userId,
+                        id:that.editId
+
+                    }, function(res) {
+                        if(res.data == "success") {
+                            console.log("成功修改日程!");
+
+                            wx.navigateBack()
+                            wx.showToast({ title: '修改成功' ,
+                                icon:'success'
+                            })
+                        }
+                        else if(res.data == "error") {
+                            console.log("修改日程失败！");
+                            wx.showModal({
+                                title: '修改失败',
+                                showCancel: false
+                            })
+                        }
+                        else{
+                            console.log("其他问题");
+                            console.log(res);
+                        }
+                    },
+
+                )
+            }
+
+        }
+        handleDeleteTodo(){
+            let that = this;
+            wx.showModal({
+                title:'提示',
+                content:'确定要删除该日程吗？',
+                success(sm) {
+                    if (sm.confirm) {
+                        console.log('用户点击确定删除,id = '+that.editId)
+                        // 用户点击了确定 可以调用删除方法了
+                        that.userRequest(
+                            '/api/user/timetable/delete/'+that.editId ,'get',
+                            {
+                                timetableId:that.editId
+                            }, function(res) {
+                                if(res.data == "success") {
+                                    console.log("成功删除一条日程!");
+                                    wx.navigateBack();
+                                    wx.showToast({ title: '删除成功' ,
+                                        icon:'success'
+                                    })
+                                }
+                                else {
+                                    console.log("删除日程失败");
+                                    wx.showModal({
+                                        title: '提示',
+                                        content:'删除失败！',
+                                        showCancel: false
+                                    })
+                                }
+                            }
+                        )
+
+                    } else if (sm.cancel) {
+                        console.log('用户点击取消')
+                    }
+                }
+            })
+        }
+
+    }
+</script>
+
+
+
