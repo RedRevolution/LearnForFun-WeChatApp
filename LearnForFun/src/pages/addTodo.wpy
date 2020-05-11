@@ -20,16 +20,9 @@
 
         <van-cell title = "日期" required>
 
-                <picker mode = "date" start="2000-01-01" bindchange="handleDateChange">
-                    {{endDate ? endDate:"选择日期"}}
-                </picker>
-
-
-
-                <!--<button bindtap = "showDate">-->
-                <!--点击选择结束日期-->
-                <!--</button>-->
-
+            <picker mode = "date" start="2000-01-01" bindchange="handleDateChange">
+                {{endDate ? endDate:"选择日期"}}
+            </picker>
 
         </van-cell>
 
@@ -62,12 +55,10 @@
             userId: '',
         }
         addTodo() {
-
             let that = this;
             console.log("待提交内容："+that.content)
             console.log("待提交学号："+that.userId)
             console.log("待提交时间："+that.endDate+'T'+that.endTime+':00')
-
 
             if(that.content==''||that.endDate==''||that.endTime=='') {
                 wx.showModal({
@@ -90,8 +81,10 @@
                             console.log("成功添加一条日程!");
 
                             wx.navigateBack()
-                            wx.showToast({ title: '创建成功' ,
-                                    icon:'success'
+                            wx.showToast({
+                                title: '创建成功' ,
+                                icon:'success',
+                                duration:2000
                             })
                         }
                         else if(res.data == "error") {

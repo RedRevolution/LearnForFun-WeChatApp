@@ -146,11 +146,10 @@ export default class groupInfo extends wepy.page {
     }
 
     gotoPost(){
-      wx.showToast({
-        title: '功能尚未开发，敬请期待',
-        icon: 'none',
-        duration: 2000
-      })
+      let that=this
+      wx.navigateTo({
+        url:'/pages/addShare?groupId='+that.groupId+'&groupName='+that.groupName
+              })
     }
     
 

@@ -43,7 +43,7 @@
 <script>
     import wepy from 'wepy'
     import wxCommon from '../mixins/wxCommon'
-    export default class editTodo extends wepy.page {
+    export default class EditTodo extends wepy.page {
         config = {
             navigationBarTitleText: "修改日程"
         }

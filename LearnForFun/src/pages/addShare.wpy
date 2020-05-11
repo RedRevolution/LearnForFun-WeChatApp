@@ -1,0 +1,122 @@
+<style>
+
+</style>
+<template>
+    <van-cell-group>
+        <van-field
+                value="{{topic}}"
+                required
+                clearable
+                label="标题"
+                placeholder="输入标题"
+                @input="inputTopic"
+        />
+
+
+        <van-field
+                value="{{ content }}"
+                required
+                label="内容"
+                type="textarea"
+                clearable
+                placeholder="分享新鲜的知识..."
+                autosize
+                @input="inputContent"
+        />
+    </van-cell-group>
+    <view style="margin-top: 8rpx;margin-left:10rpx">
+        <text style="color:grey;margin-bottom: 8rpx">分享类型</text>
+        <van-radio-group value="{{ radio }}" bind:change="onChange">
+            <van-radio name="F">资料</van-radio>
+            <van-radio name="K">知识</van-radio>
+        </van-radio-group>
+    </view>
+
+
+
+    <van-cell/>
+    <van-button type="info" block round @tap="addShare">确认分享</van-button>
+</template>
+<script>
+    import wepy from 'wepy'
+    import wxCommon from '../mixins/wxCommon'
+    export default class AddShare extends wepy.page {
+        config = {
+            navigationBarTitleText: "发布分享"
+        }
+        mixins = [wxCommon]
+        data = {
+            word:'Welcome Share!',
+            radio: 'F',
+            topic:'',     //分享的标题
+            content:'',    //分享的内容
+            userId:'',
+            userName:'',
+            groupId:'',
+            groupName:''
+        }
+        methods={
+            inputTopic(e) {
+                this.topic = e.detail
+                this.$apply()
+                console.log("此时topic = " + this.topic)
+            },
+            inputContent(e) {
+                this.content = e.detail
+                this.$apply()
+                console.log("此时content = " + this.content)
+            }
+
+        }
+        addShare(){
+            let that = this
+            console.log('待提交userId'+that.userId+' 待提交userName'+that.userName)
+            console.log('待提交groupId'+that.groupId+' 待提交groupName'+that.groupName)
+            console.log('待提交topic' +that.topic+' 待提交content'+that.content)
+            console.log('待提交shareId' + that.radio)
+
+            that.userRequest(
+                '/api/group/share/post','post',
+                {
+                    groupName:that.groupName,
+                    groupId:that.groupId,
+                    userId:that.userId,
+                    userName:that.userName,
+                    topic:that.topic,
+                    content:that.content,
+                    shareId:that.radio
+                },function(res){
+                    if(res.data =="success") {
+                        console.log("成功发布分享")
+                        wx.navigateBack()
+                        wx.showToast({
+                        title: '分享成功' ,
+                        icon:'success',
+                        duration:2000
+                        })
+                    }
+                    else{
+                        console.log("发布分享失败")
+                        wx.showModal({
+                            title: '分享失败' ,
+                            showCancel: false
+                        })
+                    }
+                }
+            )
+        }
+        onChange(e) {
+            this.radio=e.detail
+        }
+        async onLoad(options) {
+            let that = this
+            that.userId = wepy.getStorageSync("schoolNum")
+            that.userName = wepy.getStorageSync("realName")
+            that.groupId = options.groupId
+            that.groupName = options.groupName
+
+        }
+
+
+    }
+</script>
