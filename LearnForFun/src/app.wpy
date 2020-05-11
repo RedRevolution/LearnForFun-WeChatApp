@@ -52,6 +52,7 @@ export default class extends wepy.app {
       'pages/favorite',
       'pages/createGroup',
       'pages/addTodo',
+      'pages/editTodo',
       'pages/joinGroup',
       'pages/groupInfo'
     ],
@@ -74,9 +75,15 @@ export default class extends wepy.app {
         },
         {
           pagePath: "pages/coursetable",
-          text: "课表和日程",
-          'iconPath': 'images/calendar.png',
-          'selectedIconPath': 'images/calendar_select.png'
+          text: "课表",
+          'iconPath': 'images/course.png',
+          'selectedIconPath': 'images/course_select.png'
+        },
+        {
+            pagePath: "pages/schedule",
+            text: "日程",
+            'iconPath': 'images/calendar.png',
+            'selectedIconPath': 'images/calendar_select.png'
         },
         {
           pagePath: "pages/collection",

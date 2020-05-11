@@ -33,7 +33,7 @@
     <view>
         <block wx:for="{{todolist}}" wx:key="index">
             <van-cell title="{{item.content}}" label="{{item.deadline}}" >
-                <van-button type = "warning" size="small" @click="handleDeleteTodo" data-delid = "{{item.id}}">删除</van-button>
+                <van-icon name="edit"  size="46rpx" @click="handleEditTodo" data-editid = "{{item.id}}"/>
             </van-cell>
         </block>
     </view>
@@ -131,7 +131,7 @@
             let editid = e.currentTarget.dataset.editid;
             console.log("要编辑日程的id："+editid);
             wx.navigateTo({
-                url: '/pages/addTodo?editid=' + editid,
+                url: '/pages/editTodo?editid='+editid
 
             })
         }
@@ -155,6 +155,7 @@
                                     wx.showToast({ title: '删除成功' ,
                                         icon:'success'
                                     })
+                                    that.getTodoList() //删除后刷新页面
                                 }
                                 else {
                                     console.log("删除日程失败");
