@@ -55,7 +55,7 @@
         padding-left: 4px;
     }
     .scroll {
-        height: 1170rpx;
+        height: 97vh;
         z-index: 101;
         position: fixed;
     }
@@ -134,17 +134,6 @@
             <view wx:for="{{wlist}}">
                 <block wx:if="{{item.kcxx}}">
                 <view class="flex-item kcb-item" @tap="showPopup" data-index="{{index}}" style="margin-left:{{(item.xqj-1)*100}}rpx;margin-top:{{(item.sksj-1)*100+5}}rpx;height:{{item.skcd*100-5}}rpx;background-color:{{colorArrays[index%6]}}">
-                    <!-- xqj代表星期几上课，sksj是上课时间，skcd上课长度，kcxx课程信息-->
-                    <!--？？？？？？？-->
-                    <!-- <van-popup
-                        show="{{ show }}"
-                        closeable
-                        close-icon="close"
-                        position="bottom"
-                        custom-style="height: 20%"
-                        @tap="onClose"
-                    >展示该课程详情</van-popup> -->
-
                     <view class="smalltext">{{item.kcxx}}</view>
                 </view>
                 </block>
@@ -167,6 +156,19 @@
         data= {
             show: false,
             colorArrays: ["#fdcb6e", "#ff7675","#74b9ff", "#a29bfe", "#2ecc71", "#00b894", "#fd79a8"],
+            courseList:[{
+                id:0,
+                courseCode:'',
+                courseName:'',
+                teacherName:'',
+                classInfo:''
+            }],
+            parseList:[{
+                weekday:0,      // xqj
+                startTime:0,    // sksj
+                duration:2,     // skcd
+                courseName:''  // kcxx包括课程名字，课程地点，教师名称 (5-14/二/6,7,8,9/学院路校区)
+            }],
             wlist: [
                 //上课长度全部默认为两节课
                 // xqj 星期几 一 七 映射至1-7
@@ -228,7 +230,72 @@
          */
         onLoad() {
             let that = this
-            that.checkCourseTable()
+            console.log("即将调用chectCourseTable")
+            let courseTblCache = wepy.getStorageSync('course')
+            if (courseTblCache) {
+                console.log("已经缓存过课表")
+            } else {
+                that.checkCourseTable()
+            }
+            let str = "(1-5/二/3,4/"
+            
+            var content = 'http://home.com/goods/detail.html?id=845';
+            var code1 = content.match(/\?id=(.*)/)[1];//取 ?id=后面所有字符串
+            var code2 = content.match(/id=(.*)/)[1];//取 id=后面所有字符串
+            var code3 = content.match(/id=(.*)/)[0]; //取 包含 id=及后面的字符串
+            console.log('?id= 后的内容为: '+code1);
+            console.log('id= 后的内容为: '+code2);
+            console.log('包含 id= 的所有内容为: '+code3);
+            // 手写循环处理字符串
+            var type = 0;   // 0: 
+            var week = ""
+            var weekday = ""
+            var duration = 2
+            var info = ""
+            // weekday:0,      // xqj
+            //     startTime:0,    // sksj
+            //     duration:2,     // skcd
+            //     courseName:'' 
+            for (let i = 0; i < str.length; ) {
+                const ele = str[i]; // 一个字符
+                // (1-16/五/3,4/学院路校区F207)
+                if(ele == '('){
+                    type = 1;
+                    i++;
+                    continue;
+                } else if ( type == 1 && that.isDigit(ele) && str[i+1] == '-') {
+                    while (str[i] != '/') {
+                        i++;
+                    }
+                    type = 2;
+                    continue;
+                } else if(type == 2 && str[i+1] == '/') {
+                    if (ele == '一') weekday = 1;
+                    else if (ele == '二') weekday = 2;
+                    else if (ele == '三') weekday = 3;
+                    else if (ele == '四') weekday = 4;
+                    else if (ele == '五') weekday = 5;
+                    else if (ele == '六') weekday = 6;
+                    else if (ele == '七') weekday = 7;
+                    i++;    // '/'
+                    type = 3;
+                } else if (type == 3 && that.isDigit(ele)) { // 
+                    let startTime = ele - '0'   // ascii 转化为数字
+                    while (str[i+1] != '/') {
+                        i++;
+                    }
+                    // 下一个是 / 那么当前就是这节课的最后一个数
+                    let endTime = str[i] - '0'
+                    duration = endTime-startTime+1;
+                    i++;
+                    break;
+                }
+                else if(str[i] == '/'){
+                    i++;
+                    continue;
+                }
+            }
+            console.log("提取：" + weekday + ", " + duration) // 星期和时长成功
 
         }
         onClose() {
@@ -245,33 +312,56 @@
         // 从数据库中获取课表，如果获取的课表为空，那么再用crawler爬取课表
         checkCourseTable(){ // 
             let that = this
+            console.log("正在调用chectCourseTable")
             that.userRequest(
-            '/api/user/course/'+that.schoolNum ,'get',//这里url后面加了code来决定请求什么，文档
+            '/api/user/course/17373291', 'get',// 暂时使用17373291 red的学号 that.schoolNum 
             {
-                
+                userId:17373291
             }, function(res) {
-                if(res.data.length) { // 返回数据分类讨论情况
+                console.log("查看课表进入function res")
+                if(res.data.length == 0) { // 返回数据分类讨论情况
                     wepy.showModal({
-                    title: '提示',
-                    content: '',
-                    success (res) {
-                        if (res.confirm) {
-                        console.log('用户点击确定')
-                        } else if (res.cancel) {
-                        console.log('用户点击取消')
+                        title: '提示',
+                        content: '',
+                        success (res) {
+                            if (res.confirm) {
+                                console.log('用户点击确定')
+                            } else if (res.cancel) {
+                                console.log('用户点击取消')
+                            }
                         }
-                    }
                     })
                 } else { // 返回一个完整的User实例
-               
+                    console.log(res.data)
+                    let classString = res.data[0].classInfo
+                    that.courseList = res.data
+                    that.$apply()
+                    console.log(classString)
+                    that.parseClassInfo()
                 }                
              }
             )
 
         }
 
-        
+        parseClassInfo(){
+            console.log("开始解析课程信息")
+            let that = this
+            for (let i = 0; i < that.courseList.length; i++) { // 
+                let element = that.courseList[i];
+                console.log(element)
+            }
+            // TODO：解析完之后缓存一下解析好的html能直接用的课表格式
+        }
 
+        isDigit(value) {
+            var patrn = /^[0-9]*$/;
+            if (patrn.exec(value) == null || value == "") {
+                return false
+            } else {
+                return true
+            }
+        }
        
     }
 </script>
