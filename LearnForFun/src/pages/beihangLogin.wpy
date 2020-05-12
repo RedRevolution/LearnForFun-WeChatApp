@@ -1,0 +1,36 @@
+<style lang="less">
+
+</style>
+<template>
+    <view>
+       
+    </view>
+
+</template>
+<script>
+    import wepy from 'wepy'
+    import wxCommon from '../mixins/wxCommon'
+
+    export default class beihangLogin extends wepy.page {
+        config = {
+            navigationBarTitleText: '北航统一认证登录'
+        }
+        mixins = [wxCommon]
+        data = {
+            userId: '',
+            userName: ''
+        }
+        methods = {}
+        async onLoad(options) {
+            let that = this;
+            
+        }
+
+        onShow() {
+            let that = this
+           
+        }
+
+
+    }
+</script>
