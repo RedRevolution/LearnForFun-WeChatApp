@@ -138,12 +138,7 @@ export default class Me extends wepy.page {
       console.log("点击进到me页面："+ that.realName + ", 学号：" + that.schoolNum + ", openid: " + that.openId);
   }
 
-  // 慎用这个爬虫！爬教务太多次IP会被封
-  crawler(){
-    // 导入个人课表
-    // GET /api/user/course/{userId}/{usr}/{pwd}
-      
-  }
+
 
 }
 </script>

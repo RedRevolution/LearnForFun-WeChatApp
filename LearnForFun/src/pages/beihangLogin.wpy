@@ -2,8 +2,32 @@
 
 </style>
 <template>
+    <view style="text-align:center"><van-cell title="{{word}}"/></view>
     <view>
-       
+        <van-cell-group>
+            <van-field
+                    value="{{usr}}"
+                    required
+                    clearable
+                    label="账号"
+                    placeholder="输入账号"
+                    @input="inputUsr"
+            />
+
+
+            <van-field
+                    value="{{pwd}}"
+                    required
+                    label="密码"
+                    type="password"
+                    clearable
+                    placeholder="输入密码"
+                    @input="inputPwd"
+            />
+        </van-cell-group>
+        <van-cell/>
+        <van-button type="info" block round @tap="crawler">登录</van-button>
+
     </view>
 
 </template>
@@ -11,19 +35,69 @@
     import wepy from 'wepy'
     import wxCommon from '../mixins/wxCommon'
 
-    export default class beihangLogin extends wepy.page {
+    export default class BeihangLogin extends wepy.page {
         config = {
             navigationBarTitleText: '北航统一认证登录'
         }
         mixins = [wxCommon]
         data = {
+            word:'登录北航统一认证，获取课表并加入官方课程群组',
             userId: '',
-            userName: ''
+            usr:'',
+            pwd:''
         }
-        methods = {}
-        async onLoad(options) {
+        methods = {
+            inputUsr(e){
+                this.usr=e.detail
+                this.$apply()
+            },
+            inputPwd(e){
+                this.pwd=e.detail
+                this.$apply()
+            }
+        }
+        // 慎用这个爬虫！爬教务太多次IP会被封
+        crawler(){
+            let that = this
+            wx.showLoading({
+                title: '加载中',
+            })
+            console.log('待提交userId'+that.userId)
+            console.log('待提交usr'+that.usr+' 待提交pwd'+that.pwd)
+            // 导入个人课表
+            // GET /api/user/course/{userId}/{usr}/{pwd}
+            that.userRequest(
+                '/api/user/course/'+that.userId+'/'+that.usr+'/'+that.pwd,'get',
+                {
+                },function (res) {
+                    if(res.data =="success") {
+                        wx.hideLoading();
+                        console.log("统一认证成功，已获取课表和加入官方课程群组")
+                        wx.navigateBack()
+                        wx.showModal({
+                            title:'提示',
+                            content: '已成功获取课表并加入官方群组，请前往相应页面查看',
+                            showCancel: false
+                        })
+                    }
+                    else if(res.data =="failure"){
+                        wx.hideLoading();
+                        console.log("统一身份认证失败")
+                        wx.showModal({
+                            title: '登录失败' ,
+                            //content:'请检查账号密码',
+                            showCancel: false
+                        })
+                    }
+
+                }
+            )
+
+        }
+        async onLoad() {
             let that = this;
-            
+            that.userId = wepy.getStorageSync("schoolNum");
+            console.log("学号："+that.userId)
         }
 
         onShow() {
