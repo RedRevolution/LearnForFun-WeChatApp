@@ -155,6 +155,7 @@
         mixins = [wxCommon]
         data= {
             show: false,
+            schoolNum:0,
             colorArrays: ["#fdcb6e", "#ff7675","#74b9ff", "#a29bfe", "#2ecc71", "#00b894", "#fd79a8"],
             courseList:[{
                 id:0,
@@ -163,12 +164,6 @@
                 teacherName:'',
                 classInfo:''
             }],
-            parseList:[{
-                weekday:0,      // xqj
-                startTime:0,    // sksj
-                duration:2,     // skcd
-                courseName:''  // kcxx包括课程名字，课程地点，教师名称 (5-14/二/6,7,8,9/学院路校区)
-            }],
             wlist: [
                 //上课长度全部默认为两节课
                 // xqj 星期几 一 七 映射至1-7
@@ -176,47 +171,17 @@
                 // skcd 上课长度
                 // kcxx 课程信息：名字+周数
                 { "xqj": 1, "sksj": 1, "skcd":2, "kcxx": "高等数学 教学楼0218 1~16周"},
-                { "xqj": 1, "sksj": 3, "skcd": 2, "kcxx": ""},
-                { "xqj": 1, "sksj": 6, "skcd": 2, "kcxx": ""},
                 { "xqj": 1, "sksj": 8, "skcd": 2, "kcxx":"大学英语 教学楼0318 1~16周"},
-                { "xqj": 1, "sksj": 10, "skcd": 2, "kcxx": "" },
-                { "xqj": 1, "sksj": 12, "skcd": 2, "kcxx": "" },
-                { "xqj": 2, "sksj": 1, "skcd": 2, "kcxx": "" },
-                { "xqj": 2, "sksj": 3, "skcd": 2, "kcxx": "计算机基础 教学楼0210 1~16周" },
-                { "xqj": 2, "sksj": 6, "skcd": 2, "kcxx": "C语言 教学楼0402 1~16周" },
-                { "xqj": 2, "sksj": 8, "skcd": 2, "kcxx": "" },
-                { "xqj": 2, "sksj": 10, "skcd": 2, "kcxx": "" },
-                { "xqj": 2, "sksj": 12, "skcd": 2, "kcxx": "" },
-                { "xqj": 3, "sksj": 1, "skcd": 2, "kcxx": "" },
-                { "xqj": 3, "sksj": 3, "skcd": 2, "kcxx": "C语言实验课 实验楼0216 4~12周" },
+                // { "xqj": 2, "sksj": 3, "skcd": 2, "kcxx": "计算机基础 教学楼0210 1~16周" },
+                // { "xqj": 2, "sksj": 6, "skcd": 2, "kcxx": "C语言 教学楼0402 1~16周" },
+                // { "xqj": 3, "sksj": 3, "skcd": 2, "kcxx": "C语言实验课 实验楼0216 4~12周" },
                 { "xqj": 3, "sksj": 6, "skcd": 2, "kcxx": "数据结构 教学楼0306 1~16周" },
-                { "xqj": 3, "sksj": 8, "skcd": 2, "kcxx": "" },
-                { "xqj": 3, "sksj": 10, "skcd": 2, "kcxx": "" },
                 { "xqj": 3, "sksj": 13, "skcd": 2, "kcxx": "计网实验 实验楼0306 5～10周" },
                 { "xqj": 4, "sksj": 1, "skcd": 2, "kcxx": "高等数学 教学楼0218 1~16周" },
-                { "xqj": 4, "sksj": 3, "skcd": 2, "kcxx": "" },
                 { "xqj": 4, "sksj": 6, "skcd": 2, "kcxx": "乒乓球 体育馆一楼 1~16周" },
                 { "xqj": 4, "sksj": 8, "skcd": 2, "kcxx": "数据结构实验课 实验楼0216 4~16周" },
                 { "xqj": 4, "sksj": 11, "skcd": 2, "kcxx": "选修课 综实楼0504 1~16周" },
-                { "xqj": 4, "sksj": 12, "skcd": 2, "kcxx": "" },
-                { "xqj": 5, "sksj": 1, "skcd": 2, "kcxx": "" },
-                { "xqj": 5, "sksj": 3, "skcd": 2, "kcxx": "软件工程 教学楼0403 1~16周" },
-                { "xqj": 5, "sksj": 6, "skcd": 2, "kcxx": "" },
-                { "xqj": 5, "sksj": 8, "skcd": 2, "kcxx": "" },
-                { "xqj": 5, "sksj": 10, "skcd": 2, "kcxx": "" },
-                { "xqj": 5, "sksj": 12, "skcd": 2, "kcxx": "" },
-                { "xqj": 6, "sksj": 1, "skcd": 2, "kcxx": "" },
-                { "xqj": 6, "sksj": 3, "skcd": 2, "kcxx": "" },
-                { "xqj": 6, "sksj": 6, "skcd": 2, "kcxx": "" },
-                { "xqj": 6, "sksj": 8, "skcd": 2, "kcxx": "" },
-                { "xqj": 6, "sksj": 10, "skcd": 2, "kcxx": "" },
-                { "xqj": 6, "sksj": 12, "skcd": 2, "kcxx": "" },
-                { "xqj": 7, "sksj": 1, "skcd": 2, "kcxx": "" },
-                { "xqj": 7, "sksj": 3, "skcd": 2, "kcxx": "" },
-                { "xqj": 7, "sksj": 6, "skcd": 2, "kcxx": "" },
-                { "xqj": 7, "sksj": 8, "skcd": 2, "kcxx": "" },
-                { "xqj": 7, "sksj": 10, "skcd": 2, "kcxx": "" },
-                { "xqj": 7, "sksj": 12, "skcd": 2, "kcxx": "" }
+                { "xqj": 5, "sksj": 3, "skcd": 2, "kcxx": "软件工程 教学楼0403 1~16周" }
             ]
         }
         showCardView(e) {
@@ -230,72 +195,15 @@
          */
         onLoad() {
             let that = this
+            that.schoolNum = wepy.getStorageSync("schoolNum")
             console.log("即将调用chectCourseTable")
             let courseTblCache = wepy.getStorageSync('course')
-            if (courseTblCache) {
+            if (courseTblCache) {   // 考虑课表会有变化，暂时不实现缓存，每次都调用check请求
                 console.log("已经缓存过课表")
             } else {
                 that.checkCourseTable()
             }
-            let str = "(1-5/二/3,4/"
             
-            var content = 'http://home.com/goods/detail.html?id=845';
-            var code1 = content.match(/\?id=(.*)/)[1];//取 ?id=后面所有字符串
-            var code2 = content.match(/id=(.*)/)[1];//取 id=后面所有字符串
-            var code3 = content.match(/id=(.*)/)[0]; //取 包含 id=及后面的字符串
-            console.log('?id= 后的内容为: '+code1);
-            console.log('id= 后的内容为: '+code2);
-            console.log('包含 id= 的所有内容为: '+code3);
-            // 手写循环处理字符串
-            var type = 0;   // 0: 
-            var week = ""
-            var weekday = ""
-            var duration = 2
-            var info = ""
-            // weekday:0,      // xqj
-            //     startTime:0,    // sksj
-            //     duration:2,     // skcd
-            //     courseName:'' 
-            for (let i = 0; i < str.length; ) {
-                const ele = str[i]; // 一个字符
-                // (1-16/五/3,4/学院路校区F207)
-                if(ele == '('){
-                    type = 1;
-                    i++;
-                    continue;
-                } else if ( type == 1 && that.isDigit(ele) && str[i+1] == '-') {
-                    while (str[i] != '/') {
-                        i++;
-                    }
-                    type = 2;
-                    continue;
-                } else if(type == 2 && str[i+1] == '/') {
-                    if (ele == '一') weekday = 1;
-                    else if (ele == '二') weekday = 2;
-                    else if (ele == '三') weekday = 3;
-                    else if (ele == '四') weekday = 4;
-                    else if (ele == '五') weekday = 5;
-                    else if (ele == '六') weekday = 6;
-                    else if (ele == '七') weekday = 7;
-                    i++;    // '/'
-                    type = 3;
-                } else if (type == 3 && that.isDigit(ele)) { // 
-                    let startTime = ele - '0'   // ascii 转化为数字
-                    while (str[i+1] != '/') {
-                        i++;
-                    }
-                    // 下一个是 / 那么当前就是这节课的最后一个数
-                    let endTime = str[i] - '0'
-                    duration = endTime-startTime+1;
-                    i++;
-                    break;
-                }
-                else if(str[i] == '/'){
-                    i++;
-                    continue;
-                }
-            }
-            console.log("提取：" + weekday + ", " + duration) // 星期和时长成功
 
         }
         onClose() {
@@ -314,15 +222,15 @@
             let that = this
             console.log("正在调用chectCourseTable")
             that.userRequest(
-            '/api/user/course/17373291', 'get',// 暂时使用17373291 red的学号 that.schoolNum 
+            '/api/user/course/'+that.schoolNum , 'get',
             {
-                userId:17373291
+                userId:that.schoolNum
             }, function(res) {
-                console.log("查看课表进入function res")
+                console.log("查看课表进入function res" + res.data)
                 if(res.data.length == 0) { // 返回数据分类讨论情况
                     wepy.showModal({
                         title: '提示',
-                        content: '',
+                        content: '返回的课表为空',
                         success (res) {
                             if (res.confirm) {
                                 console.log('用户点击确定')
@@ -333,10 +241,10 @@
                     })
                 } else { // 返回一个完整的User实例
                     console.log(res.data)
-                    let classString = res.data[0].classInfo
+                    // let classString = res.data[0].classInfo
                     that.courseList = res.data
-                    that.$apply()
-                    console.log(classString)
+                    that.$apply()   // 存下当前courseList
+                    // console.log(classString)
                     that.parseClassInfo()
                 }                
              }
@@ -347,9 +255,100 @@
         parseClassInfo(){
             console.log("开始解析课程信息")
             let that = this
-            for (let i = 0; i < that.courseList.length; i++) { // 
-                let element = that.courseList[i];
-                console.log(element)
+            for (let index = 0; index < 1; index++) { // that.courseList.length
+                let element = that.courseList[index];
+                var courseName = element.courseName
+                var teacherName = element.teacherName
+                var courseCode = element.courseCode
+                console.log(courseName + ", " + teacherName + ", " + courseCode)
+
+                console.log(element.classInfo)
+                // 一条classInfo可能包含好几个段，比如不同周，不同开始时间，不同上课地点，拆分后组装层
+                let classInfo = "[1-9/二/1,2/学院路校区][1-9/四/3,4/学院路校区(一)301]" //  element.classInfo
+                let segment = classInfo.split("]")
+                for (var seg = 0; seg < segment.length-1; seg++) {  // 为什么这里居然要length-1否则会多执行一次循环
+                    var onestr = segment[seg];
+                    console.log("第 " + seg + "部分: " + onestr)
+                    // 手写循环处理字符串
+                    var type = 0;   // 0: 
+                    var weekday = ""
+                    var startTime = 0
+                    var duration = 2
+                    var info = ""
+                    var startWeek = 1
+                    let str = segment[seg]
+                    // 该for循环只处理一个segment
+                    for (let i = 0; i < str.length; ) {
+                        var ele = str[i]; // 一个字符
+                        if(ele == '/'){
+                            i++;
+                            // console.log("遇到/ 跳过")
+                            continue;
+                        } else if(ele == '['){
+                            type = 1;
+                            i++;
+                            // console.log("遇到左括号")
+                            continue;
+                        } else if ( type == 1 && that.isDigit(ele)) { // 1-9, 16 不一定会有短斜杠 -
+                            while (str[i+1] != '/') {
+                                i++;
+                            } // str[i+1] == '/'
+                            type = 2;
+                            i++;
+                            continue;
+                        } else if(type == 2 && str[i+1] == '/') {
+                            if (ele == '一') weekday = 1;
+                            else if (ele == '二') weekday = 2;
+                            else if (ele == '三') weekday = 3;
+                            else if (ele == '四') weekday = 4;
+                            else if (ele == '五') weekday = 5;
+                            else if (ele == '六') weekday = 6;
+                            else if (ele == '日' || ele == '七') weekday = 7;
+                            i++;    // '/'
+                            type = 3;
+                            // console.log("提取出weekday: " + weekday)
+                        } else if (type == 3 && that.isDigit(ele)) { // 
+                            startTime = ele - '0'   // ascii 转化为数字
+
+                            while (str[i+1] != '/') {
+                                i++;
+                            }
+                            // 下一个是 / 那么当前就是这节课的最后一个数
+                            let endTime = str[i] - '0'
+                            duration = endTime-startTime+1;
+                            i++;
+                            type = 4;
+                            // console.log("提取出startTime: "+ startTime + ", duration: " + duration)
+                            continue;
+                        } else if (type == 4) {
+                            let startChar = i
+                            while (str[i+1] != ']' && i < str.length) { // [1-16/一/3,4/学院路校区
+                                i++;
+                            }
+                            // str[i] 为最后一个汉字
+                            let endChar = i
+                            info = str.substring(startChar, endChar)
+                            // console.log("提取出 classInfo: " + info)
+                            i++;
+                            type = 5;
+                            continue;
+                        } else if (ele == ']' || type == 5) {
+                            console.log("遇到反括号结束或type == 5结束，换下一个segment")
+                            break;
+                        }
+                    }
+                    console.log("提取一个segment：星期" + weekday + ", 从第" + startTime + "节开始, 节数：" + duration + ", info: " + info) // 星期和时长成功
+                    // TODO: 提取segment之后做成wlist相同格式，并用concat拼接到后面
+                    let oneList = [{
+                        "xqj": weekday,     // 星期几
+                        "sksj": startTime,  // 上课时间 开始是第几节课
+                        "skcd":duration,    // 上课长度(通常为2节，或者4节)
+                        "kcxx": courseName + " " + info    // 课程名字，地点，周数，（教师名字？？）" 1~16周"
+                    }]
+                    console.log(oneList)
+                    that.wlist = that.wlist.concat(oneList)
+                    that.$apply()
+                }
             }
             // TODO：解析完之后缓存一下解析好的html能直接用的课表格式
         }
