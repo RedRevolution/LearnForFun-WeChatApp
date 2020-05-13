@@ -26,11 +26,23 @@
       bind:click-right="gotoJoin"
       safe-area-inset-top="false"
   />
+  <van-cell value="快来撩我嘤嘤" icon="shop-o" is-link size="large" @tap="enterRobot">
+    <view slot="title">
+      <view class="van-cell-text">小趣聊天机器人</view>
+      <van-tag type="danger">你的智能助手</van-tag>
+    </view>
+  </van-cell>
   <!-- 这个页面为群组聊天页面首页，点击tarbar第一个“群聊”即可看到此页面 -->
   <!-- 群组列表 注意传参 "自建群组/官方群组"使用三元表达式看groupId的开头是什么字母-->
     <repeat for="{{grouplist}}" item="item">
+      <view wx:if="{{item.groupId[0] == 'I'}}">
         <van-cell title="{{item.groupName}}" value="自建群组" size="large" label="{{item.groupIntrod}}"
          data-groupid="{{item.groupId}}" data-groupname="{{item.groupName}}" is-link @tap="enterGroupchat"/>
+      </view>
+      <view wx:else>
+        <van-cell title="{{item.groupName}}" value="官方群组" size="large" label="{{item.groupIntrod}}"
+         data-groupid="{{item.groupId}}" data-groupname="{{item.groupName}}" is-link @tap="enterGroupchat"/>
+      </view>
     </repeat>
  
 </template>
@@ -181,6 +193,11 @@
               // 通过eventChannel向被打开页面传送数据
               res.eventChannel.emit('acceptDataFromOpenerPage', { data: 'test' })
             }
+        })
+      },
+      enterRobot(){
+        wx.navigateTo({ // 不能用 redirectTo
+            url: '/pages/robot'
         })
       }
       

@@ -1,7 +1,7 @@
 <style lang="less">
   .page {
     // position: fixed;
-    height: 100vh;
+    // height: 100vh;
     // width: 100vw;
     // background-color: #f7f7f7;
     box-sizing:border-box
@@ -30,6 +30,14 @@
   flex-direction: column;
   align-items: center;
 }
+
+// .chat {
+//   width: 300px;
+//   border: solid 1px #EEE;
+//   display: flex;
+//   flex-direction: column;
+//   padding: 10px;
+// }
 
 .messages {
   margin-top: 30px;
@@ -129,9 +137,7 @@
 <template>
   
   <view class="page">
-    <van-button type="normal" block @tap="enterGroupInfo">查看群详情</van-button>
-    
-    <scroll-view class="chats" scroll-y="true" style="height:{{height-160}}px;" scroll-top="{{scrollTop}}">
+    <scroll-view class="chats" scroll-y="true" style="height:{{height-100}}px;" scroll-top="{{scrollTop}}">
       <repeat for="{{chats}}" item="item" id="item{{index}}">
         <!-- <view style="font-size: 20rpx;color: #ababab">{{item.time}}</view> -->
         
@@ -181,15 +187,12 @@
 <script>
   import wepy from 'wepy'
   import wxCommon from '../mixins/wxCommon'
-  // 监听是否打开的状态量
-  // 页面逻辑代码部分
-  // 页面注释，进入这个页面的时候应当发送ajax请求，使得在列表能列出最近的群组消息和群名字
-  // 点击某一个群组进去会建立websocket连接
-  let socketOpen = false    //页面全局变量，默认值为false
-  export default class chat extends wepy.page {
+import { transition } from '../components/vant/mixins/transition';
+  
+  export default class robot extends wepy.page {
     components = {}
     config = {
-      navigationBarTitleText: '群聊'
+      navigationBarTitleText: '聊天机器人'
     }
     data = {
       height:'',
@@ -198,8 +201,6 @@
       say: '',
       realName: '',
       schoolNum: '',
-      groupId:'', // groupId是一个字符串，O开头官方，I开头自创
-      groupName:'',
       chats: [{
         time: '聊天开始',  // 最顶部的小字
         text: '',
@@ -223,72 +224,45 @@
       },
       // 自己发送一条消息，服务器会返回一条一样的，这个我说的就显示为右侧的气泡
       sendMessage() {
-        if(this.say.length == 0) {
+        let that = this
+        let sendmsg = that.say
+        if(sendmsg.length == 0) {
           wx.showToast({
             title: '不允许发送空消息',
             icon: 'none',
             duration: 2000
           })
         } else {
+        that.scrollTop =  that.scrollTop + 4000
           let time = new Date()
-          let that = this
-          that.scrollTop =  that.scrollTop + 4000
-          that.handleSendMessage()
+          that.chats = that.chats.concat([{
+            time: time.toLocaleTimeString(), 
+            text: sendmsg,
+            name: that.realName
+          }])
+          that.userRequest(
+            '/api/xiaoqu/' + sendmsg ,'get',
+            {
+
+            }, function(res) {
+                console.log("小趣说：" + res.data)
+                that.chats = that.chats.concat([{
+                    time: time.toLocaleTimeString(), 
+                    text: res.data,
+                    name: "小趣"
+                }])
+                that.$apply()
+                that.scrollTop =  that.scrollTop + 4000
+                that.$apply()
+                wepy.setStorageSync("robotrec", JSON.stringify(that.chats))
+                console.log("此时chats:" + that.chats)
+            }
+          )
           that.say = '' // 用于清空输入框
           that.$apply()
         }
         
-      },
-      enterGroupInfo(e){
-        let that = this
-        wx.navigateTo({ // 不能用 redirectTo
-            url: '/pages/groupInfo?groupId='+that.groupId+'&groupName='+that.groupName, // ?id=2020&time=20200309
-            events: {
-              // 为指定事件添加一个监听器，获取被打开页面传送到当前页面的数据
-              acceptDataFromOpenedPage: function(data) {
-                console.log(data)
-              },
-              someEvent: function(data) {
-                console.log(data)
-              }
-            },
-            success: function(res) {
-              // 通过eventChannel向被打开页面传送数据
-              res.eventChannel.emit('acceptDataFromOpenerPage', { data: 'test' })
-            }
-        })
       }
-    }
-
-    // 启动一个socket
-    startSocket() {
-      wx.connectSocket({
-        url: 'wss://learn.wsscloud.cn/webSocket/' + this.groupId
-        // {groupId}测试时群号暂时使用123456
-        
-      })
-      console.log("即将启动一个socket，人员：" + this.realName)
-    }
-
-    // 初始化要是连接成功了应当先查收消息，所以先调用receiveMessage
-    wssInit() {
-      const that = this
-      this.startSocket()    // 先用学号姓名建立连接，测试暂时连接可以成功
-      // 链接失败显示
-      wx.onSocketError(function (res) {
-        socketOpen = false
-        console.log('WebSocket连接打开失败，请检查！', res)   //每隔两秒钟就重新发一次
-        setTimeout(() => {    // 可延时回调
-          that.startSocket()
-        }, 2000)
-      })
-      // 监听连接成功
-      wx.onSocketOpen(function (res) {
-        socketOpen = true                 
-        console.log('WebSocket连接已打开！Res: ' + res)
-        //  接收服务器的信息
-        that.receiveMessage()
-      })
     }
 
     // 接收服务器的消息
@@ -311,8 +285,9 @@
                 name: tmpName[0]
             }])
             that.$apply()
-            that.scrollTop =  that.scrollTop + 4000
-            that.$apply()
+            
+            // 为了自动返回底部
+            // 每收到一条消息就缓存一下
             wepy.setStorageSync(that.groupId+"rec", JSON.stringify(that.chats))
             console.log("此时chats:" + that.chats)
             
@@ -327,101 +302,31 @@
       }
     }
 
-    // 向服务器发送消息
-    handleSendMessage() {
-      const that = this
-      console.log('尝试向服务器发送消息：' + that.say)
-      // 要先检查是否还是连通的才可以发送消息, wx是否换成wepy
-      // 链接失败显示
-      wx.onSocketError(function (res) {
-        socketOpen = false
-        console.log('准备向服务器发送消息时：WebSocket连接打开失败，请检查！', res)   //每隔两秒钟就重新发一次
-        setTimeout(() => {    // 可延时回调
-          that.startSocket()
-        }, 2000)
-      })
-      // 监听连接成功 注意，这两个函数除了第一次建立连接的时候会进行，这里写起来并不会再次执行这个函数，尚无解决方法
-      wx.onSocketOpen(function (res) {
-        socketOpen = true                 
-        console.log('准备向服务器发送消息时：WebSocket连接已打开！', res)
-      })
-      if (socketOpen) {
-        console.log('socket is open! 可以发送！' + that.say)
-        var msg = {
-            content: that.say,
-            userId:that.schoolNum,
-            userName:that.realName
-          }
-        wx.sendSocketMessage({
-          // data: that.say  // 短消息都是string不用json格式
-          data: JSON.stringify(msg)
-        })
-      }
-    }
 
-    events = {}
-
-    loadChatsRec(){
-      // 第一次进入页面的时候加载
+    // 页面加载函数启动socket连接，当连接成功后，回复socket连接成功并且调用接收服务器
+    onLoad(options) {
       let that = this
-      let record = wepy.getStorageSync(that.groupId+"rec")
+      that.height = wx.getSystemInfoSync().windowHeight
+      that.width = wx.getSystemInfoSync().windowWidth
+
+      that.realName = wepy.getStorageSync('realName')
+      that.schoolNum = wepy.getStorageSync('schoolNum')
+
+      let record = wepy.getStorageSync("robotrec")
       let cache = JSON.parse(record)
       console.log("进入页面加载的缓存："+JSON.parse(record))
       
       that.chats = cache
       that.$apply()
-    }
-
-    getGroupInfo(){ // /api/group/{groupId}
-      let that = this
-      that.userRequest(
-        '/api/group/'+that.groupId ,'get', 
-        {             
-        }, function(res) {
-           console.log('获取该群信息', res)
-           wepy.setStorageSync(that.groupId, res.data)  // 全局缓存群组信息
-         } 
-      )
-    }
-    // 页面加载函数启动socket连接，当连接成功后，回复socket连接成功并且调用接收服务器
-    onLoad(options) {
-      const that = this
-      that.height = wx.getSystemInfoSync().windowHeight
-      that.width = wx.getSystemInfoSync().windowWidth
-      // onload
-      that.realName = wepy.getStorageSync('realName')
-      that.schoolNum = wepy.getStorageSync('schoolNum')
-      // 延迟启动socket
-      setTimeout(() => {
-        that.wssInit() //  wepy.onSocketOpen即为连接成功，会把socketOpen变量设置为true
-      }, 2000)
-      that.groupId = options.groupId  // 后面groupId还要用于请求websocket连接
-      that.groupName = options.groupName
-      wx.setNavigationBarTitle({
-        title: options.groupName // 在顶部显示群名
-      })
-      console.log("进入了群聊！groupId为 " + this.groupId+", groupName为 " + this.groupName);  // 传进来的参数是groupId, groupName
-      that.getGroupInfo() 
-      that.loadChatsRec()
+      
     }
 
     onShow(){
-      const that = this
-      // onload
-      that.realName = wepy.getStorageSync('realName')
-      that.schoolNum = wepy.getStorageSync('schoolNum')
-      wx.setNavigationBarTitle({
-        title: that.groupName 
-      })
+      
     }
 
     onUnload(){
-      console.log("群聊页面被onUnload了，暂时关掉websocket连接")
-      wx.closeSocket()
-
-      wx.onSocketClose(function(res) {
-        console.log('WebSocket 已关闭！')
-      })
+      
     }
 
   }
