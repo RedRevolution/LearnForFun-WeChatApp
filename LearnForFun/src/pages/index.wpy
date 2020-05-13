@@ -20,8 +20,8 @@
   </view> 
   <van-nav-bar
       title="我的群聊"
-      left-text="创建群聊"
-      right-text="加入群聊"
+      left-text="创建群组"
+      right-text="加入群组"
       bind:click-left="gotoCreate"
       bind:click-right="gotoJoin"
       safe-area-inset-top="false"
@@ -49,6 +49,10 @@
   <view wx:else>
   <!-- nothing -->
   </view>
+  <block wx:if="{{nickName}}">
+
+  </block>
+
 </template>
 
 <script>
@@ -195,8 +199,27 @@
     onClose() {
       this.show = false
     }
-    
-    
+
+    popLogin() {
+      let that = this
+      //未登录，弹窗
+      if(!that.nickName) {
+        console.log('用户未登录')
+        wx.showModal({
+          title:'提示',
+          content:'登录后使用更多功能',
+          confirmText:'跳转登录',
+          success (res) {
+            if (res.confirm) {
+              console.log('用户点击跳转登录')
+              wx.navigateTo({
+                url:'/pages/userlogin'
+              })
+            }
+          }
+        })
+      }
+    }
     async onLoad() {
       let self = this
       let that = this
@@ -208,7 +231,7 @@
 
       // 这里要补充：进到该页面时要发送请求获取已经加入的群
       that.getGroupList();  // 调用函数时要写 that. 否则可能会报错 not defined
-      
+      that.popLogin();
     }
 
     onShow(){

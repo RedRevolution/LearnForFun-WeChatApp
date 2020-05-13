@@ -8,7 +8,7 @@
   box-sizing: border-box;
 }
 .userbox {
-    padding-bottom: 30rpx;
+    padding-bottom: 130rpx;
     min-height: 410rpx;
 }
 .userinfo {
@@ -48,16 +48,17 @@
     <view class ="userbox">
     <view class = "userinfo">
       <block wx:if="{{nickName}}">
-        <view class="header_content">
-            <van-image
-              round
-              width="10rem"
-              height="10rem"
-              src="{{ avatarUrl }}"
-            />
-          <view class="nickName">微信名：{{ nickName }}</view>
-          <view>学号：{{schoolNum}}</view>
-          <view>姓名：{{realName}}</view>
+        <view class="useravatar">
+            <!--<van-image-->
+              <!--round-->
+              <!--width="10rem"-->
+              <!--height="10rem"-->
+              <!--src="{{ avatarUrl }}"-->
+            <!--/>-->
+          <image src="{{ avatarUrl }}" mode="aspectFill"></image>
+          <view class="userlogin">微信名：{{ nickName }}</view>
+          <view class="userlogin">学号：{{schoolNum}}</view>
+          <view class="userlogin">姓名：{{realName}}</view>
           <view class = "container">
             <view class="userlogin">
               <navigator url="/pages/bindschoolnum"><van-button plain type="info">跳转到绑定学号界面</van-button></navigator>
@@ -78,12 +79,15 @@
   <view class="listbox">
       
       <view>
-        <van-cell title="我的日程" is-link  link-type="navigateTo"
-          url="/pages/schedule" />
-        <van-cell title="我的收藏" is-link  link-type="navigateTo"
-                  url="/pages/collection" />
-        <van-cell title="关于" is-link  link-type="navigateTo"
-              url="/pages/favorite" />
+        <!--<van-cell title="我的日程" is-link  link-type="navigateTo"-->
+          <!--url="/pages/schedule" />-->
+
+        <!--功能待开启-->
+
+        <!--<van-cell title="我的收藏" is-link  link-type="navigateTo"-->
+                  <!--url="/pages/collection" />-->
+        <!--<van-cell title="关于" is-link  link-type="navigateTo"-->
+              <!--url="/pages/favorite" />-->
         <van-cell title="从教务导入课表" is-link  link-type="navigateTo"
               url="/pages/beihangLogin" />
       </view>
@@ -136,6 +140,7 @@ export default class Me extends wepy.page {
       that.schoolNum = wepy.getStorageSync('schoolNum')
       that.openId = wepy.getStorageSync('openid')
       console.log("点击进到me页面："+ that.realName + ", 学号：" + that.schoolNum + ", openid: " + that.openId);
+
   }
 
 

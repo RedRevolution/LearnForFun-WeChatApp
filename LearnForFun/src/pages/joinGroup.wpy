@@ -43,7 +43,7 @@
     <van-tag plain type="primary">群组名</van-tag>
     <van-tag plain type="primary">创建者名</van-tag>
     <van-tag plain type="primary">课程代码</van-tag>
-    
+    <van-cell/>
     <van-button type="info" block round @tap="searchGroup">搜索群组</van-button>
 
     </van-cell-group>

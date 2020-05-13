@@ -1,4 +1,5 @@
 <style lang="less">
+    @import "../templates/nodata/nodata.wxss";
     .container {
         height: 100%;
         display: flex;
@@ -26,6 +27,8 @@
     }
 </style>
 <template>
+    <import src="../templates/nodata/nodata.wxml" />
+
     <view style="text-align: center">
         <van-cell title="点我弹出日历" value="{{ date }}" bind:click="onDisplay"/>
         <van-calendar show="{{ show }}" bind:close="onClose" bind:confirm="onConfirm"/>
@@ -39,8 +42,9 @@
                 </repeat>
         </view>
         <view wx:else>
-        <!-- nothing -->
+            <template is="jiangqie_nodata" />
         </view>
+
 
     </view>
 
