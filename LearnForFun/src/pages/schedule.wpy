@@ -31,11 +31,17 @@
         <van-calendar show="{{ show }}" bind:close="onClose" bind:confirm="onConfirm"/>
     </view>
     <view>
-        <repeat for="{{todolist}}" item="item">
-        <van-cell title="{{item.content}}" size="large" label="{{item.deadline}}">
-            <van-icon name="edit"  size="46rpx" @tap="handleEditTodo" data-timetable = "{{item}}"/>
-        </van-cell>
-        </repeat>
+        <view wx:if="{{todolist.length > 0}}">
+                <repeat for="{{todolist}}" item="item">
+                <van-cell title="{{item.content}}" size="large" label="{{item.deadline}}">
+                    <van-icon name="edit"  size="46rpx" @tap="handleEditTodo" data-timetable = "{{item}}"/>
+                </van-cell>
+                </repeat>
+        </view>
+        <view wx:else>
+        <!-- nothing -->
+        </view>
+
     </view>
 
     <view class="todo-add" @tap="handleAddTodo">+</view>
@@ -57,17 +63,7 @@
             date: '',
             schoolNum:'',
             todolist: [
-            //     {
-            //     "content": "写作业",
-            //     "deadline": "2020-02-02 22:22",
-            //
-            //
-            // },
-            //     {
-            //         "content": "写作业写作业",
-            //         "deadline": "2020-02-02 22:11",
-            //
-            //     }
+            
             ],
             show: false,
         };
