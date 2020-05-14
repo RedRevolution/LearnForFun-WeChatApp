@@ -60,7 +60,7 @@
         crawler(){
             let that = this
             wx.showLoading({
-                title: '加载中',
+                title: '大约需要45秒哦',
             })
             console.log('待提交userId'+that.userId)
             console.log('待提交usr'+that.usr+' 待提交pwd'+that.pwd)
