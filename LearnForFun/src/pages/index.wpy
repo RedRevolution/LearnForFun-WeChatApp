@@ -12,6 +12,7 @@
   .userinfo-nickname {
     color: #aaa;
   }
+
 </style>
 <template>
   <view class="userinfo" @tap="handleViewTap">
@@ -26,12 +27,14 @@
       bind:click-right="gotoJoin"
       safe-area-inset-top="false"
   />
-  <van-cell value="快来撩我嘤嘤" icon="shop-o" is-link size="large" @tap="enterRobot">
-    <view slot="title">
-      <view class="van-cell-text">小趣聊天机器人</view>
-      <van-tag type="danger">你的智能助手</van-tag>
-    </view>
-  </van-cell>
+  <view style="background-color:blue">
+    <van-cell value="快来撩我嘤嘤" icon="shop-o" is-link size="large" @tap="enterRobot">
+      <view slot="title">
+        <view class="van-cell-text">小趣聊天机器人</view>
+        <van-tag type="danger">你的智能助手</van-tag>
+      </view>
+    </van-cell>
+  </view>
   <!-- 这个页面为群组聊天页面首页，点击tarbar第一个“群聊”即可看到此页面 -->
   <!-- 群组列表 注意传参 "自建群组/官方群组"使用三元表达式看groupId的开头是什么字母-->
   <view wx:if="{{grouplist.length > 0}}">

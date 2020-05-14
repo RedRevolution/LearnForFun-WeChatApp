@@ -12,6 +12,7 @@
             <block wx:if="{{item.shareId[0]=='F'}}">
                 <van-cell title="{{item.topic}}" value="{{item.userName}}" size="large" label="{{item.content}}">
                 </van-cell>
+                <van-button plain size="small" @tap="copyUrl" data-text="{{item.content}}">复制URL</van-button>
                 <!--尝试按钮页面跳转-->
                 <!--<van-cell  value="{{item.userName}}" size="large">-->
                     <!--<view slot="title">-->
@@ -57,7 +58,7 @@
                 '/api/group/share/' + that.groupId, 'get',
                 {}, function (res) {  // 返回的是一个list? 里面全是Share实例
                     if (res.data.length == 0) {
-                        console.log("没有知识分享")
+                        console.log("没有资料分享")
                         that.sharelist = res.data
                         that.$apply()
                     } else {
@@ -68,6 +69,21 @@
                     }
                 }
             )
+        }
+        copyUrl(e){
+            console.log(e)
+            wx.setClipboardData({
+                data: e.currentTarget.dataset.text,
+                success: function (res) {
+                    wx.getClipboardData({
+                        success: function (res) {
+                            wx.showToast({
+                                title: '复制成功'
+                            })
+                        }
+                    })
+                }
+            })
         }
 
 
