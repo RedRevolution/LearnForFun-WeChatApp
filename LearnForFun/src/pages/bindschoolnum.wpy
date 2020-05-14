@@ -124,10 +124,22 @@ export default class Bind extends wepy.page {
                         })
                         // 返回“重复”时不应当进行缓存
                       } else if (res.data == 'success'){
-                          wepy.showModal({
-                            title: '提示',
-                            content: '绑定成功！你的姓名：' + that.realName + '\n你的学号：' + that.schoolNum
+                          wx.showModal({
+                            title: '绑定成功',
+                            content: '你的姓名：' + that.realName + '\n你的学号：' + that.schoolNum,
+                              success(sm){
+                                if(sm.confirm) {
+                                    console.log('用户点击确定')
+                                    wx.navigateBack()
+                                }
+                                else{
+                                    console.log('用户点击取消')
+
+                                }
+                              }
+
                           })
+
                           // 全局缓存
                           wepy.setStorageSync("schoolNum", that.schoolNum)
                           wepy.setStorageSync("realName", that.realName)
