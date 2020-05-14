@@ -13,7 +13,7 @@
   </view>
   <van-cell title="单元格" value="内容" label="描述信息" border="{{ false }}" />
   <view slot="footer">
-    <van-button size="normal">查看群成员</van-button>
+    <van-button size="normal" @tap="showGroupMember">查看群成员</van-button>
     <van-button size="normal" @tap='copyText' data-text="{{groupId}}">复制群ID</van-button>
   </view>
 </van-card>
@@ -127,6 +127,14 @@ export default class groupInfo extends wepy.page {
 
         
       }
+    }
+
+    showGroupMember(){
+      wx.showToast({
+        title: '此功能尚未开放哦～',
+        icon:'none',
+        duration:2000
+      })
     }
     
     enterFile(){
