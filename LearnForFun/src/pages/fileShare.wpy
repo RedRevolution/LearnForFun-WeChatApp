@@ -12,6 +12,13 @@
             <block wx:if="{{item.shareId[0]=='F'}}">
                 <van-cell title="{{item.topic}}" value="{{item.userName}}" size="large" label="{{item.content}}">
                 </van-cell>
+                <!--尝试按钮页面跳转-->
+                <!--<van-cell  value="{{item.userName}}" size="large">-->
+                    <!--<view slot="title">-->
+                        <!--<view class="van-cell-text">{{item.topic}}</view>-->
+                        <!--<van-button @tap="gotoURL" data-Url="{{item.content}}">点击此处跳转页面</van-button>-->
+                    <!--</view>-->
+                <!--</van-cell>-->
             </block>
         </repeat>
     </view>
@@ -36,6 +43,14 @@
         methods = {}
 
 
+        gotoURL(e){
+            console.log('跳转')
+            let Url= e.currentTarget.dataset.Url
+            console.log('跳转到'+Url)
+            wx.navigateTo({
+                url:'/pages/out?Url='+Url
+            })
+        }
         getShareList() {
             let that = this
             that.userRequest(

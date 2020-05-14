@@ -1,0 +1,18 @@
+<style>
+
+</style>
+<template>
+    <web-view src="{{Url}}"></web-view>
+</template>
+<script>
+    import wepy from 'wepy'
+    export default class Out extends wepy.page {
+        data={
+            Url:''
+        }
+        async onLoad(options){
+            let that = this
+            that.Url=options.Url
+        }
+    }
+</script>

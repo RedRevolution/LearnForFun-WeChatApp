@@ -27,7 +27,7 @@
     <view style="margin-top: 8rpx;margin-left:10rpx">
         <text style="color:grey;margin-bottom: 8rpx">分享类型</text>
         <van-radio-group value="{{ radio }}" bind:change="onChange">
-            <van-radio name="F">资料</van-radio>
+            <van-radio name="F">资料（仅支持URL）</van-radio>
             <van-radio name="K">知识</van-radio>
         </van-radio-group>
     </view>
