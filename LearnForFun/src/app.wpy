@@ -60,7 +60,8 @@ export default class extends wepy.app {
       'pages/beihangLogin',
       'pages/robot',
       'pages/out',
-      'pages/editGroupInfo'
+      'pages/editGroupInfo',
+      'pages/announcement'
     ],
     window: {
       backgroundTextStyle: 'light',

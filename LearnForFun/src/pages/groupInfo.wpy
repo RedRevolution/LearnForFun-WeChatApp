@@ -29,7 +29,7 @@
   <van-cell-group title="基本信息">
     <van-cell title="群组名称" value="{{groupName}}" is-link @tap="editBasicInfo"></van-cell>
     <van-cell title="群组ID" value="{{groupId}}"  ></van-cell>
-    <van-cell title="群公告" value="设置" is-link></van-cell>
+    <van-cell title="群公告" value="发布公告" is-link @tap="announce"></van-cell>
     <van-cell title="群组介绍" value="{{groupIntrod}}" is-link @tap="editBasicInfo"></van-cell>
     <van-cell title="群创建者" value="{{groupOwnerName}}"  ></van-cell>
   </van-cell-group>
@@ -80,7 +80,7 @@ export default class groupInfo extends wepy.page {
         groupOwnerName:'',  // 群主
         groupOwnerId:0, // 群主学号
         isOfficial:'官方',
-        notice:'这里是群公告这里是群公告这里是群公告这里是群公告！注意看公告！随手测试一下群公告最多能装多少个字哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈'           // 群公告
+        notice:'这里是群公告这里是群公告这里是群公告这里是群公告！注意看公告！随手测试一下群公告最多能装多少个字'           // 群公告
     }
     methods = {
     // 一键复制群号，群邀请信息
@@ -105,40 +105,51 @@ export default class groupInfo extends wepy.page {
     // 退出群组按
       onClickQuit(){ // 
         let that = this
-        wx.showModal({
-          title: '提示',
-          content: '确定要退出该群组吗？',
-          success (res) {
-            if (res.confirm) {
-              console.log('用户点击确定')
-              that.userRequest(
-                '/api/user/group/exit/'+that.groupId + '/' + that.schoolNum,'get', 
-                { 
-                  userId:that.schoolNum        
-                }, function(res) {
-                  if(res.data == 'success') {
-                    wx.showToast({
-                      title: '已退出群组',
-                      icon: 'success',
-                      duration: 2000
-                    })
-                    wx.switchTab({
-                      url: '/pages/index'
-                    })
-                  } else {
-                    wx.showToast({
-                      title: '退出失败，请稍后再试',
-                      icon: 'none',
-                      duration: 2000
-                    })
-                  }
-                } 
-              )
-            } else if (res.cancel) {
-              console.log('用户点击取消')
+        if (that.schoolNum == that.groupOwnerId) {
+          // 是群创建者不能退出
+          wx.showModal({
+            title: '提示',
+            content:'群创建者不可以退出群组，只能解散群组哦～',
+            showCancel: false,
+            confirmText:'我知道了'
+          })
+        } else {
+          wx.showModal({
+            title: '提示',
+            content: '确定要退出该群组吗？',
+            success (res) {
+              if (res.confirm) {
+                console.log('用户点击确定')
+                that.userRequest(
+                  '/api/user/group/exit/'+that.groupId + '/' + that.schoolNum,'get', 
+                  { 
+                    userId:that.schoolNum        
+                  }, function(res) {
+                    if(res.data == 'success') {
+                      wx.showToast({
+                        title: '已退出群组',
+                        icon: 'success',
+                        duration: 2000
+                      })
+                      wx.switchTab({
+                        url: '/pages/index'
+                      })
+                    } else {
+                      wx.showToast({
+                        title: '退出失败，请稍后再试',
+                        icon: 'none',
+                        duration: 2000
+                      })
+                    }
+                  } 
+                )
+              } else if (res.cancel) {
+                console.log('用户点击取消')
+              }
             }
-          }
-        })
+          })
+        }
+        
 
         
       },
@@ -154,7 +165,7 @@ export default class groupInfo extends wepy.page {
                 that.userRequest(
                   '/api/group/dismiss/'+that.groupId ,'get', 
                   { 
-                    
+                    groupId:that.groupId
                   }, function(res) {
                     if(res.data == 'success') {
                       wx.showToast({
@@ -180,10 +191,11 @@ export default class groupInfo extends wepy.page {
             }
           })
         } else {
-          wx.showToast({
-            title: '只有群创建者' + that.groupOwnerName +'才可以解散群组哦',
-            icon:'none',
-            duration:2000
+          wx.showModal({
+            title: '提示',
+            content:'只有群创建者' + that.groupOwnerName +'才可以解散群组哦',
+            showCancel: false,
+            confirmText:'我知道了'
           })
         }
         
@@ -199,15 +211,50 @@ export default class groupInfo extends wepy.page {
           url:'/pages/editGroupInfo?groupId='+that.groupId
         })
       } else {
-        wx.showToast({
-          title: '只有群管理员才可以修改群信息哦',
-          icon:'none',
-          duration:2000
+        wx.showModal({
+          title: '提示',
+          content:'只有群管理员才可以修改群信息',
+          showCancel: false,
+          confirmText:'我知道了'
         })
       }
     }
 
+    announce(){
+      // 进行该操作的用户是该群的管理员 * need:groupId,userId,userName,content * response: * string=="success"
+      let that = this 
+      let auth = wepy.getStorageSync("auth"+that.groupId)
+      if(auth == "administrator") {
+        wx.navigateTo({
+          url:'/pages/announcement?groupId='+that.groupId
+        })
+      } else {
+        wx.showModal({
+          title: '提示',
+          content:'只有群管理员才可以发布公告',
+          showCancel: false,
+          confirmText:'我知道了'
+        })
+      }
+    }
+
+    addGroupMember(){
+      wx.showToast({
+        title: '此功能尚未开放哦～',
+        icon:'none',
+        duration:2000
+      })
+    }
+
     showGroupMember(){
+      wx.showToast({
+        title: '此功能尚未开放哦～',
+        icon:'none',
+        duration:2000
+      })
+    }
+
+    delGroupMember(){
       wx.showToast({
         title: '此功能尚未开放哦～',
         icon:'none',
@@ -259,6 +306,9 @@ export default class groupInfo extends wepy.page {
       //进入群详情页的时候先查询这个人有无管理员权限，并缓存到本地
       that.checkAuth()
 
+      // 获取群公告展示，如果获取不到就先用现在的哈哈哈notice
+      that.getAnnounce()
+
 
     }
 
@@ -285,6 +335,23 @@ export default class groupInfo extends wepy.page {
       }
     }
 
+    getAnnounce(){
+      let that = this
+      that.userRequest(
+        '/api/group/notice/'+that.groupId,'get', 
+        { 
+          groupId:that.groupId      
+        }, function(res) {
+          if(res.data) { // 有管理权限
+            console.log("获取到了群公告 : " + res.data)
+            that.notice = res.data
+          } else {
+            // 不是该群成员，一般不会进行到这一步
+            console.log("获取到的群公告暂时为空")
+          }
+        } 
+      )
+    }
 
 }
 </script>

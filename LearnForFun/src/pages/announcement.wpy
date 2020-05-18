@@ -1,0 +1,119 @@
+<style lang="less">
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+</style>
+<template>
+<view>
+    <van-cell-group>
+    <van-field
+        value="{{notice}}"
+        required
+        clearable
+        label="公告"
+        icon="question-o"
+        placeholder="请输入群公告内容"
+        bind:click-icon="onClickIcon"
+        @input="inputNotice"
+    />
+    </van-cell-group>
+    <hr>
+    <van-cell/>
+    <van-button type="info" block round @tap="postAnnounce">发布群公告</van-button>
+    <!-- 该按钮绑定 -->
+    
+</view>
+</template>
+<script>
+import wepy from 'wepy'
+import wxCommon from '../mixins/wxCommon'
+
+export default class announcement extends wepy.page {
+    config = {
+      navigationBarTitleText: '发布群公告'
+    }
+    mixins = [wxCommon]
+    data = {
+        schoolNum:'',
+        realName:'',
+        notice:'',
+        groupId:''
+    }
+    methods = {
+        inputNotice(e){
+          this.notice = e.detail
+          this.$apply()
+        }
+    }
+
+    //进行该操作的用户是该群的管理员 * need:groupId,userId,userName,content * response: * string=="success",
+    postAnnounce() {
+      let that = this
+      that.userRequest(
+          '/api/group/notice/announce','post',
+          {
+            groupId:that.groupId,
+            userId:that.schoolNum,
+            userName:that.realName,
+            content:that.notice
+          }, function(res) {  
+            if(res.data =="success") {
+              console.log("成功发布了群公告!")
+              wx.showModal({
+                title: '提示',
+                content: '成功发布群公告！回到详情页即可查看',
+                cancelText:'好的',
+                confirmText:'返回首页',
+                success (res) {
+                  if (res.confirm) {
+                    console.log('用户点击返回首页')
+                    wx.navigateBack()
+                  } else if (res.cancel) {
+                    console.log('用户点击好的')
+                  }
+                }
+              })
+              
+            } else {
+              wx.showModal({
+                title: '提示',
+                content:'发布公告失败！请稍后再试',
+                showCancel: false,
+                confirmText:'我知道了'
+              })
+            }      
+          }
+        )
+    }
+
+    onClickIcon(){
+        console.log("点击了一下小问号！")
+        wx.showToast({
+          title: '发布群公告',
+          icon: 'none',
+          duration: 3000
+        })
+    }
+
+    async onLoad(options) {
+      let that = this
+      that.groupId = options.groupId
+      console.log('进入了群公告编辑页面，群号 ' + that.groupId)
+
+      let userInfo = wepy.getStorageSync("userInfo")
+      that.avatarUrl = userInfo.avatarUrl
+      that.nickName = userInfo.nickName
+
+    //创建群组的人信息
+      that.schoolNum = wepy.getStorageSync("schoolNum")
+      that.realName = wepy.getStorageSync("realName")
+    }
+
+
+}
+</script>
