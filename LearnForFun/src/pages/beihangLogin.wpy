@@ -70,6 +70,9 @@
                 '/api/user/course/'+that.userId+'/'+that.usr+'/'+that.pwd,'get',
                 {
                 },function (res) {
+                    setTimeout(function () {
+                        wx.hideLoading()
+                    }, 60000)
                     if(res.data =="success") {
                         wx.hideLoading();
                         console.log("统一认证成功，已获取课表和加入官方课程群组")
@@ -86,6 +89,12 @@
                         wx.showModal({
                             title: '登录失败' ,
                             //content:'请检查账号密码',
+                            showCancel: false
+                        })
+                    } else {
+                        wx.showModal({
+                            title: '登录失败' ,
+                            content:'网络不太好，请稍后再试',
                             showCancel: false
                         })
                     }
