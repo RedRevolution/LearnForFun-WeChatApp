@@ -1,0 +1,129 @@
+<style lang="less">
+
+</style>
+<template>
+    <view><van-cell title="{{word}}"/></view>
+
+    <van-cell-group>
+
+        <van-field
+                value="{{groupName}}"
+                label="群名"
+                type="textarea"
+                required
+                clearable
+                input-align = "right"
+                placeholder="输入群组名称"
+                autosize
+                @input = "inputGroupName"
+
+        />
+        <van-field
+                value="{{ groupIntrod}}"
+                label="群介绍"
+                type="textarea"
+                required
+                clearable
+                input-align = "right"
+                placeholder="输入群组介绍"
+                autosize
+                @input = "inputIntrod"
+        />
+
+    </van-cell-group>
+
+    <view style="margin-bottom:4rpx">
+        <van-button type="info" block round @click="handleEditInfo">确认修改</van-button>
+    </view>
+
+</template>
+<script>
+    import wepy from 'wepy'
+    import wxCommon from '../mixins/wxCommon'
+    export default class EditGroupInfo extends wepy.page {
+        config = {
+            navigationBarTitleText: "修改群组信息"
+        }
+        mixins = [wxCommon]
+        data = {
+            word : "修改群组信息",
+            groupName: '',
+            groupIntrod:'',
+            groupId:'',
+            groupOwnerId:'',
+            groupOwnerName:'',
+            courseCode:0,
+        }
+
+        async onLoad(options) { // 传参数只用传ID即可，剩下的内容可以从缓存获取
+            let that = this;
+            that.groupId = options.groupId
+            // 传入三个参数即可？
+            let groupData = wepy.getStorageSync(that.groupId)
+            that.groupName = groupData.groupName
+            that.groupIntrod = groupData.groupIntrod
+            that.groupOwnerId = groupData.groupOwnerId
+            that.groupOwnerName = groupData.groupOwnerName
+            that.courseCode = groupData.courseCode
+
+            console.log("跳转到修改群组信息页面啦！现有群组基本信息：" + groupData)
+        
+        }
+
+        inputGroupName(e) {
+            console.log("修改后群组名称:" + e.detail);
+            this.groupName = e.detail;
+            this.$apply()
+        }
+
+        inputIntrod(e){
+            console.log("修改后群组介绍:" + e.detail);
+            this.groupIntrod = e.detail;
+            this.$apply()
+        }
+
+        handleEditInfo() {
+            let that = this;
+            if(that.groupName=='') {
+                wx.showModal({
+                    title: '无法提交修改',
+                    content: '群组名称不能为空',
+                    showCancel: false,
+                })
+            }
+            else{
+                that.userRequest(
+                    '/api/group/modify','post',
+                    {
+                        courseCode:that.courseCode,
+                        groupId:that.groupId,
+                        groupIntrod:that.groupIntrod,
+                        groupName:that.groupName,
+                        groupOwnerId:that.groupOwnerId,
+                        groupOwnerName:that.groupOwnerName,
+                        id:0
+                    }, function(res) {
+                        if(res.data == "success") {
+                            console.log("成功修改群组信息!");
+                            wx.navigateBack()
+                            wx.showToast({ title: '修改成功' ,
+                                icon:'success'
+                            })
+                        }
+                        else{
+                            wx.navigateBack()
+                            console.log("修改群组基本信息有其他问题");
+                            console.log(res);
+                        }
+                    }
+
+                )
+            }
+
+        }
+       
+    }
+</script>
+
+
+

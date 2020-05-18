@@ -90,6 +90,8 @@
               <!--url="/pages/favorite" />-->
         <van-cell title="从教务导入课表" is-link  link-type="navigateTo"
               url="/pages/beihangLogin" />
+        <van-cell title="问题反馈" is-link  link-type="navigateTo"
+              url="" />
       </view>
     </view>
 

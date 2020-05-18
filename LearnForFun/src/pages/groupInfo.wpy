@@ -8,53 +8,57 @@
 <template>
 <van-card
   tag="{{isOfficial}}"
-  desc="{{groupIntrod}}"
-  title="{{groupName}}"
+  desc="{{groupName}}"
+  title="{{notice}}"
   thumb="{{ imageURL }}"
+  style="font-size: 20rpx"
+
 >
-  <view slot="tags">
+  <!-- <view slot="tags">
     <van-tag plain type="primary">{{isOfficial}}</van-tag>
-  </view>
+  </view> -->
   <van-cell title="单元格" value="内容" label="描述信息" border="{{ false }}" />
   <view slot="footer">
-    <van-button size="normal" @tap="showGroupMember">查看群成员</van-button>
-    <van-button size="normal" @tap='copyText' data-text="{{groupId}}">复制群ID</van-button>
+    <van-button size="normal" round plain color="#22a6b3" @tap="addGroupMember">添加成员</van-button>
+    <van-button size="normal" round plain color="#0984e3" @tap="showGroupMember">群成员列表</van-button>
+    <van-button size="normal" round plain color="#d63031" @tap="delGroupMember">删除成员</van-button>
+    <van-button size="normal" round plain color="#535c68" @tap='copyText' data-text="{{groupId}}">复制群ID</van-button>
   </view>
 </van-card>
-  <van-cell-group>
 
-
-<van-cell title="群组名称" value="{{groupName}}"  ></van-cell>
-<van-cell title="群组ID" value="{{groupId}}"  ></van-cell>
-<van-cell title="群组介绍" value="{{groupIntrod}}"  ></van-cell>
-<van-cell title="群创建者" value="{{groupOwnerName}}"  ></van-cell>
+  <van-cell-group title="基本信息">
+    <van-cell title="群组名称" value="{{groupName}}" is-link @tap="editBasicInfo"></van-cell>
+    <van-cell title="群组ID" value="{{groupId}}"  ></van-cell>
+    <van-cell title="群公告" value="设置" is-link></van-cell>
+    <van-cell title="群组介绍" value="{{groupIntrod}}" is-link @tap="editBasicInfo"></van-cell>
+    <van-cell title="群创建者" value="{{groupOwnerName}}"  ></van-cell>
   </van-cell-group>
-  <van-cell-group>
-<van-cell value="前往查看" size="large" icon="orders-o" is-link @tap="enterFile">
-  <view slot="title">
-    <view class="van-cell-text">资料分享模块</view>
-    <van-tag plain color="#ff9f43">仅支持URL</van-tag>
-  </view>
-</van-cell>
-<van-cell value="前往查看" size="large" icon="cluster-o" is-link @tap="enterKnow">
-  <view slot="title">
-    <view class="van-cell-text">知识分享模块</view>
-    <van-tag plain color="#ff9f43">纯文本输入</van-tag>
-  </view>
-</van-cell>
-<van-cell value="前往发布" size="large" icon="apps-o" is-link @tap="gotoPost">
-  <view slot="title">
-    <view class="van-cell-text">我要发布分享</view>
-    <van-tag plain type="primary">资料</van-tag>
-    <van-tag plain type="primary">知识</van-tag>
-  </view>
-</van-cell>
+
+  <van-cell-group title="学习区">
+    <van-cell value="前往查看" size="large" icon="orders-o" is-link @tap="enterFile">
+      <view slot="title">
+        <view class="van-cell-text">资料分享模块</view>
+        <van-tag plain color="#ff9f43">仅支持URL</van-tag>
+      </view>
+    </van-cell>
+    <van-cell value="前往查看" size="large" icon="cluster-o" is-link @tap="enterKnow">
+      <view slot="title">
+        <view class="van-cell-text">知识分享模块</view>
+        <van-tag plain color="#ff9f43">纯文本输入</van-tag>
+      </view>
+    </van-cell>
+    <van-cell value="前往发布" size="large" icon="apps-o" is-link @tap="gotoPost">
+      <view slot="title">
+        <view class="van-cell-text">我要发布分享</view>
+        <van-tag plain type="primary">资料</van-tag>
+        <van-tag plain type="primary">知识</van-tag>
+      </view>
+    </van-cell>
   </van-cell-group>
 
 
 <van-goods-action>
-  <!-- <van-goods-action-icon icon="chat-o" text="客服" bind:click="onClickIcon" />
-  <van-goods-action-icon icon="cart-o" text="购物车" bind:click="onClickIcon" /> -->
+  <van-goods-action-icon icon="fire-o" color="#f6b93b" text="解散群组" @tap="dissmissGroup" />
   <van-goods-action-button text="退出群组" @tap="onClickQuit" />
 </van-goods-action>
 </template>
@@ -74,7 +78,9 @@ export default class groupInfo extends wepy.page {
         courseCode:'',
         groupIntrod:'',
         groupOwnerName:'',  // 群主
-        isOfficial:'官方'
+        groupOwnerId:0, // 群主学号
+        isOfficial:'官方',
+        notice:'这里是群公告这里是群公告这里是群公告这里是群公告！注意看公告！随手测试一下群公告最多能装多少个字哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈'           // 群公告
     }
     methods = {
     // 一键复制群号，群邀请信息
@@ -135,6 +141,69 @@ export default class groupInfo extends wepy.page {
         })
 
         
+      },
+      dissmissGroup(){
+        let that = this
+        if (that.schoolNum == that.groupOwnerId) {  // 是群创建者才可以解散！
+          wx.showModal({
+            title: '提示',
+            content: '确定要解散该群组吗？将删除所有记录且不可恢复！',
+            success (res) {
+              if (res.confirm) {
+                console.log('用户点击确定')
+                that.userRequest(
+                  '/api/group/dismiss/'+that.groupId ,'get', 
+                  { 
+                    
+                  }, function(res) {
+                    if(res.data == 'success') {
+                      wx.showToast({
+                        title: '已解散群组',
+                        icon: 'success',
+                        duration: 2000
+                      })
+                      wx.switchTab({
+                        url: '/pages/index'
+                      })
+                    } else {
+                      wx.showToast({
+                        title: '解散失败，请稍后再试',
+                        icon: 'none',
+                        duration: 2000
+                      })
+                    }
+                  } 
+                )
+              } else if (res.cancel) {
+                console.log('用户点击取消')
+              }
+            }
+          })
+        } else {
+          wx.showToast({
+            title: '只有群创建者' + that.groupOwnerName +'才可以解散群组哦',
+            icon:'none',
+            duration:2000
+          })
+        }
+        
+
+      }
+    }
+
+    editBasicInfo(){
+      let that = this
+      let auth = wepy.getStorageSync("auth"+that.groupId)
+      if(auth == "administrator") {
+        wx.navigateTo({
+          url:'/pages/editGroupInfo?groupId='+that.groupId
+        })
+      } else {
+        wx.showToast({
+          title: '只有群管理员才可以修改群信息哦',
+          icon:'none',
+          duration:2000
+        })
       }
     }
 
@@ -164,7 +233,7 @@ export default class groupInfo extends wepy.page {
       let that=this
       wx.navigateTo({
         url:'/pages/addShare?groupId='+that.groupId+'&groupName='+that.groupName
-              })
+      })
     }
     
 
@@ -182,10 +251,38 @@ export default class groupInfo extends wepy.page {
         that.courseCode = groupData.courseCode
         that.groupIntrod = groupData.groupIntrod
         that.groupOwnerName = groupData.groupOwnerName
+        that.groupOwnerId = groupData.groupOwnerId
         if (that.groupId[0] == 'I') {
           that.isOfficial = '自建'
         }
+      
+      //进入群详情页的时候先查询这个人有无管理员权限，并缓存到本地
+      that.checkAuth()
 
+
+    }
+
+    checkAuth(){
+      let that = this
+      that.userRequest(
+          '/api/group/authority/'+that.groupId + '/' + that.schoolNum,'get', 
+          { 
+            userId:that.schoolNum        
+          }, function(res) {
+            if(res.data == 'administrator') { // 有管理权限
+              wepy.setStorageSync("auth"+that.groupId, "administrator")  // 缓存权限，后续使用
+            } else if (res.data == 'groupmember'){  // 
+              console.log("普通成员没有管理权限")
+            } else {
+              // 不是该群成员，一般不会进行到这一步
+              console.log("checkAuth不是该群成员")
+            }
+          } 
+        )
+      
+      if (that.schoolNum == that.groupOwnerId) {  // 如果是创建者的话也可以拥有权限
+          wepy.setStorageSync("auth"+that.groupId,"administrator")
+      }
     }
 
 

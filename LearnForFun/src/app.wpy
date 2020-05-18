@@ -59,7 +59,8 @@ export default class extends wepy.app {
       'pages/knowledgeShare',
       'pages/beihangLogin',
       'pages/robot',
-        'pages/out'
+      'pages/out',
+      'pages/editGroupInfo'
     ],
     window: {
       backgroundTextStyle: 'light',
