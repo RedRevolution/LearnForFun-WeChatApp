@@ -308,8 +308,12 @@ export default class groupInfo extends wepy.page {
 
       // 获取群公告展示，如果获取不到就先用现在的哈哈哈notice
       that.getAnnounce()
+    }
 
-
+    onShow(){
+      let that = this
+      // 获取群公告展示，如果获取不到就先用现在的哈哈哈notice
+      that.getAnnounce()
     }
 
     checkAuth(){
@@ -320,8 +324,10 @@ export default class groupInfo extends wepy.page {
             userId:that.schoolNum        
           }, function(res) {
             if(res.data == 'administrator') { // 有管理权限
+              console.log("根据后台，您是这个群的管理员哦！")
               wepy.setStorageSync("auth"+that.groupId, "administrator")  // 缓存权限，后续使用
             } else if (res.data == 'groupmember'){  // 
+              wepy.setStorageSync("auth"+that.groupId, "groupmember")  // 缓存权限，后续使用
               console.log("普通成员没有管理权限")
             } else {
               // 不是该群成员，一般不会进行到这一步
@@ -332,6 +338,7 @@ export default class groupInfo extends wepy.page {
       
       if (that.schoolNum == that.groupOwnerId) {  // 如果是创建者的话也可以拥有权限
           wepy.setStorageSync("auth"+that.groupId,"administrator")
+          console.log("您是这个群的创建者，所以也是管理员！")
       }
     }
 
@@ -342,6 +349,7 @@ export default class groupInfo extends wepy.page {
         { 
           groupId:that.groupId      
         }, function(res) {
+          console.log("收到的返回信息：" + res)
           if(res.data) { // 有管理权限
             console.log("获取到了群公告 : " + res.data)
             that.notice = res.data

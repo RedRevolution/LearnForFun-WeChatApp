@@ -66,7 +66,7 @@
             that.groupOwnerName = groupData.groupOwnerName
             that.courseCode = groupData.courseCode
 
-            console.log("跳转到修改群组信息页面啦！现有群组基本信息：" + groupData)
+            console.log("跳转到修改群组信息页面啦！现有群组基本信息：群主：" + groupData.groupOwnerName)
         
         }
 
