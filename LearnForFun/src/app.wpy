@@ -61,7 +61,8 @@ export default class extends wepy.app {
       'pages/robot',
       'pages/out',
       'pages/editGroupInfo',
-      'pages/announcement'
+      'pages/announcement',
+        'pages/article'
     ],
     window: {
       backgroundTextStyle: 'light',

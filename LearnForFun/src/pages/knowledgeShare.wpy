@@ -10,7 +10,7 @@
     <view>
         <repeat for="{{sharelist}}" item="item">
             <block wx:if="{{item.shareId[0]=='K'}}">
-                <van-cell title="{{item.topic}}" value="{{item.userName}}" size="large" label="{{item.content}}">
+                <van-cell title="{{item.topic}}" value="{{item.userName}}" size="large" label="{{item.content}}" is-link @tap="viewArticle">
                 </van-cell>
             </block>
         </repeat>
@@ -65,6 +65,11 @@
                     }
                 }
             )
+        }
+        viewArticle() {
+            wx.navigateTo({
+                url:'/pages/article'
+            })
         }
 
 

@@ -1,7 +1,7 @@
 <style lang="less">
   page {
     /*为了适应小手机QAQ*/
-    height:120%
+    height:150%
   }
 
 </style>
