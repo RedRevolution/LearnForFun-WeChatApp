@@ -157,47 +157,47 @@
       </view>      
     </block>
 <view class="jiangqie-news-view">
-    <block wx:if="{{posts.length > 0}}">
-      <block wx:for="{{posts}}" wx:key="id">
-        <view wx:if="{{index%5==4}}" class="jiangqie-news-block image-wide" data-id="{{item.id}}" catchtap="handlerArticleClick">
+    <block wx:if="{{collectList.length > 0}}">
+      <block wx:for="{{collectList}}" wx:key="id">
+        <!--<view wx:if="{{index%5==4}}" class="jiangqie-news-block image-wide" data-id="{{item.id}}" catchtap="handlerArticleClick">-->
+          <!--&lt;!&ndash; <image src="{{item.thumbnail}}" mode="aspectFill" class="jiangqie-news-image"></image> &ndash;&gt;-->
+          <!--<view class="jiangqie-news-text">-->
+            <!--<view class="jiangqie-news-title {{item.excerpt?'':'jiangqie-news-no-excerpt'}}">{{item.title}}</view>-->
+            <!--&lt;!&ndash; 作者是谁 &ndash;&gt;-->
+            <!--<view wx:if="{{item.excerpt}}" class="jiangqie-news-describe">{{item.excerpt}}</view>-->
+            <!--<view class="jiangqie-news-info">-->
+              <!--<view class="jiangqie-news-cmt">-->
+                <!--<image src="../images/view.png" mode="aspectFill" class=""></image>{{item.views}}-->
+              <!--</view>-->
+              <!--<text wx:for="{{item.tags}}" wx:key="id" class="jiangqie-news-tag">{{item.name}}</text>-->
+              <!--<text class="jiangqie-news-time">{{item.time}}</text>-->
+            <!--</view>-->
+          <!--</view>-->
+        <!--</view>-->
+        <view class="jiangqie-news-block" data-id="{{item.id}}" catchtap="handlerArticleClick">
           <!-- <image src="{{item.thumbnail}}" mode="aspectFill" class="jiangqie-news-image"></image> -->
           <view class="jiangqie-news-text">
-            <view class="jiangqie-news-title {{item.excerpt?'':'jiangqie-news-no-excerpt'}}">{{item.title}}</view>
-            <!-- 作者是谁 -->
-            <view wx:if="{{item.excerpt}}" class="jiangqie-news-describe">{{item.excerpt}}</view>
+            <view class="jiangqie-news-title {{item.excerpt?'':'jiangqie-news-no-excerpt'}}">{{item.topic}}</view>
+            <view wx:if="{{item.excerpt}}" class="jiangqie-news-describe">{{item.userName}}</view>
             <view class="jiangqie-news-info">
-              <view class="jiangqie-news-cmt">
-                <image src="../images/view.png" mode="aspectFill" class=""></image>{{item.views}}
-              </view>
-              <text wx:for="{{item.tags}}" wx:key="id" class="jiangqie-news-tag">{{item.name}}</text>
-              <text class="jiangqie-news-time">{{item.time}}</text>
-            </view>
-          </view>
-        </view>
-        <view wx:else class="jiangqie-news-block" data-id="{{item.id}}" catchtap="handlerArticleClick">
-          <!-- <image src="{{item.thumbnail}}" mode="aspectFill" class="jiangqie-news-image"></image> -->
-          <view class="jiangqie-news-text">
-            <view class="jiangqie-news-title {{item.excerpt?'':'jiangqie-news-no-excerpt'}}">{{item.title}}</view>
-            <view wx:if="{{item.excerpt}}" class="jiangqie-news-describe">{{item.excerpt}}</view>
-            <view class="jiangqie-news-info">
-              <view class="jiangqie-news-cmt">
-                <image src="../images/view.png" mode="aspectFill" class=""></image>{{item.views}}
-              </view>
-              <text wx:for="{{item.tags}}" wx:key="id" class="jiangqie-news-tag">{{item.name}}</text>
-              <text class="jiangqie-news-time">{{item.time}}</text>
+              <!--<view class="jiangqie-news-cmt">-->
+                <!--<image src="../images/view.png" mode="aspectFill" class=""></image>{{item.views}}-->
+              <!--</view>-->
+              <text class="jiangqie-news-tag">{{item.shareId[0]}}</text>
+              <text class="jiangqie-news-time">{{item.shareId}}</text>
             </view>
           </view>
         </view>
       </block>
 
-      <!--加载loadding-->
-      <!-- <tui-loadmore visible="{{loadding}}"></tui-loadmore> -->
-      <tui-nomore visible="{{!pullUpOn1}}"></tui-nomore>
-      <tui-nomore visible="{{!pullUpOn2}}"></tui-nomore>
-      <!--加载loadding-->
+      <!--&lt;!&ndash;加载loadding&ndash;&gt;-->
+      <!--&lt;!&ndash; <tui-loadmore visible="{{loadding}}"></tui-loadmore> &ndash;&gt;-->
+      <!--<tui-nomore visible="{{!pullUpOn1}}"></tui-nomore>-->
+      <!--<tui-nomore visible="{{!pullUpOn2}}"></tui-nomore>-->
+      <!--&lt;!&ndash;加载loadding&ndash;&gt;-->
 
     </block>
-    <block wx:elif="{{loaded}}">
+    <block wx:else>
       <template is="jiangqie_nodata" />
     </block>
 
@@ -209,43 +209,59 @@
 </template>
 
 <script>
-// 页面逻辑代码部分
-import wepy from 'wepy'
-import Nomore from '../components/nomore' // alias example
-export default class Collection extends wepy.page {
-  config = {
-      navigationBarTitleText: '收藏',
+  import wepy from 'wepy'
+  import wxCommon from '../mixins/wxCommon'
+  import Nomore from '../components/nomore'
+  export default class Collection extends wepy.page {
+    config = {
+      navigationBarTitleText: '我的收藏',
       
     }
     components = {
       nomore : Nomore
     }
-  data = {
-    wordData: 'Welcome!这个是收藏页面',
-    pullUpOn1:true,
-    pullUpOn2:false,
-    posts: [
-    {
-      "title":"如何抗击ddls", 
-      "excerpt":"paige",
-      "views":"1000",
-      "time":"2020-5-6",
-      "tags" :[{"name":"文件"}]
-      
-      
-
-    },
-    {
-      "title":"hihihi", 
-      "excerpt":"excerpt",
-      // "views":"views",
-      "time":"2020-1-1", 
-      "tags" :[{"name":"知识"}]
-
+    mixins = [wxCommon]
+    data = {
+      userId:'',
+      pullUpOn1:true,
+      pullUpOn2:false,
+      collectList: []
+      //         [{
+      // "title":"如何抗击ddls",
+      // "excerpt":"paige",
+      // "views":"1000",
+      // "time":"2020-5-6",
+      // "tags" :[{"name":"文件"}]
+      //
+      //
+      //         },
+      // ]
     }
-    ]
+    getCollectList(){
+      let that = this;
+      that.userRequest(
+              '/api/user/collect/'+that.userId,
+              {},function (res) {
+                if (res.data.length == 0) {
+                  console.log("没有个人收藏")
+                  that.collectList = res.data
+                  that.$apply()
+                } else {
+                  console.log(res.data)
+                  that.collectList = res.data
+                  that.$apply()
+                }
+              }
+              )
+    }
+    async onLoad(){
+      let that=this
+      that.userId=wepy.getStorageSync("schoolNum")
+      that.getCollectList();
+    }
+    onShow() {
+      let that = this
+      // that.getCollectList();
+    }
   }
-
-
-}
 </script>
