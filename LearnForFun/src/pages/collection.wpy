@@ -174,17 +174,16 @@
             <!--</view>-->
           <!--</view>-->
         <!--</view>-->
-        <view class="jiangqie-news-block" data-id="{{item.id}}" catchtap="handlerArticleClick">
-          <!-- <image src="{{item.thumbnail}}" mode="aspectFill" class="jiangqie-news-image"></image> -->
+        <view class="jiangqie-news-block" data-id="{{item.id}}" data-item="{{item}}"catchtap="viewArticle">
           <view class="jiangqie-news-text">
             <view class="jiangqie-news-title {{item.userName?'':'jiangqie-news-no-excerpt'}}">{{item.topic}}</view>
-            <view wx:if="{{item.userName}}" class="jiangqie-news-describe">{{item.userName}}</view>
+            <view class="jiangqie-news-describe">{{item.userName}}</view>
             <view class="jiangqie-news-info">
               <!--<view class="jiangqie-news-cmt">-->
                 <!--<image src="../images/view.png" mode="aspectFill" class=""></image>{{item.views}}-->
               <!--</view>-->
               <text class="jiangqie-news-tag">{{item.shareId[0]=='K'?'知识':'资料'}}</text>
-              <text class="jiangqie-news-time">{{timefmt(item.shareId)}}</text>
+              <text class="jiangqie-news-time">{{tool.timefmt(item.shareId)}}</text>
             </view>
           </view>
         </view>
@@ -212,6 +211,7 @@
   import wepy from 'wepy'
   import wxCommon from '../mixins/wxCommon'
   import Nomore from '../components/nomore'
+  import mywxs from '../wxs/mywxs.wxs'
   export default class Collection extends wepy.page {
     config = {
       navigationBarTitleText: '我的收藏',
@@ -220,7 +220,12 @@
     components = {
       nomore : Nomore
     }
-    mixins = [wxCommon]
+      wxs = {
+          tool: mywxs
+      }
+
+
+      mixins = [wxCommon]
     data = {
       userId:'',
       pullUpOn1:true,
@@ -248,7 +253,14 @@
       )
     }
     timefmt(s){
+        console.log('正确的时间：'+this.timeFormat(s))
         return this.timeFormat(s)
+    }
+    viewArticle(e) {
+          let share=e.currentTarget.dataset.item
+          wx.navigateTo({
+              url:'/pages/article?share='+JSON.stringify(share)
+          })
     }
     async onLoad(){
       let that=this

@@ -11,9 +11,7 @@
         <repeat for="{{sharelist}}" item="item">
             <block wx:if="{{item.shareId[0]=='K'}}">
                 <van-cell title="{{item.topic}}" value="{{item.userName}}" size="large" label="{{item.content}}"
-                          data-userName="{{item.userName}}" data-topic="{{item.topic}}" data-likesNum="{{item.likesNum}}"
-                          data-content="{{item.content}}" data-commentNum="{{item.commentNum}}" data-item="{{item}}"
-                          data-shareId="{{item.shareId}}"
+                          data-item="{{item}}" data-shareId="{{item.shareId}}"
                           is-link @tap="viewArticle">
                 </van-cell>
             </block>
@@ -71,7 +69,6 @@
             )
         }
         viewArticle(e) {
-            let shareId=e.currentTarget.dataset.shareId
             let share=e.currentTarget.dataset.item
             wx.navigateTo({
                 url:'/pages/article?share='+JSON.stringify(share)

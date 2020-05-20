@@ -1,0 +1,9 @@
+module.exports = {
+    text: 'This is from wxs',
+    timefmt: function (id) {
+        var format = id.substring(1,5)+'-'+id.substring(5,7)+'-'+id.substring(7,9)
+
+        return format
+    }
+};
+
