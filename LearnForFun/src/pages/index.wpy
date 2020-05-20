@@ -17,7 +17,7 @@
 <template>
   <van-notice-bar
     left-icon="info-o"
-    text="这里会滚动展示系统消息，请注意查看哦"
+    text="{{sysMsg}}"
   />
   <van-nav-bar
       title="我的群聊"
@@ -100,6 +100,7 @@
       setTimeoutTitle: '标题三秒后会被修改',
       count: 0,
       netrst: '',
+      sysMsg:'这里会滚动展示系统消息，请注意查看哦'
     }
 
     computed = {
@@ -225,6 +226,27 @@
         })
       }
     }
+
+    getSysMsg(){
+      let that = this
+      that.userRequest(
+          '/api/sys/message','get',
+          {
+            
+          }, function(res) {  // 返回的是一个list? 里面全是Group实例
+            console.log("返回的res是 " + res.data)
+            if(res.data) { // 是官方群组 .groupId[0]=='O'
+              console.log("有系统消息！是 " + res.data)
+              that.sysMsg = res.data
+              that.$apply()
+            } else {
+              console.log("暂未获取到系统消息")
+              
+            }      
+          }
+        )
+    }
+
     async onLoad() {
       let self = this
       let that = this
@@ -237,6 +259,7 @@
       // 这里要补充：进到该页面时要发送请求获取已经加入的群
       that.getGroupList();  // 调用函数时要写 that. 否则可能会报错 not defined
       that.popLogin();
+      that.getSysMsg();
     }
 
     onShow(){
