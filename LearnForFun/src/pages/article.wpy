@@ -159,19 +159,6 @@
         overflow: hidden;
     }
 
-    .jiangqie-page-cmt-avatar {
-        float: left;
-        margin-left: -80rpx;
-        height: 64rpx;
-        width: 64rpx;
-    }
-
-    .jiangqie-page-cmt-avatar image {
-        height: 64rpx;
-        width: 64rpx;
-        border-radius: 64rpx;
-        overflow: hidden;
-    }
 
     .jiangqie-page-cmt-head {
         font-size: 28rpx;
@@ -486,6 +473,15 @@
         box-sizing: content-box;
         line-height: inherit;
     }
+
+    .tui-nomore {
+        position: relative;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        margin-top: 10rpx;
+        padding-bottom: 60rpx;
+    }
 </style>
 <template>
     <!--pages/article/article.wxml-->
@@ -535,6 +531,7 @@
                         <text class="jiangqie-page-cmt-text-world">{{item.content}}</text>
                     </view>
                 </view>
+                <view class="tui-nomore"></view>
                 <!--加载loadding-->
                 <!--<tui-loadmore visible="{{loadding}}"></tui-loadmore>-->
                 <!--<tui-nomore visible="{{!pullUpOn}}"></tui-nomore>-->
@@ -553,17 +550,16 @@
             <view class="tui-btn-comment" catchtap="handlerCommentClick">发表你的评论...</view>
         </view>
         <view class="tui-operation-right tui-right-flex tui-col-5">
-            <view class="tui-operation-item" hover-class="opcity" hover-stay-time="150" bindtap="handlerCommentClick">
+            <view class="tui-operation-item" hover-class="opcity" hover-stay-time="150" bindtap="handlerLikeClick">
                 <image src="/images/color_like.png" mode="widthFix"></image>
-                <!--<text>{{comment_count + comment_count_change}}</text>-->
-                <text>{{share.likesNum}}</text>
+                <text>{{likesNum}}</text>
             </view>
             <view class="tui-operation-item" catchtap="handlerFavoriteClick">
                 <block wx:if="{{post_favorite==1}}">
-                    <image src="/images/color_star.png" mode="widthFix"></image>
+                    <image src="/images/fav_on.png" mode="widthFix"></image>
                 </block>
                 <block wx:else>
-                    <image src="/images/star.png" mode="widthFix"></image>
+                    <image src="/images/fav.png" mode="widthFix"></image>
                 </block>
             </view>
             <button open-type="share" class="tui-operation-item" hover-class="opcity" hover-stay-time="150">
@@ -614,12 +610,13 @@
             commentlist: [],
             share_time:'',
             meId:'',
-            myName:''
+            myName:'',
+            likesNum:0
         }
         /**
          * 文章 收藏
          */
-        handlerFavoriteClick(e) {
+        handlerFavoriteClick() {
             let that = this;
             console.log('url:/api/group/share/collect/'+that.share.shareId+'/'+that.meId)
             that.userRequest(
@@ -656,25 +653,51 @@
                     }
                 }
             )
-            // Rest.get(Api.JIANGQIE_USER_FAVORITE, {
-            //     post_id: that.data.post.id
-            // }).then(res => {
-            //     that.setData({
-            //         post_favorite: (that.data.post_favorite == 1 ? 0 : 1)
-            //     });
-            // })
+        }
+
+        /**
+         * 文章 点赞
+         */
+        handlerLikeClick() {
+            let that = this;
+            console.log('url:/api/group/share/favor/'+that.share.shareId+'/')
+            that.userRequest(
+                '/api/group/share/favor/'+that.share.shareId+'/','get',
+                {
+                },function(res){
+                    console.log(res)
+                    if(res.data =="success") {
+                        console.log("点赞成功")
+                        wx.showToast({
+                            title: '点赞成功' ,
+                            icon:'success',
+                            duration:2000
+                        })
+                        that.likesNum=that.likesNum+1;
+                        that.$apply()
+                        console.log('点赞数：'+that.likesNum)
+                    }
+                    else{
+                        console.log("点赞失败")
+                        wx.showModal({
+                            title: '提示' ,
+                            content:'点赞失败',
+                            showCancel: false
+                        })
+                    }
+                }
+            )
         }
         /**
          * 评论 弹框
          */
-        handlerCommentClick(e) {
-            this.comment_id = 0;
+        handlerCommentClick() {
             this.show_comment_submit=true
         }
         /**
          * 评论 取消
          */
-        handlerCancelClick(e) {
+        handlerCancelClick() {
             this.show_comment_submit= false
         }
         /**
@@ -709,8 +732,8 @@
                             icon:'success',
                             duration:2000
                         })
-                        getCommentList()
-                        that.$apply()
+                        that.getCommentList()
+                        that.show_comment_submit=false
                     }
                     else{
                         wx.showModal({
@@ -747,6 +770,7 @@
             // var share = JSON.parse(options.share);
             that.share= JSON.parse(options.share);
             that.share_time=this.timeFormat(that.share.shareId)
+            that.likesNum=that.share.likesNum
             that.meId=wepy.getStorageSync('schoolNum')
             that.myName=wepy.getStorageSync('realName')
 
