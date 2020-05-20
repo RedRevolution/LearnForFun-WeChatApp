@@ -108,9 +108,9 @@
                         console.log(todolist)
                         that.todolist = res.data
                         //修改datetime格式"2020-02-02 22:22"
-                        for(var i in that.todolist) {
-                            that.todolist[i].deadline = that.todolist[i].deadline.substr(0,10)+" "+that.todolist[i].deadline.substr(11,5);
-                        }
+                        // for(var i in that.todolist) {
+                        //     that.todolist[i].deadline = that.todolist[i].deadline.substr(0,10)+" "+that.todolist[i].deadline.substr(11,5);
+                        // }
                         that.$apply()
                     }
                 }

@@ -58,7 +58,7 @@
             let that = this;
             console.log("待提交内容："+that.content)
             console.log("待提交学号："+that.userId)
-            console.log("待提交时间："+that.endDate+'T'+that.endTime+':00')
+            console.log("待提交时间："+that.endDate+' '+that.endTime)
 
             if(that.content==''||that.endDate==''||that.endTime=='') {
                 wx.showModal({
@@ -72,11 +72,12 @@
                     '/api/user/timetable/add','post',
                     {
                         content:that.content,
-                        deadline:that.endDate+'T'+that.endTime+':00',
+                        deadline:that.endDate+' '+that.endTime,
                         userId:that.userId,
                         id:0
 
                     }, function(res) {
+                        console.log(res)
                         if(res.data == "success") {
                             console.log("成功添加一条日程!");
 
@@ -87,16 +88,12 @@
                                 duration:2000
                             })
                         }
-                        else if(res.data == "error") {
+                        else{
                             console.log("创建日程失败！");
                             wx.showModal({
                                 title: '创建失败',
                                 showCancel: false
                             })
-                        }
-                        else{
-                            console.log("其他问题");
-                            console.log(res);
                         }
                     },
 
