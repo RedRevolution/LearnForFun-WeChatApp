@@ -39,5 +39,10 @@ export default class wxCommon extends wepy.mixin{
     }
 
   }
+  //从id中格式化提取时间字符串
+  timeFormat(id){
+    let format = id.substr(1,4)+'-'+id.substr(5,2)+'-'+id.substr(7,2)
+    return format
+  }
 
 }

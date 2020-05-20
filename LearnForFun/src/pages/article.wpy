@@ -480,17 +480,6 @@
         box-sizing: content-box;
         line-height: inherit;
     }
-
-    .WxEmojiView {
-        /* padding: 0 60rpx; */
-        text-align: justify;
-    }
-    .wxParse-inline {
-        /* display: inline-block; */
-        display: inline;
-        margin: 0;
-        padding: 0;
-    }
 </style>
 <template>
     <!--pages/article/article.wxml-->
@@ -501,7 +490,7 @@
 
                 <text>{{share.topic}}</text>
                 <view class="jiangqie-page-cmt">
-                    <text>{{share.shareId}}</text>
+                    <text>{{share_time}}</text>
                     <text class="category">{{share.userName}}</text>
                 </view>
             </view>
@@ -519,28 +508,7 @@
             <view class="jiangqie-page-body-tag">
                 <text wx:for="{{post.tags}}" wx:key="id" data-id="{{item.id}}" data-tag="{{item.name}}" catchtap="handlerTagClick">{{item.name}}</text>
             </view>
-            <view class="jiangqie-page-laud">
-                <view class="jiangqie-page-laud-contrl">
-                    <view wx:if="{{post_like==1}}" class="jiangqie-page-laud-btn" catchtap="handlerLikeClick">
-                        <image src="../../images/laud_on.png" mode="widthFix"></image>
-                        <text>已赞过</text>
-                    </view>
-                    <view wx:else class="jiangqie-page-laud-btn" catchtap="handlerLikeClick">
-                        <image src="../../images/laud.png" mode="widthFix"></image>
-                        <text>点个赞</text>
-                    </view>
-                    <button open-type="share" class="jiangqie-page-laud-btn">
-                        <image src="../../images/share.png" mode="widthFix"></image>
-                        <text>分享好友</text>
-                    </button>
-                </view>
-                <view class="jiangqie-page-laud-list">
-                    <view class="jiangqie-page-laud-list-title">- {{like_list.length}}人已赞 -</view>
-                    <view class="jiangqie-page-laud-list-block">
-                        <image wx:for="{{like_list}}" wx:key="index" src="{{item.length>0?item:'../../images/default_avatar.jpg'}}" mode="aspectFill"></image>
-                    </view>
-                </view>
-            </view>
+
         </view>
         <view class="jiangqie-page-cmtbox">
             <view class="jiangqie-page-cmt-title">
@@ -593,7 +561,8 @@
         <view class="tui-operation-right tui-right-flex tui-col-5">
             <view class="tui-operation-item" hover-class="opcity" hover-stay-time="150" bindtap="handlerCommentClick">
                 <image src="/images/color_like.png" mode="widthFix"></image>
-                <text>{{comment_count + comment_count_change}}</text>
+                <!--<text>{{comment_count + comment_count_change}}</text>-->
+                <text>{{share.likesNum}}</text>
             </view>
             <view class="tui-operation-item" catchtap="handlerFavoriteClick">
                 <block wx:if="{{post_favorite==1}}">
@@ -647,8 +616,55 @@
             show_comment_submit: false,
             comment_content: '',
             comment_count_change: 0,
+
             commentlist: [],
             shareId:'',
+            share_time:''
+        }
+        /**
+         * 文章 收藏
+         */
+        handlerFavoriteClick(e) {
+            let that = this;
+            console.log('url:/api/group/share/collect/'+that.share.shareId+'/'+that.share.userId)
+            that.userRequest(
+                '/api/group/share/collect/'+that.share.shareId+'/'+that.share.userId,'get',
+                {
+                },function(res){
+                    if(res.data =="success") {
+                        console.log("成功收藏")
+                        wx.showToast({
+                            title: '收藏成功' ,
+                            icon:'success',
+                            duration:2000
+                        })
+                        that.post_favorite=1
+                    }
+                    if(res.data =="exist") {
+                        console.log("成功收藏")
+                        wx.showToast({
+                            title: '已经收藏过' ,
+                            icon:'success',
+                            duration:2000
+                        })
+                    }
+                    else{
+                        console.log("收藏失败")
+                        wx.showModal({
+                            title: '提示' ,
+                            content:'收藏失败',
+                            showCancel: false
+                        })
+                    }
+                }
+            )
+            // Rest.get(Api.JIANGQIE_USER_FAVORITE, {
+            //     post_id: that.data.post.id
+            // }).then(res => {
+            //     that.setData({
+            //         post_favorite: (that.data.post_favorite == 1 ? 0 : 1)
+            //     });
+            // })
         }
         /**
          * 评论 弹框
@@ -685,8 +701,8 @@
             let that = this
             // var share = JSON.parse(options.share);
             that.share= JSON.parse(options.share);
-            // that.shareId = share.shareId
-            // that.content=share
+            that.share_time=this.timeFormat(that.share.shareId)
+
         }
         onShow() {
             let that = this
