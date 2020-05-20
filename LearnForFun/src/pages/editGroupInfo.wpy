@@ -53,6 +53,7 @@
             groupOwnerId:'',
             groupOwnerName:'',
             courseCode:0,
+            id:0
         }
 
         async onLoad(options) { // 传参数只用传ID即可，剩下的内容可以从缓存获取
@@ -65,6 +66,7 @@
             that.groupOwnerId = groupData.groupOwnerId
             that.groupOwnerName = groupData.groupOwnerName
             that.courseCode = groupData.courseCode
+            that.id = groupData.id
 
             console.log("跳转到修改群组信息页面啦！现有群组基本信息：群主：" + groupData.groupOwnerName)
         
@@ -101,7 +103,7 @@
                         groupName:that.groupName,
                         groupOwnerId:that.groupOwnerId,
                         groupOwnerName:that.groupOwnerName,
-                        id:0
+                        id:that.id
                     }, function(res) {
                         if(res.data == "success") {
                             console.log("成功修改群组信息!");

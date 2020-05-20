@@ -365,11 +365,15 @@
       // 第一次进入页面的时候加载
       let that = this
       let record = wepy.getStorageSync(that.groupId+"rec")
-      let cache = JSON.parse(record)
-      console.log("进入页面加载的缓存："+JSON.parse(record))
+
+      if (record) {
+        let cache = JSON.parse(record)
+        console.log("进入页面加载的缓存："+JSON.parse(record))
+        
+        that.chats = cache
+        that.$apply()
+      }
       
-      that.chats = cache
-      that.$apply()
     }
 
     getGroupInfo(){ // /api/group/{groupId}

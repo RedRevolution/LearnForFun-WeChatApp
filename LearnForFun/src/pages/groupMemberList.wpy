@@ -1,0 +1,111 @@
+<style lang="less">
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+</style>
+<template>
+<view>
+  <van-index-bar>
+  <view>
+    <van-index-anchor index="A" />
+    <van-cell title="文本" />
+    <van-cell title="文本" />
+    <van-cell title="文本" />
+  </view>
+
+  <view>
+    <van-index-anchor index="B" />
+    <van-cell title="文本" />
+    <van-cell title="文本" />
+    <van-cell title="文本" />
+  </view>
+
+  <view>
+    <van-index-anchor index="C" />
+    <van-cell title="文本" />
+    <van-cell title="文本" />
+    <van-cell title="文本" />
+  </view>
+
+  <view>
+    <van-index-anchor index="D" />
+    <van-cell title="文本" />
+    <van-cell title="文本" />
+    <van-cell title="文本" />
+  </view>
+
+  <view>
+    <van-index-anchor index="E" />
+    <van-cell title="文本" />
+    <van-cell title="文本" />
+    <van-cell title="文本" />
+  </view>
+
+  <view>
+    <van-index-anchor index="F" />
+    <van-cell title="文本" />
+    <van-cell title="文本" />
+    <van-cell title="文本" />
+  </view>
+
+  <view>
+    <van-index-anchor index="G" />
+    <van-cell title="文本" />
+    <van-cell title="文本" />
+    <van-cell title="文本" />
+  </view>
+</van-index-bar>
+</view>
+</template>
+<script>
+import wepy from 'wepy'
+import wxCommon from '../mixins/wxCommon'
+
+export default class groupMemberList extends wepy.page {
+    config = {
+      navigationBarTitleText: '群成员列表'
+    }
+    mixins = [wxCommon]
+    data = {
+        groupId:0,
+        memberList:[]
+    }
+    methods = {
+        
+    }
+  
+
+    async onLoad(options) {
+      let that = this
+      that.groupId = options.groupId
+      that.getMemberList()
+    }
+
+    getMemberList(){
+        let that = this
+        that.userRequest(
+          '/api/group/member/'+that.groupId ,'get', 
+          { 
+            userId:that.schoolNum        
+          }, function(res) {
+            console.log("查找群成员时" + res.data)
+            if(res.data.length != 0) { // 有管理权限
+              console.log("成员列表不为空")
+              that.memberList = res.data    // 赋值已经没问题了
+              that.$apply()
+            } else {
+              // 不太可能进行到这一步
+              console.log("该群成员列表为空")
+            }
+          } 
+        )
+    }
+
+
+}
+</script>

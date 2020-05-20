@@ -170,6 +170,8 @@
           }, function(res) {  // 返回的是一个list? 里面全是Group实例
             if(res.data.length == 0) { // 是官方群组 .groupId[0]=='O'
               console.log("尚未加入任何群组")
+              that.grouplist = res.data
+              that.$apply()
             } else {
               let grouplist = res.data
               console.log(grouplist)

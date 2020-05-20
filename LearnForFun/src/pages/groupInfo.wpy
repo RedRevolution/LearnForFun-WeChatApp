@@ -168,13 +168,21 @@ export default class groupInfo extends wepy.page {
                     groupId:that.groupId
                   }, function(res) {
                     if(res.data == 'success') {
-                      wx.showToast({
-                        title: '已解散群组',
-                        icon: 'success',
-                        duration: 2000
-                      })
-                      wx.switchTab({
-                        url: '/pages/index'
+                      wx.showModal({
+                        title: '提示',
+                        content: '已经解散该群',
+                        cancelText:'好的',
+                        confirmText:'返回首页',
+                        success (res) {
+                          if (res.confirm) {
+                            console.log('用户点击返回首页')
+                            wepy.switchTab({
+                              url: '/pages/index'
+                            })
+                          } else if (res.cancel) {
+                            console.log('用户点击好的')
+                          }
+                        }
                       })
                     } else {
                       wx.showToast({
@@ -247,19 +255,32 @@ export default class groupInfo extends wepy.page {
     }
 
     showGroupMember(){
-      wx.showToast({
-        title: '此功能尚未开放哦～',
-        icon:'none',
-        duration:2000
-      })
+      let that = this
+      let auth = wepy.getStorageSync("auth"+that.groupId)
+      if(auth == "administrator") {
+        wx.navigateTo({
+          url:'/pages/groupMemberList?groupId='+that.groupId
+        })
+      } else {
+        wx.showModal({
+          title: '提示',
+          content:'只有群管理员才可以查看群成员',
+          showCancel: false,
+          confirmText:'我知道了'
+        })
+      }
+      
     }
 
     delGroupMember(){
+      let that = this
+      
       wx.showToast({
         title: '此功能尚未开放哦～',
         icon:'none',
         duration:2000
       })
+      
     }
     
     enterFile(){
@@ -314,6 +335,8 @@ export default class groupInfo extends wepy.page {
       let that = this
       // 获取群公告展示，如果获取不到就先用现在的哈哈哈notice
       that.getAnnounce()
+      that.getGroupInfo()
+      that.checkAuth()
     }
 
     checkAuth(){
@@ -349,15 +372,34 @@ export default class groupInfo extends wepy.page {
         { 
           groupId:that.groupId      
         }, function(res) {
-          console.log("收到的返回信息：" + res)
-          if(res.data) { // 有管理权限
-            console.log("获取到了群公告 : " + res.data)
-            that.notice = res.data
+          console.log("群公告收到的返回信息：" + res.data)
+          
+          if(res.data.content) { // 有管理权限
+            console.log("获取到了群公告 : " + res.data.content)
+            that.notice = res.data.content
+            that.$apply()
           } else {
             // 不是该群成员，一般不会进行到这一步
             console.log("获取到的群公告暂时为空")
           }
         } 
+      )
+    }
+
+    getGroupInfo(){ // /api/group/{groupId}
+      let that = this
+      that.userRequest(
+        '/api/group/'+that.groupId ,'get', 
+        {             
+        }, function(res) {
+           console.log('获取该群信息', res)
+           wepy.setStorageSync(that.groupId, res.data)  // 更新全局缓存群组信息
+           let groupData = wepy.getStorageSync(that.groupId)
+            that.groupName = groupData.groupName
+            that.$apply()
+            that.groupIntrod = groupData.groupIntrod
+            that.$apply()
+         } 
       )
     }
 
