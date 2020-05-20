@@ -247,11 +247,20 @@ export default class groupInfo extends wepy.page {
     }
 
     addGroupMember(){
-      wx.showToast({
-        title: '此功能尚未开放哦～',
-        icon:'none',
-        duration:2000
-      })
+      let that = this
+      let auth = wepy.getStorageSync("auth"+that.groupId)
+      if(auth == "administrator") {
+        wx.navigateTo({
+          url:'/pages/addMember?groupId='+that.groupId
+        })
+      } else {
+        wx.showModal({
+          title: '提示',
+          content:'只有群管理员才可以添加群成员',
+          showCancel: false,
+          confirmText:'我知道了'
+        })
+      }
     }
 
     showGroupMember(){

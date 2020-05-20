@@ -313,16 +313,49 @@ import { transition } from '../components/vant/mixins/transition';
       that.schoolNum = wepy.getStorageSync('schoolNum')
 
       let record = wepy.getStorageSync("robotrec")
-      let cache = JSON.parse(record)
-      console.log("进入页面加载的缓存："+JSON.parse(record))
+      if(record) {
+        let cache = JSON.parse(record)
+        console.log("进入页面加载的缓存："+JSON.parse(record))
+        
+        that.chats = cache
+        that.$apply()
+      }
       
-      that.chats = cache
-      that.$apply()
       
     }
 
     onShow(){
-      
+      let that = this
+      // 如果是第一次进来，小趣自我介绍
+      var firstTime = wepy.getStorageSync('isNewbie')
+      if(firstTime != "no"){
+
+      } else {
+        // 调用自我介绍
+        that.userRequest(
+          '/api/xiaoqu' ,'get',//这里url后面加了code来决定请求什么，文档
+          {
+            
+          }, function(res) {
+            if(res.data) { // 返回数据分类讨论情况
+                let time = new Date()
+               that.chats = that.chats.concat([{
+                    time: time.toLocaleTimeString(), 
+                    text: res.data,
+                    name: "小趣"
+                }])
+                that.$apply()
+                that.scrollTop =  that.scrollTop + 4000
+                that.$apply()
+                wepy.setStorageSync("robotrec", JSON.stringify(that.chats))
+            } else { // 返回一个完整的User实例
+                console.log("小趣的自我介绍出了点问题")
+            }                
+          }
+        )
+
+        wepy.setStorageSync('isNewbie',"no")
+      }
     }
 
     onUnload(){

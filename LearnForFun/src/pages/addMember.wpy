@@ -1,0 +1,184 @@
+<style lang="less">
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+.value-class {
+  flex: none !important;
+}
+</style>
+<template>
+<view>
+    <van-cell-group>
+    <van-field
+        value="{{realName}}"
+        required
+        clearable
+        label="新成员姓名"
+        placeholder="请输入其真实姓名"
+        @input="inputName"
+    />
+    <van-field
+        value="{{ schoolNum }}"
+        label="新成员学号"
+        type="textarea"
+        clearable
+        required
+        placeholder="请输入其学号"
+        autosize
+        @input="inputNum"
+    />
+    </van-cell-group>
+    <van-checkbox-group value="{{ result }}" bind:change="onChange">
+  <van-cell-group>
+    <van-cell
+      wx:for="{{ list }}"
+      wx:key="index"
+      title="是否给予管理员权利 勾选则为“是” {{ item }}"
+      value-class="value-class"
+      clickable
+      data-index="{{ index }}"
+      bind:click="toggle"
+    >
+      <van-checkbox
+        catch:tap="noop"
+        class="checkboxes-{{ index }}"
+        name="{{ item }}"
+      />
+    </van-cell>
+  </van-cell-group>
+</van-checkbox-group>
+    <hr>
+    <van-cell/>
+    <van-button type="info" block round @tap="addMember">添加该成员</van-button>
+    <!-- 该按钮绑定 -->
+    
+</view>
+</template>
+<script>
+import wepy from 'wepy'
+import wxCommon from '../mixins/wxCommon'
+
+export default class addMember extends wepy.page {
+    config = {
+      navigationBarTitleText: '添加群成员'
+    }
+    mixins = [wxCommon]
+    data = {
+        realName:'',
+        schoolNum:'',
+        id:0,   // 数据库字段，保持0即可
+        groupId:'',
+        isAdministrator:false,
+        checked: false,
+        groupName:'',
+        list: [' '],
+        result: ['no']
+    }
+    methods = {
+        inputName(e){
+          this.realName = e.detail
+          this.$apply()
+        },
+        inputNum(e){
+          this.schoolNum = e.detail
+          this.$apply()
+        },
+        onChange(event) {
+            this.result = event.detail
+            this.$apply()
+            console.log("checked的值为 " + this.result)
+            let that = this
+            if (that.result == 'no') {
+                that.isAdministrator = false
+            } else {
+                that.isAdministrator = true
+            }
+            this.$apply()
+        },
+        toggle(event) {
+            const { index } = event.currentTarget.dataset;
+            const checkbox = this.$wxpage.selectComponent(`.checkboxes-${index}`)
+            checkbox.toggle();
+        },
+        noop() {}
+    }
+    
+    addMember(){
+        let that = this
+        if (that.realName == '' || that.schoolNum == '') {
+            wx.showModal({
+                title: '提示',
+                content:'名字和学号都不能为空！',
+                showCancel: false,
+                confirmText:'我知道了'
+            })
+        } else {
+            that.userRequest(
+                '/api/group/member/add' ,'post',//这里url后面加了code来决定请求什么，文档
+                {
+                    groupId:that.groupId,
+                    id:0,
+                    isAdministrator: that.isAdministrator,
+                    userId:that.schoolNum,
+                    userName:that.realName
+                }, function(res) {
+                    if (res.data == 'success') {
+                        console.log("加成员返回消息 " + res.data)
+                        wx.showModal({
+                            title: '提示',
+                            content:that.realName + '已经成功添加',
+                            confirmText:'返回',
+                            success (res) {
+                                if (res.confirm) {
+                                    console.log('用户点击返回')
+                                    wx.navigateBack()
+                                } else if (res.cancel) {
+                                    console.log('用户点击取消')
+                                }
+                            }
+                        })
+                    } else if (res.data == 'exist') {
+                        console.log("该用户已经存在于这个群")
+                        wx.showModal({
+                            title: '提示',
+                            content:that.realName + '已经在这个群了哦～',
+                            confirmText:'返回',
+                            success (res) {
+                                if (res.confirm) {
+                                    console.log('用户点击返回')
+                                    wx.navigateBack()
+                                } else if (res.cancel) {
+                                    console.log('用户点击取消')
+                                }
+                            }
+                        })
+                        
+                    }
+                            
+                }
+            )
+        }
+        
+    }
+
+    async onLoad(options) {
+      let that = this
+      that.groupId = options.groupId
+      let groupData = wepy.getStorageSync(that.groupId)
+      that.groupName = groupData.groupName
+
+      wx.setNavigationBarTitle({
+        title: that.groupName + " 添加成员"
+      })
+
+    
+    }
+
+
+}
+</script>

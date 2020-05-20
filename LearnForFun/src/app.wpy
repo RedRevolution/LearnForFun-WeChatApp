@@ -39,7 +39,10 @@ export default class extends wepy.app {
       "van-radio-group":"/components/vant/radio-group/index",
       "van-radio":"/components/vant/radio/index",
       "van-index-bar": "/components/vant/index-bar/index",
-      "van-index-anchor": "/components/vant/index-anchor/index"
+      "van-index-anchor": "/components/vant/index-anchor/index",
+      "van-notice-bar": "/components/vant/notice-bar/index",
+      "van-checkbox": "/components/vant/checkbox/index",
+      "van-checkbox-group": "/components/vant/checkbox-group/index"
     },
     "pages": [
       'pages/index',
@@ -65,7 +68,8 @@ export default class extends wepy.app {
       'pages/editGroupInfo',
       'pages/announcement',
       'pages/article',
-      'pages/groupMemberList'
+      'pages/groupMemberList',
+      'pages/addMember'
     ],
     window: {
       backgroundTextStyle: 'light',

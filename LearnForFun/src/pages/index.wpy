@@ -15,10 +15,10 @@
 
 </style>
 <template>
-  <view class="userinfo" @tap="handleViewTap">
-      <image class="userinfo-avatar" src="{{ avatarUrl }}" background-size="cover"/>
-      <view class="userinfo-nickname">{{ nickName }}</view>
-  </view> 
+  <van-notice-bar
+    left-icon="info-o"
+    text="这里会滚动展示系统消息，请注意查看哦"
+  />
   <van-nav-bar
       title="我的群聊"
       left-text="创建群组"
