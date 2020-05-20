@@ -151,11 +151,11 @@
 <!--新闻列表——常规-->
 <view class="container1">
   
-    <block wx:if="{{posts.length == 0}}">
-      <view class = 'container'>
-          <template is="jiangqie_nodata" />
-      </view>      
-    </block>
+    <!--<block wx:if="{{collectList.length == 0}}">-->
+      <!--<view class = 'container'>-->
+          <!--<template is="jiangqie_nodata" />-->
+      <!--</view>      -->
+    <!--</block>-->
 <view class="jiangqie-news-view">
     <block wx:if="{{collectList.length > 0}}">
       <block wx:for="{{collectList}}" wx:key="id">
@@ -177,13 +177,13 @@
         <view class="jiangqie-news-block" data-id="{{item.id}}" catchtap="handlerArticleClick">
           <!-- <image src="{{item.thumbnail}}" mode="aspectFill" class="jiangqie-news-image"></image> -->
           <view class="jiangqie-news-text">
-            <view class="jiangqie-news-title {{item.excerpt?'':'jiangqie-news-no-excerpt'}}">{{item.topic}}</view>
-            <view wx:if="{{item.excerpt}}" class="jiangqie-news-describe">{{item.userName}}</view>
+            <view class="jiangqie-news-title {{item.userName?'':'jiangqie-news-no-excerpt'}}">{{item.topic}}</view>
+            <view wx:if="{{item.userName}}" class="jiangqie-news-describe">{{item.userName}}</view>
             <view class="jiangqie-news-info">
               <!--<view class="jiangqie-news-cmt">-->
                 <!--<image src="../images/view.png" mode="aspectFill" class=""></image>{{item.views}}-->
               <!--</view>-->
-              <text class="jiangqie-news-tag">{{item.shareId[0]}}</text>
+              <text class="jiangqie-news-tag">{{item.shareId[0]=='K'?'知识':'资料'}}</text>
               <text class="jiangqie-news-time">{{item.shareId}}</text>
             </view>
           </view>
@@ -225,39 +225,33 @@
       userId:'',
       pullUpOn1:true,
       pullUpOn2:false,
-      collectList: []
-      //         [{
-      // "title":"如何抗击ddls",
-      // "excerpt":"paige",
-      // "views":"1000",
-      // "time":"2020-5-6",
-      // "tags" :[{"name":"文件"}]
-      //
-      //
-      //         },
-      // ]
+      collectList: [],
+      share_time:''
     }
     getCollectList(){
       let that = this;
+      console.log('/api/user/collect/'+that.userId)
       that.userRequest(
-              '/api/user/collect/'+that.userId,
-              {},function (res) {
-                if (res.data.length == 0) {
+          '/api/user/collect/'+that.userId,'get',
+          {},function (res) {
+              console.log(res)
+              if (res.data.length == 0) {
                   console.log("没有个人收藏")
                   that.collectList = res.data
                   that.$apply()
-                } else {
+              } else {
                   console.log(res.data)
                   that.collectList = res.data
                   that.$apply()
-                }
               }
-              )
+          }
+      )
     }
     async onLoad(){
       let that=this
       that.userId=wepy.getStorageSync("schoolNum")
       that.getCollectList();
+
     }
     onShow() {
       let that = this

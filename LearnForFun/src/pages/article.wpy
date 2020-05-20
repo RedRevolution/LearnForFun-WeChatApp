@@ -1,6 +1,12 @@
 <style>
-    button {
+    @import "../templates/nodata/nodata.wxss";
+    button::after {
+        border-radius: 0;
         border: none;
+
+    }
+
+    button {
         margin: 0;
         padding: 0;
         border-radius: 0;
@@ -148,7 +154,7 @@
 
     .jiangqie-page-cmt-content {
         padding: 16rpx 0;
-        padding-left: 80rpx;
+        padding-left: 20rpx;
         border-top: 1rpx solid #EEE;
         overflow: hidden;
     }
@@ -483,7 +489,8 @@
 </style>
 <template>
     <!--pages/article/article.wxml-->
-    <text></text>
+    <import src="../templates/nodata/nodata.wxml" />
+
     <view class="container jiangqie-page-view">
         <view class="jiangqie-page-head">
             <view class="jiangqie-page-title">
@@ -510,43 +517,30 @@
             </view>
 
         </view>
+        <!--评论列表-->
         <view class="jiangqie-page-cmtbox">
             <view class="jiangqie-page-cmt-title">
-                评论<text>{{comment_count + comment_count_change}}</text>
+                评论<text>{{commentlist.length}}</text>
             </view>
             <block wx:if="{{commentlist.length>0}}">
                 <view wx:for="{{commentlist}}" wx:key="id" class="jiangqie-page-cmt-content">
-                    <view class="jiangqie-page-cmt-avatar">
-                        <image src="{{item.user.avatar.length>0?item.user.avatar:'../../images/default_avatar.jpg'}}" mode="aspectFill"></image>
-                    </view>
                     <view class="jiangqie-page-cmt-head">
-                        {{item.user.name}}
-                        <text class="jiangqie-page-cmt-time">{{item.time}}</text>
-                        <text wx:if="{{item.approved!=1}}" class="jiangqie-page-cmt-time">待审核</text>
-                        <text class="comment-action" data-id="{{item.id}}" catchtap="handlerCommentReplyClick">回复</text>
-                        <text wx:if="{{item.user.is_me==1}}" class="comment-action" data-id="{{item.id}}" catchtap="handlerCommentDeleteClick">删除</text>
+                        {{item.userName}}
+                        <!--<text class="jiangqie-page-cmt-time">{{item.time}}</text>-->
+                        <!--<text wx:if="{{item.approved!=1}}" class="jiangqie-page-cmt-time">待审核</text>-->
+                        <text wx:if="{{item.userId==meId}}"class="jiangqie-page-cmt-time" data-id="{{item.id}}" catchtap="handlerCommentDeleteClick">删除</text>
+
                     </view>
                     <view class="jiangqie-page-cmt-text">
-                        <text class="jiangqie-page-cmt-text-world">{{item.comment_content}}</text>
-                        <view class="jiangqie-page-cmt-replay">
-                            <view wx:for="{{item.replys}}" wx:key="id" wx:for-item="reply" class="jiangqie-page-cmt-replay-box">
-                                <view class="jiangqie-page-cmt-replay-nametime">
-                                    {{reply.user.name}}
-                                    <text class="jiangqie-page-cmt-replay-time">{{reply.time}}</text>
-                                    <text wx:if="{{reply.approved!=1}}" class="jiangqie-page-cmt-time">待审核</text>
-                                    <text wx:if="{{reply.user.is_me==1}}" class="comment-action" data-id="{{reply.id}}" catchtap="handlerCommentDeleteClick">删除</text>
-                                </view>
-                                <view class="jiangqie-page-cmt-replay-world">{{reply.content}}</view>
-                            </view>
-                        </view>
+                        <text class="jiangqie-page-cmt-text-world">{{item.content}}</text>
                     </view>
                 </view>
                 <!--加载loadding-->
-                <tui-loadmore visible="{{loadding}}"></tui-loadmore>
-                <tui-nomore visible="{{!pullUpOn}}"></tui-nomore>
+                <!--<tui-loadmore visible="{{loadding}}"></tui-loadmore>-->
+                <!--<tui-nomore visible="{{!pullUpOn}}"></tui-nomore>-->
                 <!--加载loadding-->
             </block>
-            <block wx:elif="{{loaded}}">
+            <block wx:else>
                 <template is="jiangqie_nodata" />
             </block>
         </view>
@@ -586,8 +580,8 @@
                 <button form-type="submit" class="publish">发布</button>
             </view>
             <view class="textareaBox">
-                <view class="textNum">{{content.length}}/200</view>
-                <textarea auto-height autoFocus="true" name="inputComment" bindinput="handlerContentInput" class="textareaInput" maxlength="200" show-confirm-bar="{{false}}" placeholder="{{placeholder}}"></textarea>
+                <view class="textNum">{{comment_content.length}}/200</view>
+                <textarea auto-height autoFocus="true" name="inputComment" bindinput="inputContent" class="textareaInput" maxlength="200" show-confirm-bar="{{false}}" placeholder="{{placeholder}}"></textarea>
             </view>
         </form>
     </view>
@@ -618,19 +612,21 @@
             comment_count_change: 0,
 
             commentlist: [],
-            shareId:'',
-            share_time:''
+            share_time:'',
+            meId:'',
+            myName:''
         }
         /**
          * 文章 收藏
          */
         handlerFavoriteClick(e) {
             let that = this;
-            console.log('url:/api/group/share/collect/'+that.share.shareId+'/'+that.share.userId)
+            console.log('url:/api/group/share/collect/'+that.share.shareId+'/'+that.meId)
             that.userRequest(
-                '/api/group/share/collect/'+that.share.shareId+'/'+that.share.userId,'get',
+                '/api/group/share/collect/'+that.share.shareId+'/'+that.meId,'get',
                 {
                 },function(res){
+                    console.log(res)
                     if(res.data =="success") {
                         console.log("成功收藏")
                         wx.showToast({
@@ -639,9 +635,11 @@
                             duration:2000
                         })
                         that.post_favorite=1
+                        that.$apply()
+                        console.log(是否已经收藏+that.post_favorite)
                     }
-                    if(res.data =="exist") {
-                        console.log("成功收藏")
+                    else if(res.data =="exist") {
+                        console.log("已经收藏过")
                         wx.showToast({
                             title: '已经收藏过' ,
                             icon:'success',
@@ -679,10 +677,57 @@
         handlerCancelClick(e) {
             this.show_comment_submit= false
         }
+        /**
+         * 评论输入
+         */
+        inputContent(e) {
+            this.comment_content = e.detail.value
+            this.$apply()
+            console.log("此时评论content = " + this.comment_content)
+        }
+        /**
+         * 评论 提交
+         */
+        handlerCommentSubmit(e) {
+            let that = this;
+            console.log('待提交shareId'+that.share.shareId)
+            console.log('待提交meId'+that.meId)
+            console.log('待提交myName' +that.myName)
+            console.log('待提交content' + that.comment_content)
+            that.userRequest(
+                '/api/group/share/comment','post',
+                {
+                    shareId: that.share.shareId,
+                    userId: that.meId,
+                    userName:that.myName,
+                    content: that.comment_content
+                }, function(res){
+                    if(res.data =="success"){
+                        console.log("评论成功")
+                        wx.showToast({
+                            title: '评论成功' ,
+                            icon:'success',
+                            duration:2000
+                        })
+                        getCommentList()
+                        that.$apply()
+                    }
+                    else{
+                        wx.showModal({
+                            title: '提示' ,
+                            content:'评论失败',
+                            showCancel: false
+                        })
+
+                    }
+
+                }
+            )
+        }
         getCommentList() {
             let that = this
             that.userRequest(
-                '/api/group/share/comment/' + that.shareId, 'get',
+                '/api/group/share/comment/' + that.share.shareId, 'get',
                 {}, function (res) {  // 返回的是一个list? 里面全是Share实例
                     if (res.data.length == 0) {
                         console.log("没有评论")
@@ -702,6 +747,8 @@
             // var share = JSON.parse(options.share);
             that.share= JSON.parse(options.share);
             that.share_time=this.timeFormat(that.share.shareId)
+            that.meId=wepy.getStorageSync('schoolNum')
+            that.myName=wepy.getStorageSync('realName')
 
         }
         onShow() {
