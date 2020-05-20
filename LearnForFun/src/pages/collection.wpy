@@ -184,7 +184,7 @@
                 <!--<image src="../images/view.png" mode="aspectFill" class=""></image>{{item.views}}-->
               <!--</view>-->
               <text class="jiangqie-news-tag">{{item.shareId[0]=='K'?'知识':'资料'}}</text>
-              <text class="jiangqie-news-time">{{item.shareId}}</text>
+              <text class="jiangqie-news-time">{{timefmt(item.shareId)}}</text>
             </view>
           </view>
         </view>
@@ -246,6 +246,9 @@
               }
           }
       )
+    }
+    timefmt(s){
+        return this.timeFormat(s)
     }
     async onLoad(){
       let that=this
