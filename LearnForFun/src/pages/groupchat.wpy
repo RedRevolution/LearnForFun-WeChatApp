@@ -135,11 +135,11 @@
       <repeat for="{{chats}}" item="item" id="item{{index}}">
         <!-- <view style="font-size: 20rpx;color: #ababab">{{item.time}}</view> -->
         
-        <view wx:if="{{item.name==realName}}">
+        <view wx:if="{{item.userName==realName}}">
           <view class="mine messages">
-            <text style="font-size: 18rpx;color: #ababab">{{item.time}}</text>
+            <text style="font-size: 18rpx;color: #ababab">{{item.createBy}}</text>
             <view class="message last">
-              {{item.text}}
+              {{item.content}}
             </view>
           </view>
         </view>
@@ -148,9 +148,9 @@
         </view>
         <view wx:else>
            <view class="yours messages">
-              <text style="font-size: 18rpx;color: #ababab">{{item.name}} {{item.time}}</text>
+              <text style="font-size: 18rpx;color: #ababab">{{item.userName}} {{item.createBy}}</text>
               <view class="message last">
-                {{item.text}}
+                {{item.content}}
               </view>
            </view>
         </view>
@@ -164,10 +164,13 @@
     </view> -->
     <van-search
       value="{{ say }}"
-      label="输入"
       use-action-slot
       background="#c8d6e5"
       bind:change="userSay"
+      bind:search="sendMessage"
+      left-icon="chat-o"
+      shape="round"
+      confirm-type="send"
     >
       <view slot="action" @tap="sendMessage">发送</view>
     </van-search>
@@ -306,9 +309,9 @@
             let tmpName = res.data.split(":")
             console.log('发言人名字为' + tmpName[0] + '如果是自己，则不用再在弹框中显示了')
             that.chats = that.chats.concat([{
-                time: time.toLocaleTimeString(), 
-                text: '' + tmpName[1],
-                name: tmpName[0]
+                createBy: time.toLocaleTimeString(), 
+                content: '' + tmpName[1],
+                userName: tmpName[0]
             }])
             that.$apply()
             that.scrollTop =  that.scrollTop + 4000
@@ -364,15 +367,16 @@
     loadChatsRec(){
       // 第一次进入页面的时候加载
       let that = this
-      let record = wepy.getStorageSync(that.groupId+"rec")
-
-      if (record) {
-        let cache = JSON.parse(record)
-        console.log("进入页面加载的缓存："+JSON.parse(record))
-        
-        that.chats = cache
-        that.$apply()
-      }
+      // 向服务器请求最新20条数据 
+      that.userRequest(  ///api/group/message/{groupId}/{count}
+        '/api/group/message/'+that.groupId + '/20' ,'get', 
+        {             
+        }, function(res) {
+           console.log('获取最新20条消息记录', res.data)
+           that.chats = res.data
+           that.$apply()
+         } 
+      )
       
     }
 
