@@ -747,6 +747,48 @@
                 }
             )
         }
+        /**
+         * 评论 删除
+         */
+        handlerCommentDeleteClick(e) {
+            let that = this;
+            let delid = e.currentTarget.dataset.id;
+            wx.showModal({
+                title: '提示',
+                content: '确定要删除吗？',
+                success(sm) {
+                    if (sm.confirm) {
+                        that.userRequest(
+                            '/api/group/share/comment/delete/'+delid ,'get',
+                            {
+                                commentId:delid
+                            }, function(res) {
+                                if(res.data == "success") {
+                                    console.log("成功删除一条评论!");
+                                    wx.showToast({
+                                        title: '删除成功' ,
+                                        icon:'success',
+                                        duration:2000
+                                    })
+                                    that.getCommentList()
+                                }
+                                else {
+                                    console.log("删除日程失败");
+                                    wx.showModal({
+                                        title: '提示',
+                                        content:'删除失败！',
+                                        showCancel: false
+                                    })
+                                }
+                            }
+                        )
+                    }
+                    else if (sm.cancel) {
+                        console.log('用户点击取消')
+                    }
+                }
+            });
+        }
         getCommentList() {
             let that = this
             that.userRequest(
