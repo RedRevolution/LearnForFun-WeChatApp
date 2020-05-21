@@ -8,17 +8,20 @@
         </van-cell>
     </view>
     <view>
-        <repeat for="{{sharelist}}" item="item">
+        <repeat for="{{sharelist}}" item="item" key="index">
             <block wx:if="{{item.shareId[0]=='F'}}">
-                <van-cell title="{{item.topic}}" value="{{item.userName}}" size="large" label="{{tool.timefmt(item.shareId)}}">
+                <van-cell title="{{item.topic}}" value="{{item.userName}}" size="large" label="{{item.content}}">
                 </van-cell>
                 <van-button plain size="small" @tap="copyUrl" data-text="{{item.content}}">复制URL</van-button>
-                <view catchtap="handlerFavoriteClick" data-shareId="{{}}">
-                    <block wx:if="{{post_favorite==1}}">
+                <view catchtap="handlerFavoriteClick" data-item="{{item}}" data-index="{{index}}">
+                    <block wx:if="{{item.post_favorite==1}}">
                         <van-icon name="star" color="red"/>
                     </block>
-                    <block wx:else>
+                    <block wx:elif="{{item.post_favorite==0}}">
                         <van-icon name="star-o"/>
+                    </block>
+                    <block wx:else>
+                        <van-icon name="user-o"/>
                     </block>
                 </view>
 
@@ -57,12 +60,11 @@
             tool: mywxs
         }
         data = {
-            userId: '',
+            meId: '',
             userName: '',
             groupName: '',       // 群名
             groupId: '',
-            sharelist: [],
-            post_favorite: 0   //是否收藏过
+            sharelist: []
         }
         methods = {}
 
@@ -85,10 +87,21 @@
                         that.sharelist = res.data
                         that.$apply()
                     } else {
-                        let sharelist = res.data
-                        console.log(sharelist)
+                        console.log(res.data)
                         that.sharelist = res.data
+                        // for(var i in that.sharelist){
+                        //     if(that.sharelist[i].shareId[0]=='F'){
+                        //         that.sharelist[i].post_favorite=that.checkFavoriteStatus(that.sharelist[i]);
+                        //         console.log(that.sharelist[i].shareId+':::'+that.sharelist[i].post_favorite)
+                        //     }
+                        //
+                        // }
+                        for(var i in that.sharelist) {
+                            that.sharelist[i].post_favorite=1
+                        }
                         that.$apply()
+                        that.checkFavoriteStatus()
+
                     }
                 }
             )
@@ -109,33 +122,47 @@
             })
         }
         checkFavoriteStatus(){
+            console.log('check')
             let that =this
-            console.log('url:/api/group/share/collect/check/'+that.share.shareId+'/'+that.meId)
-            that.userRequest(
-                '/api/group/share/collect/check/'+that.share.shareId+'/'+that.meId,'get',
-                {},function (res) {
-                    console.log(res)
-                    if(res.data =="collected") {
-                        console.log("已经收藏过该分享")
-                        that.post_favorite=1
-                        that.$apply()
-                    }
-                    else if(res.data =="uncollected"){
-                        that.post_favorite=0
-                        that.$apply()
-                        console.log("没有收藏过该分享")
-                    }
-                }
+            console.log(that.sharelist+'end')
+            for(var i in that.sharelist){
+                console.log('url:/api/group/share/collect/check/'+that.sharelist[i].shareId+'/'+that.meId)
+                that.userRequest(
+                    '/api/group/share/collect/check/'+that.sharelist[i].shareId+'/'+that.meId,'get',
+                    {},function (res) {
+                        console.log(res)
+                        if(res.data =="collected") {
+                            console.log("已经收藏过该分享")
+                            that.sharelist[i].post_favorite=1
+                            console.log(that.sharelist[i].post_favorite)
+                            that.$apply()
 
-            )
+                        }
+                        else if(res.data =="uncollected"){
+                            that.sharelist[i].post_favorite=0
+
+                            console.log("没有收藏过该分享")
+                            that.$apply()
+
+                        }
+                    }
+
+                )
+
+            }
+
         }
-        handlerFavoriteClick(share) {
+
+        handlerFavoriteClick(e) {
             let that = this;
-            if(that.post_favorite==0) {
-                console.log('/api/group/share/collect/' + that.share.shareId + '/' + that.meId, 'get',
+            let share=e.currentTarget.dataset.item
+            let index=e.currentTarget.dataset.index
+
+            if(share.post_favorite==0) {
+                console.log('/api/group/share/collect/' + share.shareId + '/' + that.meId, 'get',
                 )
                 that.userRequest(
-                    '/api/group/share/collect/' + that.share.shareId + '/' + that.meId, 'get',
+                    '/api/group/share/collect/' + share.shareId + '/' + that.meId, 'get',
                     {}, function (res) {
                         console.log(res)
                         if (res.data == "success") {
@@ -145,9 +172,11 @@
                                 icon: 'success',
                                 duration: 2000
                             })
-                            // that.post_favorite=1
-                            // that.$apply()
-                            that.checkFavoriteStatus()
+                            that.sharelist[index].post_favorite=1
+
+                            // that.sharelist[index].post_favorite=that.checkFavoriteStatus(share)
+                            // console.log(that.checkFavoriteStatus(share))
+                            that.$apply()
                             // console.log('是否已经收藏'+that.post_favorite)
                         } else {
                             console.log("收藏失败")
@@ -161,10 +190,10 @@
                 )
             }
             else{
-                console.log('/api/user/collect/cancel/'+that.share.shareId+'/'+that.meId,'get',
+                console.log('/api/user/collect/cancel/'+share.shareId+'/'+that.meId,'get',
                 )
                 that.userRequest(
-                    '/api/user/collect/cancel/'+that.share.shareId+'/'+that.meId,'get',
+                    '/api/user/collect/cancel/'+share.shareId+'/'+that.meId,'get',
                     {
                     },function(res){
                         console.log(res)
@@ -175,7 +204,9 @@
                                 icon: 'none',
                                 duration:2000
                             })
-                            that.checkFavoriteStatus()
+                            that.sharelist[index].post_favorite=0
+                            // that.sharelist[index].post_favorite=that.checkFavoriteStatus(share)
+                            that.$apply()
                             // console.log('是否已经收藏'+that.post_favorite)
                         }
                         else{
@@ -194,19 +225,21 @@
 
         async onLoad(options) {
             let that = this;
+            that.meId=wepy.getStorageSync('schoolNum')
             that.groupId = options.groupId
             that.groupName = options.groupName
-            that.getShareList();
-            that.checkFavoriteStatus();
+            // that.getShareList();
+            // that.checkFavoriteStatus()
+            // that.getShareList();
+            // console.log("刚加载完"+that.sharelist)
+
         }
 
         onShow() {
             let that = this
             // that.onLoad()
             that.getShareList();
-            for(var i in sharelist) {
-                that.checkFavoriteStatus(i);
-            }
+
 
         }
 
