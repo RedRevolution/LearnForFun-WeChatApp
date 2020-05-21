@@ -21,7 +21,7 @@
   <view slot="footer">
     <van-button size="normal" round plain color="#22a6b3" @tap="addGroupMember">添加成员</van-button>
     <van-button size="normal" round plain color="#0984e3" @tap="showGroupMember">群成员列表</van-button>
-    <van-button size="normal" round plain color="#d63031" @tap="delGroupMember">删除成员</van-button>
+    <!-- <van-button size="normal" round plain color="#d63031" @tap="delGroupMember">删除成员</van-button> -->
     <van-button size="normal" round plain color="#535c68" @tap='copyText' data-text="{{groupId}}">复制群ID</van-button>
   </view>
 </van-card>
@@ -278,17 +278,6 @@ export default class groupInfo extends wepy.page {
           confirmText:'我知道了'
         })
       }
-      
-    }
-
-    delGroupMember(){
-      let that = this
-      
-      wx.showToast({
-        title: '此功能尚未开放哦～',
-        icon:'none',
-        duration:2000
-      })
       
     }
     

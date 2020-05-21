@@ -42,7 +42,8 @@ export default class extends wepy.app {
       "van-index-anchor": "/components/vant/index-anchor/index",
       "van-notice-bar": "/components/vant/notice-bar/index",
       "van-checkbox": "/components/vant/checkbox/index",
-      "van-checkbox-group": "/components/vant/checkbox-group/index"
+      "van-checkbox-group": "/components/vant/checkbox-group/index",
+      "van-swipe-cell": "/components/vant/swipe-cell/index"
     },
     "pages": [
       'pages/index',

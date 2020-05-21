@@ -1,65 +1,27 @@
 <style lang="less">
-.container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  box-sizing: border-box;
-}
+
 </style>
 <template>
 <view>
-  <van-index-bar>
-  <view>
-    <van-index-anchor index="A" />
-    <van-cell title="文本" />
-    <van-cell title="文本" />
-    <van-cell title="文本" />
-  </view>
+  <repeat for="{{memberList}}" item="item">
+      <van-swipe-cell
+        id="swipe-cell"
+        right-width="{{ 60 }}"
+        left-width="{{ 60 }}"
+        async-close
+        
+      >
+        <van-cell-group>
+          <van-cell title="{{item.userName}}" value="{{item.userId}}" />
+        </van-cell-group>
+        <view slot="right"  class="van-swipe-cell__right" data-userid="{{item.userId}}" data-realname="{{item.userName}}" @tap="delMember" >
+          <view style="color:#e74c3c">
+            <van-button type="danger">删除</van-button>
+          </view>
+        </view>
+      </van-swipe-cell>
+  </repeat>
 
-  <view>
-    <van-index-anchor index="B" />
-    <van-cell title="文本" />
-    <van-cell title="文本" />
-    <van-cell title="文本" />
-  </view>
-
-  <view>
-    <van-index-anchor index="C" />
-    <van-cell title="文本" />
-    <van-cell title="文本" />
-    <van-cell title="文本" />
-  </view>
-
-  <view>
-    <van-index-anchor index="D" />
-    <van-cell title="文本" />
-    <van-cell title="文本" />
-    <van-cell title="文本" />
-  </view>
-
-  <view>
-    <van-index-anchor index="E" />
-    <van-cell title="文本" />
-    <van-cell title="文本" />
-    <van-cell title="文本" />
-  </view>
-
-  <view>
-    <van-index-anchor index="F" />
-    <van-cell title="文本" />
-    <van-cell title="文本" />
-    <van-cell title="文本" />
-  </view>
-
-  <view>
-    <van-index-anchor index="G" />
-    <van-cell title="文本" />
-    <van-cell title="文本" />
-    <van-cell title="文本" />
-  </view>
-</van-index-bar>
 </view>
 </template>
 <script>
@@ -78,12 +40,89 @@ export default class groupMemberList extends wepy.page {
     methods = {
         
     }
+    // bind:close="onClose"
+    onClose(event) {
+      let that = this
+      const { position, instance } = event.detail;
+      switch (position) {
+        case 'left':
+        case 'cell':
+          instance.close();
+          break;
+        case 'right':
+          that.delMember();
+          break;
+      }
+    }
   
 
     async onLoad(options) {
       let that = this
       that.groupId = options.groupId
       that.getMemberList()
+    }
+
+    delMember(e){
+      let that = this
+      let userId = e.currentTarget.dataset.userid
+      let realName = e.currentTarget.dataset.realname
+      let groupOwnerId = wepy.getStorageSync(that.groupId).groupOwnerId
+      if (groupOwnerId == userId) {
+        wx.showModal({
+          title: '提示',
+          content:'不可以删除群创建者哦',
+          showCancel: false,
+          confirmText:'我知道了'
+        })
+      } else {
+          wx.showModal({
+          title: '提示',
+          content: '确认删除' + realName + '吗？',
+          success (res) {
+            if (res.confirm) {
+              console.log('用户点击确定')
+              that.userRequest(
+                '/api/group/member/delete/'+that.groupId + '/'+ userId,'get', 
+                { 
+                  
+                }, function(res) {
+                  console.log("删除群成员返回" + res.data)
+                  if(res.data == 'success') { // 有管理权限
+                    console.log("成功删除")
+                    that.getMemberList()
+                    wx.showModal({
+                      title: '提示',
+                      content:'已经成功删除该成员',
+                      showCancel: false,
+                      confirmText:'我知道了'
+                    })
+                  } else if(res.data == 'nonexist'){
+                    // 不太可能进行到这一步
+                    console.log("该群成员本来就不在群里")
+                    wx.showModal({
+                      title: '提示',
+                      content:'该群成员本来就不在群里',
+                      showCancel: false,
+                      confirmText:'我知道了'
+                    })
+                  } else {
+                    wx.showModal({
+                      title: '提示',
+                      content:'删除失败，请检查网络',
+                      showCancel: false,
+                      confirmText:'我知道了'
+                    })
+                  }
+                } 
+              )
+            } else if (res.cancel) {
+              console.log('用户点击取消')
+            }
+          }
+        })
+      }
+
+      
     }
 
     getMemberList(){
