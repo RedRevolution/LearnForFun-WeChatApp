@@ -8,7 +8,7 @@
 <template>
 <van-card
   tag="{{isOfficial}}"
-  desc="{{groupName}}"
+  desc="{{noticeTime}}"
   title="{{notice}}"
   thumb="{{ imageURL }}"
   style="font-size: 20rpx"
@@ -80,7 +80,8 @@ export default class groupInfo extends wepy.page {
         groupOwnerName:'',  // 群主
         groupOwnerId:0, // 群主学号
         isOfficial:'官方',
-        notice:'这里是群公告这里是群公告这里是群公告这里是群公告！注意看公告！随手测试一下群公告最多能装多少个字'           // 群公告
+        notice:'暂时没有群公告～' ,          // 群公告
+        noticeTime:''
     }
     methods = {
     // 一键复制群号，群邀请信息
@@ -375,6 +376,8 @@ export default class groupInfo extends wepy.page {
           if(res.data.content) { // 有管理权限
             console.log("获取到了群公告 : " + res.data.content)
             that.notice = res.data.content
+            that.$apply()
+            that.noticeTime = res.data.createBy
             that.$apply()
           } else {
             // 不是该群成员，一般不会进行到这一步

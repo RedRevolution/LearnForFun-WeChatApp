@@ -191,6 +191,8 @@ export default class joinGroup extends wepy.page {
                 title: '提示',
                 content: '找不到相关群组哦～换个关键词试试呢',
               })
+              that.searchResult = res.data
+              that.$apply()
             }
           }
         )

@@ -131,24 +131,25 @@
   <view class="page">
     <van-button type="normal" block @tap="enterGroupInfo">查看群详情</van-button>
     
-    <scroll-view class="chats" scroll-y="true" style="height:{{height-160}}px;" scroll-top="{{scrollTop}}">
-      <repeat for="{{chats}}" item="item" id="item{{index}}">
+    <scroll-view class="chats" scroll-y="true" style="height:{{height-160}}px;" scroll-top="{{scrollTop}}" scroll-into-view="{{toId}}" bindscrolltoupper="onPullDownRefresh" upper-threshold="10">
+       
+      <repeat for="{{chats}}" item="item" id="">
         <!-- <view style="font-size: 20rpx;color: #ababab">{{item.time}}</view> -->
         
         <view wx:if="{{item.userName==realName}}">
-          <view class="mine messages">
-            <text style="font-size: 18rpx;color: #ababab">{{item.createBy}}</text>
+          <view class="mine messages" id="to{{item.id}}">
+            <text style="font-size: 20rpx;color: #ababab">{{item.createBy}}</text>
             <view class="message last">
               {{item.content}}
             </view>
           </view>
         </view>
-        <view wx:elif="{{item.name==''}}">
+        <view wx:elif="{{item.userName==''}}">
  
         </view>
         <view wx:else>
-           <view class="yours messages">
-              <text style="font-size: 18rpx;color: #ababab">{{item.userName}} {{item.createBy}}</text>
+           <view class="yours messages" id="to{{item.id}}">
+              <text style="font-size: 20rpx;color: #ababab">{{item.userName}} {{item.createBy}}</text>
               <view class="message last">
                 {{item.content}}
               </view>
@@ -192,7 +193,9 @@
   export default class chat extends wepy.page {
     components = {}
     config = {
-      navigationBarTitleText: '群聊'
+      navigationBarTitleText: '群聊',
+      enablePullDownRefresh: true,
+      backgroundColor: "#f0145a" 
     }
     data = {
       height:'',
@@ -208,11 +211,13 @@
         content: '',
         userName: ''  // 用于区分是自己发的还是对方发的
       }],
-      cache:[{
-        time: '',
-        text: '',
-        name: ''
-      }]
+      hiddenchats:[{
+        createBy: '测试',  // 最顶部的小字
+        content: '测试分割线',
+        userName: '苦逼的前端er'  // 用于区分是自己发的还是对方发的
+      }], // 顶部追加的聊天记录
+      toId:'',
+      lastMsgId:''  // 最早消息的ID，用来在加载更多消息时请求
     }
     mixins = [wxCommon]
     methods = {
@@ -222,7 +227,9 @@
         console.log("此时输入的消息 = " + this.say)
         this.$apply()
         let that = this
-        that.scrollTop =  that.scrollTop + 4000
+        that.scrollTop =  that.scrollTop + 1000
+        that.$apply()
+        console.log("输入消息，scrollTop = " + that.scrollTop)
       },
       // 自己发送一条消息，服务器会返回一条一样的，这个我说的就显示为右侧的气泡
       sendMessage() {
@@ -235,7 +242,7 @@
         } else {
           let time = new Date()
           let that = this
-          that.scrollTop =  that.scrollTop + 4000
+          that.scrollTop =  that.scrollTop + 1000
           that.handleSendMessage()
           that.say = '' // 用于清空输入框
           that.$apply()
@@ -313,8 +320,9 @@
                 userName: tmpName[0]
             }])
             that.$apply()
-            that.scrollTop =  that.scrollTop + 4000
+            that.scrollTop =  that.scrollTop + 1000
             that.$apply()
+            console.log("输入消息，scrollTop = " + that.scrollTop)
             wepy.setStorageSync(that.groupId+"rec", JSON.stringify(that.chats))
             console.log("此时chats:" + that.chats)
             
@@ -368,18 +376,56 @@
       let that = this
       // 向服务器请求最新20条数据 
       that.userRequest(  ///api/group/message/{groupId}/{count}
-        '/api/group/message/'+that.groupId + '/20' ,'get', 
+        '/api/group/message/'+that.groupId + '/10' ,'get', 
         {             
         }, function(res) {
            console.log('获取最新20条消息记录', res.data)
            let reverse = res.data.reverse()
+           that.lastMsgId = reverse[0].id
+           console.log("最早一条消息id是: " + that.lastMsgId + ", 内容为: " + reverse[0].content)
            that.chats = reverse
            that.$apply()
-           that.scrollTop = that.scrollTop + 4000*res.data.length // 保持在最底端
+           that.scrollTop = that.scrollTop + 1000*res.data.length // 保持在最底端
            that.$apply()
          } 
       )
       
+    }
+    onPullDownRefresh(){
+      let that = this
+      that.getMoreMsg()
+    }
+
+    getMoreMsg(){
+      let that = this
+      console.log("现在要请求最早一条消息 " + that.lastMsgId + "之前的20条")
+      // /api/group/message/{groupId}/{messageId}/{count}
+      that.userRequest(  
+        '/api/group/message/'+that.groupId + '/' + that.lastMsgId + '/5' ,'get', 
+        {             
+        }, function(res) {
+           console.log('获取最新20条消息记录', res.data)
+           wx.stopPullDownRefresh()
+           if (res.data.length != 0) {
+              let reverse = res.data.reverse()
+              let oldLastId = that.lastMsgId
+              that.lastMsgId = reverse[0].id
+              console.log("更新后最早一条消息id是: " + that.lastMsgId + ", 内容为: " + reverse[0].content)
+              that.chats = reverse.concat(that.chats)
+              that.$apply()
+
+              that.toId = "to" + oldLastId
+              that.$apply()
+              
+              wx.stopPullDownRefresh()
+           } else {
+              console.log('没有更早的消息记录了')
+              wx.stopPullDownRefresh()
+           }
+            
+         } 
+      )
+
     }
 
     getGroupInfo(){ // /api/group/{groupId}
@@ -409,6 +455,9 @@
       that.groupName = options.groupName
       wx.setNavigationBarTitle({
         title: options.groupName // 在顶部显示群名
+      })
+      wx.setBackgroundColor({
+        backgroundColor: '#3498db', // 窗口的背景色为白色
       })
       console.log("进入了群聊！groupId为 " + this.groupId+", groupName为 " + this.groupName);  // 传进来的参数是groupId, groupName
       that.getGroupInfo() 
