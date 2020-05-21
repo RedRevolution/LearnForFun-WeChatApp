@@ -15,10 +15,15 @@
 
 </style>
 <template>
-  <van-notice-bar
-    left-icon="info-o"
-    text="{{sysMsg}}"
-  />
+  
+  <view wx:if="{{sysMsg.length > 0}}">
+    <repeat for="{{sysMsg}}" item="item">
+      <van-notice-bar
+        left-icon="info-o"
+        text="{{item.content}}"
+      />
+    </repeat>
+  </view>
   <van-nav-bar
       title="我的群聊"
       left-text="创建群组"
@@ -52,9 +57,9 @@
   <view wx:else>
   <!-- nothing -->
   </view>
-  <block wx:if="{{nickName}}">
+  <!-- <block wx:if="{{nickName}}">
 
-  </block>
+  </block> -->
 
 </template>
 
@@ -230,7 +235,7 @@
     getSysMsg(){
       let that = this
       that.userRequest(
-          '/api/sys/message','get',
+          '/api/sys/message/' + that.schoolNum,'get',
           {
             
           }, function(res) {  // 返回的是一个list? 里面全是Group实例

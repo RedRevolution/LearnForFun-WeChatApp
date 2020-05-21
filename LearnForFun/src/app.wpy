@@ -70,7 +70,8 @@ export default class extends wepy.app {
       'pages/announcement',
       'pages/article',
       'pages/groupMemberList',
-      'pages/addMember'
+      'pages/addMember',
+      'pages/feedback'
     ],
     window: {
       backgroundTextStyle: 'light',

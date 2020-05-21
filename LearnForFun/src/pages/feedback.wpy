@@ -1,0 +1,123 @@
+<style lang="less">
+.container{
+    flex-flow:column nowrap;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff;
+    display: flex;
+}
+
+</style>
+<template>
+<view>
+<van-cell-group>
+    <van-field
+        value="{{feedback}}"
+        required
+        clearable
+        type="textarea"
+        autosize
+        size="large"
+        label="问题反馈"
+        icon="question-o"
+        placeholder="你想跟趣学管理员说什么呢～"
+        bind:click-icon="onClickIcon"
+        @input="inputFeedback"
+    />
+    </van-cell-group>
+    <hr>
+    <van-cell/>
+    <van-button type="info" block round @tap="post">反馈</van-button>
+    <!-- 该按钮绑定 -->
+</view>
+</template>
+<script>
+import wepy from 'wepy'
+import wxCommon from '../mixins/wxCommon'
+
+export default class feedback extends wepy.page {
+    config = {
+      navigationBarTitleText: '问题反馈'
+    }
+    mixins = [wxCommon]
+    data = {
+        schoolNum:'',
+        realName:'',
+        feedback:'',
+        groupId:'',
+        height:''
+    }
+    methods = {
+        inputFeedback(e){
+          this.feedback = e.detail
+          this.$apply()
+        }
+    }
+
+    
+    post() {
+      let that = this
+      if (that.feedback == "") {
+          wx.showModal({
+                title: '提示',
+                content:'反馈内容不能是空的哦',
+                showCancel: false,
+                confirmText:'我知道了'
+            })
+      } else {
+          that.userRequest(
+          '/api/sys/usermessage/' + that.schoolNum + '/' + that.feedback,'get',
+          {
+            
+          }, function(res) {  
+            if(res.data =="success") {
+              console.log("成功反馈！")
+              wx.showModal({
+                title: '提示',
+                content: '成功反馈！',
+                cancelText:'好的',
+                confirmText:'返回',
+                success (res) {
+                  if (res.confirm) {
+                    console.log('用户点击返回')
+                    wx.navigateBack()
+                  } else if (res.cancel) {
+                    console.log('用户点击好的')
+                  }
+                }
+              })
+              
+            } else {
+              wx.showModal({
+                title: '提示',
+                content:'反馈失败！请稍后再试',
+                showCancel: false,
+                confirmText:'我知道了'
+              })
+            }      
+          }
+        )
+      }
+      
+    }
+
+    
+
+    async onLoad(options) {
+      let that = this
+
+      let userInfo = wepy.getStorageSync("userInfo")
+      that.avatarUrl = userInfo.avatarUrl
+      that.nickName = userInfo.nickName
+
+
+      that.schoolNum = wepy.getStorageSync("schoolNum")
+      that.realName = wepy.getStorageSync("realName")
+
+    }
+
+
+}
+</script>

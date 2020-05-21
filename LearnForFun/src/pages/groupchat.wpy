@@ -159,11 +159,8 @@
   
     </scroll-view>
     
-<!--     
-    <view class="chatInput">
-      <input placeholder="请输入聊天内容" value="{{say}}" bindinput="userSay"/>
-    </view> -->
-    <van-search
+
+    <!-- <van-search
       value="{{ say }}"
       use-action-slot
       background="#c8d6e5"
@@ -173,8 +170,26 @@
       shape="round"
       confirm-type="send"
     >
-      <view slot="action" @tap="sendMessage">发送</view>
-    </van-search>
+      <view slot="action" >发送</view>
+    </van-search> -->
+
+    <van-cell-group>
+      <van-field
+        value="{{ say }}"
+        center
+        clearable
+        left-icon="chat-o"
+        shape="round"
+        confirm-type="text"
+        type="textarea"
+        autosize="maxHeight: 100"
+        bind:change="userSay"
+        border="{{ true }}"
+        use-button-slot
+      >
+        <van-button slot="button" type="info" @tap="sendMessage">发送</van-button>
+      </van-field>
+    </van-cell-group>
     
   </view> 
  
@@ -227,7 +242,7 @@
         console.log("此时输入的消息 = " + this.say)
         this.$apply()
         let that = this
-        that.scrollTop =  that.scrollTop + 1000
+        that.scrollTop = that.scrollTop + 1000
         that.$apply()
         console.log("输入消息，scrollTop = " + that.scrollTop)
       },

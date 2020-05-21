@@ -83,12 +83,13 @@
 
         <van-cell title="我的收藏" is-link  link-type="navigateTo"
                   url="/pages/collection" icon="star-o"/>
-        <!--<van-cell title="关于" is-link  link-type="navigateTo"-->
-              <!--url="/pages/favorite" />-->
+        
         <van-cell title="北航统一认证登录" is-link  link-type="navigateTo"
               url="/pages/beihangLogin" icon="user-o" label="导入课表&加入官方课程群"/>
-        <!--<van-cell title="问题反馈" is-link  link-type="navigateTo"-->
-              <!--url="" />-->
+
+        <van-cell title="问题反馈" is-link  link-type="navigateTo"
+              url="/pages/feedback" icon="question-o" label="通知管理端"/>
+        
       </view>
     </view>
 
