@@ -544,7 +544,6 @@
     </view>
 
     <!-- 操作栏 -->
-    <!--wx:if="{{!show_comment_submit && post.switch_comment==1}}"-->
     <view class="tui-operation" >
         <view class="tui-operation-left tui-col-7 tui-height-full tui-ptop-zero">
             <view class="tui-btn-comment" catchtap="handlerCommentClick">发表你的评论...</view>
@@ -595,9 +594,8 @@
         }
         mixins = [wxCommon]
         data={
-            share: {},
             post_like: 0,
-            post_favorite: 0,
+
             comment_count: 0,
             loadding: false,
             pullUpOn: true,
@@ -605,56 +603,108 @@
 
             show_comment_submit: false,
             comment_content: '',
-            comment_count_change: 0,
 
+            share: {},
             commentlist: [],
             share_time:'',
             meId:'',
             myName:'',
-            likesNum:0
+            likesNum:0,
+            post_favorite: 0   //是否收藏过
+
         }
         /**
          * 文章 收藏
          */
         handlerFavoriteClick() {
             let that = this;
-            console.log('url:/api/group/share/collect/'+that.share.shareId+'/'+that.meId)
+            if(that.post_favorite==0) {
+                console.log('/api/group/share/collect/' + that.share.shareId + '/' + that.meId, 'get',
+                )
+                that.userRequest(
+                    '/api/group/share/collect/' + that.share.shareId + '/' + that.meId, 'get',
+                    {}, function (res) {
+                        console.log(res)
+                        if (res.data == "success") {
+                            console.log("成功收藏")
+                            wx.showToast({
+                                title: '收藏成功',
+                                icon: 'success',
+                                duration: 2000
+                            })
+                            // that.post_favorite=1
+                            // that.$apply()
+                            that.checkFavoriteStatus()
+                            // console.log('是否已经收藏'+that.post_favorite)
+                        } else {
+                            console.log("收藏失败")
+                            wx.showModal({
+                                title: '提示',
+                                content: '收藏失败',
+                                showCancel: false
+                            })
+                        }
+                    }
+                )
+            }
+            else{
+                console.log('/api/user/collect/cancel/'+that.share.shareId+'/'+that.meId,'get',
+                )
+                that.userRequest(
+                    '/api/user/collect/cancel/'+that.share.shareId+'/'+that.meId,'get',
+                    {
+                    },function(res){
+                        console.log(res)
+                        if(res.data =="success") {
+                            console.log("取消收藏")
+                            wx.showToast({
+                                title: '取消收藏' ,
+                                icon: 'none',
+                                duration:2000
+                            })
+                            that.checkFavoriteStatus()
+                            // console.log('是否已经收藏'+that.post_favorite)
+                        }
+                        else{
+                            console.log("取消收藏失败")
+                            wx.showModal({
+                                title: '提示' ,
+                                content:'取消收藏失败',
+                                showCancel: false
+                            })
+                        }
+                    }
+                )
+            }
+        }
+        /**
+         * 文章 取消收藏
+         */
+
+        /**
+         * 文章 是否收藏过
+         */
+        checkFavoriteStatus(){
+            let that =this
+            console.log('url:/api/group/share/collect/check/'+that.share.shareId+'/'+that.meId)
             that.userRequest(
-                '/api/group/share/collect/'+that.share.shareId+'/'+that.meId,'get',
-                {
-                },function(res){
+                '/api/group/share/collect/check/'+that.share.shareId+'/'+that.meId,'get',
+                {},function (res) {
                     console.log(res)
-                    if(res.data =="success") {
-                        console.log("成功收藏")
-                        wx.showToast({
-                            title: '收藏成功' ,
-                            icon:'success',
-                            duration:2000
-                        })
+                    if(res.data =="collected") {
+                        console.log("已经收藏过该分享")
                         that.post_favorite=1
                         that.$apply()
-                        console.log(是否已经收藏+that.post_favorite)
                     }
-                    else if(res.data =="exist") {
-                        console.log("已经收藏过")
-                        wx.showToast({
-                            title: '已经收藏过' ,
-                            icon:'success',
-                            duration:2000
-                        })
-                    }
-                    else{
-                        console.log("收藏失败")
-                        wx.showModal({
-                            title: '提示' ,
-                            content:'收藏失败',
-                            showCancel: false
-                        })
+                    else if(res.data =="uncollected"){
+                        that.post_favorite=0
+                        that.$apply()
+                        console.log("没有收藏过该分享")
                     }
                 }
+
             )
         }
-
         /**
          * 文章 点赞
          */
@@ -789,6 +839,9 @@
                 }
             });
         }
+        /**
+        * 获取评论列表
+        */
         getCommentList() {
             let that = this
             that.userRequest(
@@ -809,18 +862,19 @@
         }
         async onLoad(options){
             let that = this
-            // var share = JSON.parse(options.share);
             that.share= JSON.parse(options.share);
             that.share_time=this.timeFormat(that.share.shareId)
             that.likesNum=that.share.likesNum
             that.meId=wepy.getStorageSync('schoolNum')
             that.myName=wepy.getStorageSync('realName')
+            that.getCommentList();
+            that.checkFavoriteStatus();
 
         }
         onShow() {
             let that = this
-            // that.onLoad()
-            that.getCommentList();
+            // that.getCommentList();
+            // that.checkFavoriteStatus();
             wx.setNavigationBarTitle({
                 title: that.share.topic
             })

@@ -270,7 +270,7 @@
     }
     onShow() {
       let that = this
-      // that.getCollectList();
+      that.getCollectList();
     }
   }
 </script>
