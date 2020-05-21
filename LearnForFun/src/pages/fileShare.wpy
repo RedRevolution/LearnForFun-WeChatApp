@@ -10,9 +10,26 @@
     <view>
         <repeat for="{{sharelist}}" item="item">
             <block wx:if="{{item.shareId[0]=='F'}}">
-                <van-cell title="{{item.topic}}" value="{{item.userName}}" size="large" label="{{item.content}}">
+                <van-cell title="{{item.topic}}" value="{{item.userName}}" size="large" label="{{tool.timefmt(item.shareId)}}">
                 </van-cell>
                 <van-button plain size="small" @tap="copyUrl" data-text="{{item.content}}">复制URL</van-button>
+                <view catchtap="handlerFavoriteClick" data-shareId="{{}}">
+                    <block wx:if="{{post_favorite==1}}">
+                        <van-icon name="star" color="red"/>
+                    </block>
+                    <block wx:else>
+                        <van-icon name="star-o"/>
+                    </block>
+                </view>
+
+                <!--<view class="tui-operation-item" catchtap="handlerFavoriteClick">-->
+                    <!--<block wx:if="{{post_favorite==1}}">-->
+                        <!--<image src="/images/fav_on.png" mode="widthFix"></image>-->
+                    <!--</block>-->
+                    <!--<block wx:else>-->
+                        <!--<image src="/images/fav.png" mode="widthFix"></image>-->
+                    <!--</block>-->
+                <!--</view>-->
                 <!--尝试按钮页面跳转-->
                 <!--<van-cell  value="{{item.userName}}" size="large">-->
                     <!--<view slot="title">-->
@@ -28,18 +45,24 @@
 <script>
     import wepy from 'wepy'
     import wxCommon from '../mixins/wxCommon'
+    import mywxs from '../wxs/mywxs.wxs'
+
 
     export default class FileShare extends wepy.page {
         config = {
             navigationBarTitleText: '资料分享'
         }
         mixins = [wxCommon]
+        wxs = {
+            tool: mywxs
+        }
         data = {
             userId: '',
             userName: '',
             groupName: '',       // 群名
             groupId: '',
-            sharelist: []
+            sharelist: [],
+            post_favorite: 0   //是否收藏过
         }
         methods = {}
 
@@ -85,20 +108,106 @@
                 }
             })
         }
+        checkFavoriteStatus(){
+            let that =this
+            console.log('url:/api/group/share/collect/check/'+that.share.shareId+'/'+that.meId)
+            that.userRequest(
+                '/api/group/share/collect/check/'+that.share.shareId+'/'+that.meId,'get',
+                {},function (res) {
+                    console.log(res)
+                    if(res.data =="collected") {
+                        console.log("已经收藏过该分享")
+                        that.post_favorite=1
+                        that.$apply()
+                    }
+                    else if(res.data =="uncollected"){
+                        that.post_favorite=0
+                        that.$apply()
+                        console.log("没有收藏过该分享")
+                    }
+                }
+
+            )
+        }
+        handlerFavoriteClick(share) {
+            let that = this;
+            if(that.post_favorite==0) {
+                console.log('/api/group/share/collect/' + that.share.shareId + '/' + that.meId, 'get',
+                )
+                that.userRequest(
+                    '/api/group/share/collect/' + that.share.shareId + '/' + that.meId, 'get',
+                    {}, function (res) {
+                        console.log(res)
+                        if (res.data == "success") {
+                            console.log("成功收藏")
+                            wx.showToast({
+                                title: '收藏成功',
+                                icon: 'success',
+                                duration: 2000
+                            })
+                            // that.post_favorite=1
+                            // that.$apply()
+                            that.checkFavoriteStatus()
+                            // console.log('是否已经收藏'+that.post_favorite)
+                        } else {
+                            console.log("收藏失败")
+                            wx.showModal({
+                                title: '提示',
+                                content: '收藏失败',
+                                showCancel: false
+                            })
+                        }
+                    }
+                )
+            }
+            else{
+                console.log('/api/user/collect/cancel/'+that.share.shareId+'/'+that.meId,'get',
+                )
+                that.userRequest(
+                    '/api/user/collect/cancel/'+that.share.shareId+'/'+that.meId,'get',
+                    {
+                    },function(res){
+                        console.log(res)
+                        if(res.data =="success") {
+                            console.log("取消收藏")
+                            wx.showToast({
+                                title: '取消收藏' ,
+                                icon: 'none',
+                                duration:2000
+                            })
+                            that.checkFavoriteStatus()
+                            // console.log('是否已经收藏'+that.post_favorite)
+                        }
+                        else{
+                            console.log("取消收藏失败")
+                            wx.showModal({
+                                title: '提示' ,
+                                content:'取消收藏失败',
+                                showCancel: false
+                            })
+                        }
+                    }
+                )
+            }
+        }
 
 
         async onLoad(options) {
             let that = this;
             that.groupId = options.groupId
             that.groupName = options.groupName
-
             that.getShareList();
+            that.checkFavoriteStatus();
         }
 
         onShow() {
             let that = this
             // that.onLoad()
             that.getShareList();
+            for(var i in sharelist) {
+                that.checkFavoriteStatus(i);
+            }
+
         }
 
 

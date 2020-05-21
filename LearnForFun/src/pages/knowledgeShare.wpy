@@ -10,7 +10,7 @@
     <view>
         <repeat for="{{sharelist}}" item="item">
             <block wx:if="{{item.shareId[0]=='K'}}">
-                <van-cell title="{{item.topic}}" value="{{item.userName}}" size="large" label="{{item.content}}"
+                <van-cell title="{{item.topic}}" value="{{item.userName}}" size="large" label="{{tool.timefmt(item.shareId)}}"
                           data-item="{{item}}" data-shareId="{{item.shareId}}"
                           is-link @tap="viewArticle">
                 </van-cell>
@@ -35,12 +35,17 @@
 <script>
     import wepy from 'wepy'
     import wxCommon from '../mixins/wxCommon'
+    import mywxs from '../wxs/mywxs.wxs'
+
 
     export default class KnowledgeShare extends wepy.page {
         config = {
             navigationBarTitleText: '知识分享'
         }
         mixins = [wxCommon]
+        wxs = {
+            tool: mywxs
+        }
         data = {
             userId: '',
             userName: '',

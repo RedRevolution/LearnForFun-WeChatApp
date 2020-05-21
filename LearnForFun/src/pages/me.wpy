@@ -9,7 +9,7 @@
 }
 .userbox {
     padding-bottom: 130rpx;
-    min-height: 410rpx;
+    min-height: 420rpx;
 }
 .userinfo {
     padding-bottom: 20rpx;
@@ -30,7 +30,7 @@
 }
 .userlogin {
     height: 50rpx;
-    line-height: 50rpx;
+    line-height: 60rpx;
     font-size: 30rpx;
     font-weight: 300;
 }
@@ -44,7 +44,7 @@
 </style>
 <template>
 
-  <view style = "background:">
+  <view style = "background:aliceblue">
     <view class ="userbox">
     <view class = "userinfo">
       <block wx:if="{{nickName}}">
@@ -59,9 +59,9 @@
           <view class="userlogin">微信名：{{ nickName }}</view>
           <view class="userlogin">学号：{{schoolNum}}</view>
           <view class="userlogin">姓名：{{realName}}</view>
-          <view class = "container">
+          <view class = "container"style="margin-top: 20rpx">
             <view class="userlogin">
-              <navigator url="/pages/bindschoolnum"><van-button plain type="info">跳转到绑定学号界面</van-button></navigator>
+              <navigator url="/pages/bindschoolnum"><van-button plain type="info" size="small">绑定学号</van-button></navigator>
             </view>
           </view>
         </view>
@@ -82,13 +82,13 @@
         <!--功能待开启-->
 
         <van-cell title="我的收藏" is-link  link-type="navigateTo"
-                  url="/pages/collection" />
+                  url="/pages/collection" icon="star-o"/>
         <!--<van-cell title="关于" is-link  link-type="navigateTo"-->
               <!--url="/pages/favorite" />-->
-        <van-cell title="从教务导入课表" is-link  link-type="navigateTo"
-              url="/pages/beihangLogin" />
-        <van-cell title="问题反馈" is-link  link-type="navigateTo"
-              url="" />
+        <van-cell title="北航统一认证登录" is-link  link-type="navigateTo"
+              url="/pages/beihangLogin" icon="user-o" label="导入课表&加入官方课程群"/>
+        <!--<van-cell title="问题反馈" is-link  link-type="navigateTo"-->
+              <!--url="" />-->
       </view>
     </view>
 
