@@ -376,7 +376,7 @@
       let that = this
       // 向服务器请求最新20条数据 
       that.userRequest(  ///api/group/message/{groupId}/{count}
-        '/api/group/message/'+that.groupId + '/10' ,'get', 
+        '/api/group/message/'+that.groupId + '/20' ,'get', 
         {             
         }, function(res) {
            console.log('获取最新20条消息记录', res.data)
@@ -401,7 +401,7 @@
       console.log("现在要请求最早一条消息 " + that.lastMsgId + "之前的20条")
       // /api/group/message/{groupId}/{messageId}/{count}
       that.userRequest(  
-        '/api/group/message/'+that.groupId + '/' + that.lastMsgId + '/5' ,'get', 
+        '/api/group/message/'+that.groupId + '/' + that.lastMsgId + '/10' ,'get', 
         {             
         }, function(res) {
            console.log('获取最新20条消息记录', res.data)

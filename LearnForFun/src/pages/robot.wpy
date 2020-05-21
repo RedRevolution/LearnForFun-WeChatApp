@@ -220,7 +220,7 @@ import { transition } from '../components/vant/mixins/transition';
         console.log("此时输入的消息 = " + this.say)
         this.$apply()
         let that = this
-        that.scrollTop =  that.scrollTop + 4000
+        that.scrollTop = 5000
       },
       // 自己发送一条消息，服务器会返回一条一样的，这个我说的就显示为右侧的气泡
       sendMessage() {
@@ -233,10 +233,9 @@ import { transition } from '../components/vant/mixins/transition';
             duration: 2000
           })
         } else {
-        that.scrollTop =  that.scrollTop + 4000
-          let time = new Date()
+        that.scrollTop =  that.scrollTop + 1000
           that.chats = that.chats.concat([{
-            time: time.toLocaleTimeString(), 
+            time: that.chatFormatTime(), 
             text: sendmsg,
             name: that.realName
           }])
@@ -247,12 +246,12 @@ import { transition } from '../components/vant/mixins/transition';
             }, function(res) {
                 console.log("小趣说：" + res.data)
                 that.chats = that.chats.concat([{
-                    time: time.toLocaleTimeString(), 
+                    time: that.chatFormatTime(), 
                     text: res.data,
                     name: "小趣"
                 }])
                 that.$apply()
-                that.scrollTop =  that.scrollTop + 4000
+                that.scrollTop =  that.scrollTop + 1000
                 that.$apply()
                 wepy.setStorageSync("robotrec", JSON.stringify(that.chats))
                 console.log("此时chats:" + that.chats)
@@ -265,43 +264,7 @@ import { transition } from '../components/vant/mixins/transition';
       }
     }
 
-    // 接收服务器的消息
-    receiveMessage() {
-      const that = this
-      if (socketOpen) {   // socketOpen在这里用到如果连接成功了才可以收发消息
-        console.log('正在读取socket服务器……')
-        wx.onSocketMessage(function (res) {
-          let time = new Date()
-          console.log('啦啦啦收到服务器内容：', res)
-          
-          if (res) { // 服务器有内容不为null，那么在chats中追加一条
-            // 如果服务器返回的名字是自己，那么不显示
-            // res.data 为 "名字: 消息前有一个空格", 所以这里需要用英文冒号切割一下字符串
-            let tmpName = res.data.split(":")
-            console.log('发言人名字为' + tmpName[0] + '如果是自己，则不用再在弹框中显示了')
-            that.chats = that.chats.concat([{
-                time: time.toLocaleTimeString(), 
-                text: '' + tmpName[1],
-                name: tmpName[0]
-            }])
-            that.$apply()
-            
-            // 为了自动返回底部
-            // 每收到一条消息就缓存一下
-            wepy.setStorageSync(that.groupId+"rec", JSON.stringify(that.chats))
-            console.log("此时chats:" + that.chats)
-            
-          }
-        })
-      } else {
-        //  未打开状态需要延时重新调用
-        console.log('服务器没有连接')
-        setTimeout(() => {
-          that.receiveMessage()
-        }, 2000)
-      }
-    }
-
+   
 
     // 页面加载函数启动socket连接，当连接成功后，回复socket连接成功并且调用接收服务器
     onLoad(options) {
@@ -328,7 +291,7 @@ import { transition } from '../components/vant/mixins/transition';
       let that = this
       // 如果是第一次进来，小趣自我介绍
       var firstTime = wepy.getStorageSync('isNewbie')
-      if(firstTime != "no"){
+      if(firstTime == "no"){
 
       } else {
         // 调用自我介绍
@@ -338,24 +301,23 @@ import { transition } from '../components/vant/mixins/transition';
             
           }, function(res) {
             if(res.data) { // 返回数据分类讨论情况
-                let time = new Date()
                that.chats = that.chats.concat([{
-                    time: time.toLocaleTimeString(), 
+                    time: that.chatFormatTime(), 
                     text: res.data,
                     name: "小趣"
                 }])
                 that.$apply()
-                that.scrollTop =  that.scrollTop + 4000
+                that.scrollTop =  that.scrollTop + 1000
                 that.$apply()
                 wepy.setStorageSync("robotrec", JSON.stringify(that.chats))
+                wepy.setStorageSync('isNewbie',"no")
             } else { // 返回一个完整的User实例
                 console.log("小趣的自我介绍出了点问题")
             }                
           }
         )
-
-        wepy.setStorageSync('isNewbie',"no")
       }
+      
     }
 
     onUnload(){
