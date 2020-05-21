@@ -139,11 +139,11 @@
   <view class="page">
     <scroll-view class="chats" scroll-y="true" style="height:{{height-100}}px;" scroll-top="{{scrollTop}}">
       <repeat for="{{chats}}" item="item" id="item{{index}}">
-        <!-- <view style="font-size: 20rpx;color: #ababab">{{item.time}}</view> -->
+        <!-- <view style="font-size: 20rpx;color: #535c68">{{item.time}}</view> -->
         
         <view wx:if="{{item.name==realName}}">
           <view class="mine messages">
-            <text style="font-size: 18rpx;color: #ababab">{{item.time}}</text>
+            <text style="font-size: 22rpx;color: #535c68">{{item.time}}</text>
             <view class="message last">
               {{item.text}}
             </view>
@@ -154,7 +154,7 @@
         </view>
         <view wx:else>
            <view class="yours messages">
-              <text style="font-size: 18rpx;color: #ababab">{{item.name}} {{item.time}}</text>
+              <text style="font-size: 22rpx;color: #535c68">{{item.name}} {{item.time}}</text>
               <view class="message last">
                 {{item.text}}
               </view>

@@ -134,11 +134,11 @@
     <scroll-view class="chats" scroll-y="true" style="height:{{height-160}}px;" scroll-top="{{scrollTop}}" scroll-into-view="{{toId}}" bindscrolltoupper="onPullDownRefresh" upper-threshold="10">
        
       <repeat for="{{chats}}" item="item" id="">
-        <!-- <view style="font-size: 20rpx;color: #ababab">{{item.time}}</view> -->
+        <!-- <view style="font-size: 20rpx;color: #535c68">{{item.time}}</view> -->
         
         <view wx:if="{{item.userName==realName}}">
           <view class="mine messages" id="to{{item.id}}">
-            <text style="font-size: 20rpx;color: #ababab">{{item.createBy}}</text>
+            <text style="font-size: 20rpx;color: #535c68">{{item.createBy}}</text>
             <view class="message last">
               {{item.content}}
             </view>
@@ -149,7 +149,7 @@
         </view>
         <view wx:else>
            <view class="yours messages" id="to{{item.id}}">
-              <text style="font-size: 20rpx;color: #ababab">{{item.userName}} {{item.createBy}}</text>
+              <text style="font-size: 22rpx;color: #535c68">{{item.userName}} {{item.createBy}}</text>
               <view class="message last">
                 {{item.content}}
               </view>
