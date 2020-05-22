@@ -495,7 +495,7 @@
                 <view class="jiangqie-page-cmt">
                     <text>{{share_time}}</text>
                     <text class="category">{{share.userName}}</text>
-                    <text style="text-decoration-line:underline" wx:if="{{share.userId==meId}}"class="jiangqie-page-cmt-time" data-id="{{share.shareId}}" catchtap="handleShareDelete">删除</text>
+                    <text style="text-decoration-line:underline" wx:if="{{share.userId==meId}}" class="jiangqie-page-cmt-time" data-id="{{share.shareId}}" catchtap="handleShareDelete">删除</text>
 
                 </view>
             </view>
@@ -578,7 +578,7 @@
             </button>
             </block>
             <block wx:if="{{share.shareId[0]=='F'}}">
-                <button class="tui-operation-item"style="color:#BBC" data-text='{{share.content}}' @tap="copyUrl">
+                <button class="tui-operation-item" style="color:#BBC" data-text='{{share.content}}' @tap="copyUrl">
                     复制URL
                 </button>
             </block>
@@ -636,7 +636,8 @@
          */
         handleShareDelete(e){
             let that = this;
-            let delShareId = e.currentTarget.dataset.shareId;
+            // bug记录：这里的delShareId是undefined没有传进来,原来写的是shareId
+            let delShareId = e.currentTarget.dataset.id;
             wx.showModal({
                 title: '提示',
                 content: '确定要删除吗？',

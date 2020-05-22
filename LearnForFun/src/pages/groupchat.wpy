@@ -132,14 +132,15 @@
   
   <view class="page">
     <van-button type="normal" block @tap="enterGroupInfo">查看群详情</van-button>
-    
-    <scroll-view class="chats" scroll-y="true" style="height:{{height-160}}px;" scroll-top="{{scrollTop}}" scroll-into-view="{{toId}}" bindscrolltoupper="onPullDownRefresh" upper-threshold="10">
-       
-      <repeat for="{{chats}}" item="item" id="">
+
+  
+    <scroll-view class="chats" scroll-y="true" style="height:{{height-160}}px;" scroll-top="{{scrollTop}}" scroll-into-view="{{toId}}" bindscrolltoupper="onPullDownRefresh" upper-threshold="80">
+      <view hidden="{{notShow}}">
+      <repeat for="{{hiddenchats}}" item="item" >
         <!-- <view style="font-size: 20rpx;color: #535c68">{{item.time}}</view> -->
         
         <view wx:if="{{item.userName==realName}}">
-          <view class="mine messages" id="to{{item.id}}">
+          <view class="mine messages" >
             <text style="font-size: 20rpx;color: #535c68">{{item.createBy}}</text>
             <view class="message last">
               {{item.content}}
@@ -150,7 +151,7 @@
  
         </view>
         <view wx:else>
-           <view class="yours messages" id="to{{item.id}}">
+           <view class="yours messages" >
               <text style="font-size: 22rpx;color: #535c68">{{item.userName}} {{item.createBy}}</text>
               <view class="message last">
                 {{item.content}}
@@ -159,6 +160,31 @@
         </view>
       </repeat>
   
+    </view>
+      
+      <repeat for="{{chats}}" item="item" >
+        <!-- <view style="font-size: 20rpx;color: #535c68">{{item.time}}</view> -->
+        
+        <view wx:if="{{item.userName==realName}}">
+          <view class="mine messages" >
+            <text style="font-size: 20rpx;color: #535c68" id="to{{item.id}}">{{item.createBy}}</text>
+            <view class="message last">
+              {{item.content}}
+            </view>
+          </view>
+        </view>
+        <view wx:elif="{{item.userName==''}}">
+ 
+        </view>
+        <view wx:else>
+           <view class="yours messages" >
+              <text style="font-size: 22rpx;color: #535c68" id="to{{item.id}}">{{item.userName}} {{item.createBy}}</text>
+              <view class="message last">
+                {{item.content}}
+              </view>
+           </view>
+        </view>
+      </repeat>
     </scroll-view>
     
 
@@ -229,6 +255,7 @@
         content: '',
         userName: ''  // 用于区分是自己发的还是对方发的
       }],
+      notShow:true,
       hiddenchats:[{
         createBy: '测试',  // 最顶部的小字
         content: '测试分割线',
@@ -390,14 +417,14 @@
 
     events = {}
 
-    loadChatsRec(){
+    async loadChatsRec(){
       // 第一次进入页面的时候加载
       let that = this
       // 向服务器请求最新20条数据 
       that.userRequest(  ///api/group/message/{groupId}/{count}
-        '/api/group/message/'+that.groupId + '/20' ,'get', 
+        '/api/group/message/'+that.groupId + '/500' ,'get', 
         {             
-        }, function(res) {
+        }, async function(res) {
            console.log('获取最新20条消息记录', res.data)
            let reverse = res.data.reverse()
            that.lastMsgId = reverse[0].id
@@ -406,62 +433,96 @@
            that.$apply()
            that.scrollTop = that.scrollTop + 1000*res.data.length // 保持在最底端
            that.$apply()
+
+           // 同时提前获取隐藏数据
+           let hasRequest = that.hasRequestMsgId.indexOf(that.lastMsgId)
+           if (hasRequest<0) {
+              console.log("提前获取隐藏数据")
+              that.hasRequestMsgId = that.hasRequestMsgId.concat(that.lastMsgId)
+              that.$apply()
+              that.hiddenchats = await that.getMoreMsg(that.lastMsgId)
+              if (that.hiddenchats.length != 0) {
+                console.log("获取到的hiddenchats是: " + that.hiddenchats)
+                  that.lastMsgId = that.hiddenchats[0].id
+                  that.$apply()
+              }
+           }
+           
          } 
       )
       
     }
     async onPullDownRefresh(){
       let that = this
-      that.getMoreMsg()
-      // 要缓存请求过多少
+      // 隐藏显示
+      that.notShow = false
+      // 先拼接隐藏数据和chats，chats赋值为新的拼接
+      // 调整toView为隐藏数据最后一条的高度
+      // 获取新的隐藏数据
+      
+
+      console.log("即将请求最早一条消息 " + that.lastMsgId + "之前的10条并存放在隐藏对话里")
+      // /api/group/message/{groupId}/{messageId}/{count}
+      let hasRequest = that.hasRequestMsgId.indexOf(that.lastMsgId)
+      if (hasRequest<0) {
+
+          // 这里是为了保证拼接仅发生一次
+          let gotoId = that.chats[0].id// 要跳转到的是隐藏的最后一条的ID
+
+          that.chats = that.hiddenchats.concat(that.chats)
+          that.$apply()
+
+          that.notShow = true
+          that.$apply()
+
+          that.toId = "to" + gotoId
+          console.log('滚到旧toId' + that.toId)
+          that.$apply() 
+
+
+
+        console.log("hasrequest = " + hasRequest)
+        that.hasRequestMsgId = that.hasRequestMsgId.concat(that.lastMsgId)
+        that.$apply()
+        console.log("此时hasrequest数组为 " + that.hasRequestMsgId)
+
+        let previousMsg = await that.getMoreMsg(that.lastMsgId)
+        if(previousMsg.length != 0) {
+          that.lastMsgId = previousMsg[0].id
+          console.log("更新后最早一条消息id是: " + that.lastMsgId + ", 内容为: " + previousMsg[0].content)
+          that.hiddenchats = previousMsg
+          that.$apply()
+        }
+
+      } else {
+        console.log("刚刚已经请求过一次了，请等待后台返回")
+      }
     }
 
-    async getMoreMsg(){
+    getMoreMsg(lastMsgId){
+      console.log("进入了getMoreMsg函数")
       let that = this
-      console.log("现在要请求最早一条消息 " + that.lastMsgId + "之前的20条")
-      // /api/group/message/{groupId}/{messageId}/{count}
-
-      let hasRequest = that.hasRequestMsgId.indexOf(that.lastMsgId)
-      if (hasRequest<0) {  // 还没有请求过
-          console.log("hasrequest = " + hasRequest)
-          that.hasRequestMsgId = that.hasRequestMsgId.concat(that.lastMsgId)
-          that.$apply()
-          console.log("此时hasrequest数组为 " + that.hasRequestMsgId)
+      var reverse = []
+      return new Promise(resolve=>{
           that.userRequest(  
-            '/api/group/message/'+that.groupId + '/' + that.lastMsgId + '/10' ,'get', 
+            '/api/group/message/'+that.groupId + '/' + lastMsgId + '/10' ,'get', 
             {             
             }, function(res) {
-              console.log('获取最新20条消息记录', res.data)
+              console.log('获取10条消息记录', res.data)
               wx.stopPullDownRefresh()
               if (res.data.length != 0) {
-                // 说明该条消息记录已经请求国
-                  
-                  
-
-                  let reverse = res.data.reverse()
-                  let oldLastId = that.lastMsgId
-                  that.lastMsgId = reverse[0].id
-                  console.log("更新后最早一条消息id是: " + that.lastMsgId + ", 内容为: " + reverse[0].content)
-                  that.chats = reverse.concat(that.chats)
-                  that.$apply()
-
-                  that.toId = "to" + oldLastId
-                  that.$apply()
-                  
+                  reverse = res.data.reverse()  // 倒序数组
                   wx.stopPullDownRefresh()
               } else {
                   console.log('没有更早的消息记录了')
                   wx.stopPullDownRefresh()
               }
+              resolve(reverse)  // 若无更早记录则返回的reverse为空数组
             } 
           )
-        } else {
-          console.log("刚刚已经请求过一次了，请等待后台返回")
-        }
-
-      
-
+      })
     }
+
 
     getGroupInfo(){ // /api/group/{groupId}
       let that = this

@@ -291,6 +291,7 @@ import { transition } from '../components/vant/mixins/transition';
 
     onShow(){
       let that = this
+      that.scrollTop =  4000
       // 如果是第一次进来，小趣自我介绍
       var firstTime = wepy.getStorageSync('isNewbie')
       if(firstTime == "no"){
