@@ -91,7 +91,8 @@
 .mine .message {
   color: white;
   margin-left: 25%;
-  background: linear-gradient(to bottom, #00D0EA 0%, #0085D1 100%);
+  // background: linear-gradient(to bottom, #00D0EA 0%, #0085D1 100%);
+  background: #0085D1;
   background-attachment: fixed;
   position: relative;
 }
@@ -104,7 +105,8 @@
   right: -8px;
   height: 20px;
   width: 20px;
-  background: linear-gradient(to bottom, #00D0EA 0%, #0085D1 100%);
+  // background: linear-gradient(to bottom, #00D0EA 0%, #0085D1 100%);
+  background: #0085D1;
   background-attachment: fixed;
   border-bottom-left-radius: 15px;
 }
@@ -180,14 +182,15 @@
         clearable
         left-icon="chat-o"
         shape="round"
-        confirm-type="text"
-        type="textarea"
-        autosize="maxHeight: 100"
+        confirm-type="send"
+        type="text"
+        autosize
         bind:change="userSay"
         border="{{ true }}"
         use-button-slot
+        bind:confirm="sendMessage"
       >
-        <van-button slot="button" type="info" @tap="sendMessage">发送</van-button>
+        <van-button slot="button" size="small" type="info" @tap="sendMessage">发送</van-button>
       </van-field>
     </van-cell-group>
     
@@ -232,7 +235,8 @@
         userName: '苦逼的前端er'  // 用于区分是自己发的还是对方发的
       }], // 顶部追加的聊天记录
       toId:'',
-      lastMsgId:''  // 最早消息的ID，用来在加载更多消息时请求
+      lastMsgId:'',  // 最早消息的ID，用来在加载更多消息时请求
+      hasRequestMsgId:[]
     }
     mixins = [wxCommon]
     methods = {
@@ -406,40 +410,56 @@
       )
       
     }
-    onPullDownRefresh(){
+    async onPullDownRefresh(){
       let that = this
       that.getMoreMsg()
+      // 要缓存请求过多少
     }
 
-    getMoreMsg(){
+    async getMoreMsg(){
       let that = this
       console.log("现在要请求最早一条消息 " + that.lastMsgId + "之前的20条")
       // /api/group/message/{groupId}/{messageId}/{count}
-      that.userRequest(  
-        '/api/group/message/'+that.groupId + '/' + that.lastMsgId + '/10' ,'get', 
-        {             
-        }, function(res) {
-           console.log('获取最新20条消息记录', res.data)
-           wx.stopPullDownRefresh()
-           if (res.data.length != 0) {
-              let reverse = res.data.reverse()
-              let oldLastId = that.lastMsgId
-              that.lastMsgId = reverse[0].id
-              console.log("更新后最早一条消息id是: " + that.lastMsgId + ", 内容为: " + reverse[0].content)
-              that.chats = reverse.concat(that.chats)
-              that.$apply()
 
-              that.toId = "to" + oldLastId
-              that.$apply()
-              
+      let hasRequest = that.hasRequestMsgId.indexOf(that.lastMsgId)
+      if (hasRequest<0) {  // 还没有请求过
+          console.log("hasrequest = " + hasRequest)
+          that.hasRequestMsgId = that.hasRequestMsgId.concat(that.lastMsgId)
+          that.$apply()
+          console.log("此时hasrequest数组为 " + that.hasRequestMsgId)
+          that.userRequest(  
+            '/api/group/message/'+that.groupId + '/' + that.lastMsgId + '/10' ,'get', 
+            {             
+            }, function(res) {
+              console.log('获取最新20条消息记录', res.data)
               wx.stopPullDownRefresh()
-           } else {
-              console.log('没有更早的消息记录了')
-              wx.stopPullDownRefresh()
-           }
-            
-         } 
-      )
+              if (res.data.length != 0) {
+                // 说明该条消息记录已经请求国
+                  
+                  
+
+                  let reverse = res.data.reverse()
+                  let oldLastId = that.lastMsgId
+                  that.lastMsgId = reverse[0].id
+                  console.log("更新后最早一条消息id是: " + that.lastMsgId + ", 内容为: " + reverse[0].content)
+                  that.chats = reverse.concat(that.chats)
+                  that.$apply()
+
+                  that.toId = "to" + oldLastId
+                  that.$apply()
+                  
+                  wx.stopPullDownRefresh()
+              } else {
+                  console.log('没有更早的消息记录了')
+                  wx.stopPullDownRefresh()
+              }
+            } 
+          )
+        } else {
+          console.log("刚刚已经请求过一次了，请等待后台返回")
+        }
+
+      
 
     }
 
