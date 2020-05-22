@@ -495,6 +495,8 @@
                 <view class="jiangqie-page-cmt">
                     <text>{{share_time}}</text>
                     <text class="category">{{share.userName}}</text>
+                    <text style="text-decoration-line:underline" wx:if="{{share.userId==meId}}"class="jiangqie-page-cmt-time" data-id="{{share.shareId}}" catchtap="handleShareDelete">删除</text>
+
                 </view>
             </view>
         </view>
@@ -513,46 +515,55 @@
             </view>
 
         </view>
-        <!--评论列表-->
-        <view class="jiangqie-page-cmtbox">
-            <view class="jiangqie-page-cmt-title">
-                评论<text>{{commentlist.length}}</text>
-            </view>
-            <block wx:if="{{commentlist.length>0}}">
-                <view wx:for="{{commentlist}}" wx:key="id" class="jiangqie-page-cmt-content">
-                    <view class="jiangqie-page-cmt-head">
-                        {{item.userName}}
-                        <!--<text class="jiangqie-page-cmt-time">{{item.time}}</text>-->
-                        <!--<text wx:if="{{item.approved!=1}}" class="jiangqie-page-cmt-time">待审核</text>-->
-                        <text wx:if="{{item.userId==meId}}"class="jiangqie-page-cmt-time" data-id="{{item.id}}" catchtap="handlerCommentDeleteClick">删除</text>
-
-                    </view>
-                    <view class="jiangqie-page-cmt-text">
-                        <text class="jiangqie-page-cmt-text-world">{{item.content}}</text>
-                    </view>
+        <block wx:if="{{share.shareId[0]=='K'}}">
+            <!--评论列表-->
+            <view class="jiangqie-page-cmtbox">
+                <view class="jiangqie-page-cmt-title">
+                    评论<text>{{commentlist.length}}</text>
                 </view>
-                <view class="tui-nomore"></view>
-                <!--加载loadding-->
-                <!--<tui-loadmore visible="{{loadding}}"></tui-loadmore>-->
-                <!--<tui-nomore visible="{{!pullUpOn}}"></tui-nomore>-->
-                <!--加载loadding-->
-            </block>
-            <block wx:else>
-                <template is="jiangqie_nodata" />
-            </block>
-        </view>
+                <block wx:if="{{commentlist.length>0}}">
+                    <view wx:for="{{commentlist}}" wx:key="id" class="jiangqie-page-cmt-content">
+                        <view class="jiangqie-page-cmt-head">
+                            {{item.userName}}
+                            <!--<text class="jiangqie-page-cmt-time">{{item.time}}</text>-->
+                            <!--<text wx:if="{{item.approved!=1}}" class="jiangqie-page-cmt-time">待审核</text>-->
+                            <text wx:if="{{item.userId==meId}}"class="jiangqie-page-cmt-time" data-id="{{item.id}}" catchtap="handlerCommentDeleteClick">删除</text>
+
+                        </view>
+                        <view class="jiangqie-page-cmt-text">
+                            <text class="jiangqie-page-cmt-text-world">{{item.content}}</text>
+                        </view>
+                    </view>
+                    <view class="tui-nomore"></view>
+                    <!--加载loadding-->
+                    <!--<tui-loadmore visible="{{loadding}}"></tui-loadmore>-->
+                    <!--<tui-nomore visible="{{!pullUpOn}}"></tui-nomore>-->
+                    <!--加载loadding-->
+                </block>
+                <block wx:else>
+                    <template is="jiangqie_nodata" />
+                </block>
+            </view>
+        </block>
+
     </view>
 
     <!-- 操作栏 -->
     <view class="tui-operation" >
-        <view class="tui-operation-left tui-col-7 tui-height-full tui-ptop-zero">
-            <view class="tui-btn-comment" catchtap="handlerCommentClick">发表你的评论...</view>
-        </view>
+        <block wx:if="{{share.shareId[0]=='K'}}">
+            <view class="tui-operation-left tui-col-7 tui-height-full tui-ptop-zero">
+                <view class="tui-btn-comment" catchtap="handlerCommentClick">发表你的评论...</view>
+            </view>
+        </block>
+
         <view class="tui-operation-right tui-right-flex tui-col-5">
+            <!--点赞-->
+            <block wx:if="{{share.shareId[0]=='K'}}">
             <view class="tui-operation-item" hover-class="opcity" hover-stay-time="150" bindtap="handlerLikeClick">
                 <image src="/images/color_like.png" mode="widthFix"></image>
                 <text>{{likesNum}}</text>
             </view>
+            </block>
             <view class="tui-operation-item" catchtap="handlerFavoriteClick">
                 <block wx:if="{{post_favorite==1}}">
                     <image src="/images/fav_on.png" mode="widthFix"></image>
@@ -561,9 +572,16 @@
                     <image src="/images/fav.png" mode="widthFix"></image>
                 </block>
             </view>
+            <block wx:if="{{share.shareId[0]=='K'}}">
             <button open-type="share" class="tui-operation-item" hover-class="opcity" hover-stay-time="150">
                 <image src="/images/btn_share.png" mode="widthFix"></image>
             </button>
+            </block>
+            <block wx:if="{{share.shareId[0]=='F'}}">
+                <button class="tui-operation-item"style="color:#BBC" data-text='{{share.content}}' @tap="copyUrl">
+                    复制URL
+                </button>
+            </block>
         </view>
     </view>
 
@@ -612,6 +630,49 @@
             likesNum:0,
             post_favorite: 0   //是否收藏过
 
+        }
+        /**
+         *删除分享
+         */
+        handleShareDelete(e){
+            let that = this;
+            let delShareId = e.currentTarget.dataset.shareId;
+            wx.showModal({
+                title: '提示',
+                content: '确定要删除吗？',
+                success(sm) {
+                    if (sm.confirm) {
+                        console.log('/api/group/share/delete/'+delShareId)
+                        that.userRequest(
+                            '/api/group/share/delete/'+delShareId ,'get',
+                            {
+                                shareId:delShareId
+                            }, function(res) {
+                                if(res.data == "success") {
+                                    console.log("成功删除一条分享!");
+                                    wx.navigateBack()
+                                    wx.showToast({
+                                        title: '删除成功' ,
+                                        icon:'success',
+                                        duration:2000
+                                    })
+                                }
+                                else {
+                                    console.log("删除失败");
+                                    wx.showModal({
+                                        title: '提示',
+                                        content:'删除失败！',
+                                        showCancel: false
+                                    })
+                                }
+                            }
+                        )
+                    }
+                    else if (sm.cancel) {
+                        console.log('用户点击取消')
+                    }
+                }
+            });
         }
         /**
          * 文章 收藏
@@ -677,9 +738,6 @@
                 )
             }
         }
-        /**
-         * 文章 取消收藏
-         */
 
         /**
          * 文章 是否收藏过
@@ -859,6 +917,21 @@
                     }
                 }
             )
+        }
+        copyUrl(e){
+            console.log(e)
+            wx.setClipboardData({
+                data: e.currentTarget.dataset.text,
+                success: function (res) {
+                    wx.getClipboardData({
+                        success: function (res) {
+                            wx.showToast({
+                                title: '复制成功'
+                            })
+                        }
+                    })
+                }
+            })
         }
         async onLoad(options){
             let that = this

@@ -10,12 +10,9 @@
     <view>
         <repeat for="{{sharelist}}" item="item">
             <block wx:if="{{item.shareId[0]=='K'}}">
-                <van-cell title="{{item.topic}}" size="large" use-label-slot
+                <van-cell title="{{item.topic}}" value="{{item.userName}}" size="large" label="{{tool.timefmt(item.shareId)}}"
                           data-item="{{item}}" data-shareId="{{item.shareId}}"
                           is-link @tap="viewArticle">
-                    <view slot="label">
-                        <view class="van-cell-text">{{tool.timefmt(item.shareId)}} {{item.userId==meId?'我':item.userName}}</view>
-                    </view>
                 </van-cell>
             </block>
         </repeat>
@@ -41,7 +38,7 @@
     import mywxs from '../wxs/mywxs.wxs'
 
 
-    export default class KnowledgeShare extends wepy.page {
+    export default class MyShare extends wepy.page {
         config = {
             navigationBarTitleText: '知识分享'
         }
@@ -50,7 +47,7 @@
             tool: mywxs
         }
         data = {
-            meId: '',
+            userId: '',
             userName: '',
             groupName: '',       // 群名
             groupId: '',
@@ -68,7 +65,7 @@
                         that.sharelist = res.data
                         that.$apply()
                     } else {
-                       let sharelist = res.data
+                        let sharelist = res.data
                         console.log(sharelist)
                         that.sharelist = res.data
                         that.$apply()
@@ -88,7 +85,7 @@
             let that = this;
             that.groupId = options.groupId
             that.groupName = options.groupName
-            that.meId=wepy.getStorageSync('schoolNum')
+
             that.getShareList();
         }
 

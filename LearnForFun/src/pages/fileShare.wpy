@@ -10,26 +10,42 @@
     <view>
         <repeat for="{{sharelist}}" item="item" key="index">
             <block wx:if="{{item.shareId[0]=='F'}}">
-                <van-cell title="{{item.topic}}" value="{{item.userName}}" size="large" label="{{item.content}}">
-                </van-cell>
-                <van-button plain size="small" @tap="copyUrl" data-text="{{item.content}}">复制URL</van-button>
-                <view catchtap="handlerFavoriteClick" data-item="{{item}}" data-index="{{index}}">
-                    <block wx:if="{{item.post_favorite==1}}">
-                        <van-icon name="star" color="red"/>
-                    </block>
-                    <block wx:elif="{{item.post_favorite==0}}">
-                        <van-icon name="star-o"/>
-                    </block>
-                </view>
+                <view>
+                    <van-cell title="{{item.topic}}"  size="large" use-label-slot>
+                        <!--value="{{item.userId==meId?'我':item.userName}}"-->
+                        <view slot="label">
+                            <view class="van-cell-text">{{tool.timefmt(item.shareId)}} {{item.userId==meId?'我':item.userName}}</view>
+                            <view class="van-cell-text">{{item.content}}</view>
+                        </view>
+                        <view wx:if="{{item.userId==meId}}">
+                            <van-icon  name="delete" class="custom-icon" @tap="deleteShare" data-shareId="{{item.shareId}}"/>
+                        </view>
 
-                <!--<view class="tui-operation-item" catchtap="handlerFavoriteClick">-->
-                <!--<block wx:if="{{post_favorite==1}}">-->
-                <!--<image src="/images/fav_on.png" mode="widthFix"></image>-->
-                <!--</block>-->
-                <!--<block wx:else>-->
-                <!--<image src="/images/fav.png" mode="widthFix"></image>-->
-                <!--</block>-->
-                <!--</view>-->
+                        <view catchtap="handlerFavoriteClick" data-item="{{item}}" data-index="{{index}}">
+                            <block wx:if="{{item.post_favorite==1}}">
+                                <van-icon name="star" color="red"/>
+                            </block>
+                            <block wx:elif="{{item.post_favorite==0}}">
+                                <van-icon name="star-o"/>
+                            </block>
+                        </view>
+                        <view> <van-button plain size="small" @tap="copyUrl" data-text="{{item.content}}">复制URL</van-button>
+                        </view>
+                    </van-cell>
+
+                    <!--<view wx:if="{{item.userId==meId}}">-->
+                        <!--<van-icon name="delete"  @tap="deleteShare" data-shareId="{{item.shareId}}"></van-icon>-->
+                    <!--</view>-->
+
+                    <!--<view catchtap="handlerFavoriteClick" data-item="{{item}}" data-index="{{index}}">-->
+                        <!--<block wx:if="{{item.post_favorite==1}}">-->
+                            <!--<van-icon name="star" color="red"/>-->
+                        <!--</block>-->
+                        <!--<block wx:elif="{{item.post_favorite==0}}">-->
+                            <!--<van-icon name="star-o"/>-->
+                        <!--</block>-->
+                    <!--</view>-->
+                </view>
                 <!--尝试按钮页面跳转-->
                 <!--<van-cell  value="{{item.userName}}" size="large">-->
                 <!--<view slot="title">-->
@@ -94,10 +110,13 @@
                         //
                         // }
                         for(var i in that.sharelist) {
-                            let id=that.sharelist[i].shareId
-                            console.log('shareid：'+id)
-                            //同步请求数据！！
-                            that.sharelist[i].post_favorite= await that.checkFavoriteStatus(id)
+                            if(that.sharelist[i].shareId[0]=='F'){
+                                let id=that.sharelist[i].shareId
+                                console.log('shareid：'+id)
+                                //同步请求数据！！
+                                that.sharelist[i].post_favorite= await that.checkFavoriteStatus(id)
+                            }
+
                         }
                         that.$apply()
                         // that.checkFavoriteStatus()
@@ -105,6 +124,45 @@
                     }
                 }
             )
+        }
+        deleteShare(e){
+            let that = this;
+            let delShareId = e.currentTarget.dataset.shareId;
+            wx.showModal({
+                title: '提示',
+                content: '确定要删除吗？',
+                success(sm) {
+                    if (sm.confirm) {
+                        console.log('/api/group/share/delete/'+delShareId)
+                        that.userRequest(
+                            '/api/group/share/delete/'+delShareId ,'get',
+                            {
+                                shareId:delShareId
+                            }, function(res) {
+                                if(res.data == "success") {
+                                    console.log("成功删除一条分享!");
+                                    wx.showToast({
+                                        title: '删除成功' ,
+                                        icon:'success',
+                                        duration:2000
+                                    })
+                                }
+                                else {
+                                    console.log("删除失败");
+                                    wx.showModal({
+                                        title: '提示',
+                                        content:'删除失败！',
+                                        showCancel: false
+                                    })
+                                }
+                            }
+                        )
+                    }
+                    else if (sm.cancel) {
+                        console.log('用户点击取消')
+                    }
+                }
+            });
         }
         copyUrl(e){
             console.log(e)
@@ -240,7 +298,6 @@
             let that = this
             // that.onLoad()
             that.getShareList();
-
 
         }
 
