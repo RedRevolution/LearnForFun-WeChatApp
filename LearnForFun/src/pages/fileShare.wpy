@@ -20,25 +20,22 @@
                     <block wx:elif="{{item.post_favorite==0}}">
                         <van-icon name="star-o"/>
                     </block>
-                    <block wx:else>
-                        <van-icon name="user-o"/>
-                    </block>
                 </view>
 
                 <!--<view class="tui-operation-item" catchtap="handlerFavoriteClick">-->
-                    <!--<block wx:if="{{post_favorite==1}}">-->
-                        <!--<image src="/images/fav_on.png" mode="widthFix"></image>-->
-                    <!--</block>-->
-                    <!--<block wx:else>-->
-                        <!--<image src="/images/fav.png" mode="widthFix"></image>-->
-                    <!--</block>-->
+                <!--<block wx:if="{{post_favorite==1}}">-->
+                <!--<image src="/images/fav_on.png" mode="widthFix"></image>-->
+                <!--</block>-->
+                <!--<block wx:else>-->
+                <!--<image src="/images/fav.png" mode="widthFix"></image>-->
+                <!--</block>-->
                 <!--</view>-->
                 <!--尝试按钮页面跳转-->
                 <!--<van-cell  value="{{item.userName}}" size="large">-->
-                    <!--<view slot="title">-->
-                        <!--<view class="van-cell-text">{{item.topic}}</view>-->
-                        <!--<van-button @tap="gotoURL" data-Url="{{item.content}}">点击此处跳转页面</van-button>-->
-                    <!--</view>-->
+                <!--<view slot="title">-->
+                <!--<view class="van-cell-text">{{item.topic}}</view>-->
+                <!--<van-button @tap="gotoURL" data-Url="{{item.content}}">点击此处跳转页面</van-button>-->
+                <!--</view>-->
                 <!--</van-cell>-->
             </block>
         </repeat>
@@ -81,7 +78,7 @@
             let that = this
             that.userRequest(
                 '/api/group/share/' + that.groupId, 'get',
-                {}, function (res) {  // 返回的是一个list? 里面全是Share实例
+                {}, async function (res) {  // 返回的是一个list 里面全是Share实例 //async和await配对！
                     if (res.data.length == 0) {
                         console.log("没有资料分享")
                         that.sharelist = res.data
@@ -97,10 +94,13 @@
                         //
                         // }
                         for(var i in that.sharelist) {
-                            that.sharelist[i].post_favorite=1
+                            let id=that.sharelist[i].shareId
+                            console.log('shareid：'+id)
+                            //同步请求数据！！
+                            that.sharelist[i].post_favorite= await that.checkFavoriteStatus(id)
                         }
                         that.$apply()
-                        that.checkFavoriteStatus()
+                        // that.checkFavoriteStatus()
 
                     }
                 }
@@ -121,35 +121,36 @@
                 }
             })
         }
-        checkFavoriteStatus(){
+        checkFavoriteStatus(shareId){
             console.log('check')
             let that =this
-            console.log(that.sharelist+'end')
-            for(var i in that.sharelist){
-                console.log('url:/api/group/share/collect/check/'+that.sharelist[i].shareId+'/'+that.meId)
+            var post=0
+            //重要！同步请求数据！
+            return new Promise(resolve=>{
+                console.log('url:/api/group/share/collect/check/'+shareId+'/'+that.meId)
                 that.userRequest(
-                    '/api/group/share/collect/check/'+that.sharelist[i].shareId+'/'+that.meId,'get',
+                    '/api/group/share/collect/check/'+shareId+'/'+that.meId,'get',
                     {},function (res) {
                         console.log(res)
                         if(res.data =="collected") {
                             console.log("已经收藏过该分享")
-                            that.sharelist[i].post_favorite=1
-                            console.log(that.sharelist[i].post_favorite)
-                            that.$apply()
+                            post=1
+                            // that.sharelist[i].post_favorite=1
+                            // that.$apply()
 
                         }
                         else if(res.data =="uncollected"){
-                            that.sharelist[i].post_favorite=0
-
                             console.log("没有收藏过该分享")
-                            that.$apply()
+                            post=0
+                            // that.sharelist[i].post_favorite=0
+                            // that.$apply()
 
                         }
+                        resolve(post)
                     }
 
                 )
-
-            }
+            })
 
         }
 
