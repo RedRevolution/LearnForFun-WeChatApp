@@ -234,10 +234,13 @@
                 if(res.data.length == 0) { // 返回数据分类讨论情况
                     wepy.showModal({
                         title: '提示',
-                        content: '返回的课表为空',
+                        content: '你还没有导入课表哦～点击确定去“我的”页面统一认证登录',
                         success (res) {
                             if (res.confirm) {
                                 console.log('用户点击确定')
+                                wx.navigateTo({ // 不能用 redirectTo
+                                    url: '/pages/beihangLogin'
+                                })
                             } else if (res.cancel) {
                                 console.log('用户点击取消')
                             }

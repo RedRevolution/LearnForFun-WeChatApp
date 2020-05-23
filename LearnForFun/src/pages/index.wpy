@@ -20,7 +20,7 @@
     <repeat for="{{sysMsg}}" item="item">
       <van-notice-bar
         left-icon="info-o"
-        text="{{item.content}}"
+        text="{{item}}"
       />
     </repeat>
   </view>
@@ -238,8 +238,8 @@
           '/api/sys/message/' + that.schoolNum,'get',
           {
             
-          }, function(res) {  // 返回的是一个list? 里面全是Group实例
-            console.log("返回的res是 " + res.data)
+          }, function(res) {  
+            console.log("返回的res是 " + res)
             if(res.data) { // 是官方群组 .groupId[0]=='O'
               console.log("有系统消息！是 " + res.data)
               that.sysMsg = res.data
