@@ -11,8 +11,7 @@
         <repeat for="{{sharelist}}" item="item">
             <block wx:if="{{item.shareId[0]=='K'}}">
                 <van-cell title="{{item.topic}}" size="large" use-label-slot
-                          data-item="{{item}}" data-shareId="{{item.shareId}}"
-                          is-link @tap="viewArticle">
+                          data-item="{{item}}" is-link @tap="viewArticle">
                     <view slot="label">
                         <view class="van-cell-text">{{tool.timefmt(item.shareId)}} {{item.userId==meId?'我':item.userName}}</view>
                     </view>

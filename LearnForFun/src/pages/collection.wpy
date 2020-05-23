@@ -159,21 +159,6 @@
 <view class="jiangqie-news-view">
     <block wx:if="{{collectList.length > 0}}">
       <block wx:for="{{collectList}}" wx:key="id">
-        <!--<view wx:if="{{index%5==4}}" class="jiangqie-news-block image-wide" data-id="{{item.id}}" catchtap="handlerArticleClick">-->
-          <!--&lt;!&ndash; <image src="{{item.thumbnail}}" mode="aspectFill" class="jiangqie-news-image"></image> &ndash;&gt;-->
-          <!--<view class="jiangqie-news-text">-->
-            <!--<view class="jiangqie-news-title {{item.excerpt?'':'jiangqie-news-no-excerpt'}}">{{item.title}}</view>-->
-            <!--&lt;!&ndash; 作者是谁 &ndash;&gt;-->
-            <!--<view wx:if="{{item.excerpt}}" class="jiangqie-news-describe">{{item.excerpt}}</view>-->
-            <!--<view class="jiangqie-news-info">-->
-              <!--<view class="jiangqie-news-cmt">-->
-                <!--<image src="../images/view.png" mode="aspectFill" class=""></image>{{item.views}}-->
-              <!--</view>-->
-              <!--<text wx:for="{{item.tags}}" wx:key="id" class="jiangqie-news-tag">{{item.name}}</text>-->
-              <!--<text class="jiangqie-news-time">{{item.time}}</text>-->
-            <!--</view>-->
-          <!--</view>-->
-        <!--</view>-->
         <view class="jiangqie-news-block" data-item="{{item}}"catchtap="viewArticle">
           <view class="jiangqie-news-text">
             <view class="jiangqie-news-title">{{item.topic}}</view>

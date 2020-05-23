@@ -15,10 +15,10 @@
                         <!--value="{{item.userId==meId?'我':item.userName}}"-->
                         <view slot="label">
                             <view class="van-cell-text">{{tool.timefmt(item.shareId)}} {{item.userId==meId?'我':item.userName}}</view>
-                            <view class="van-cell-text">{{item.content}}</view>
+                            <view class="van-cell-text" style="word-break:break-all; text-decoration-line:underline">{{item.content}}</view>
                         </view>
                         <view wx:if="{{item.userId==meId}}">
-                            <van-icon  name="delete" class="custom-icon" @tap="deleteShare" data-shareId="{{item.shareId}}"/>
+                            <van-icon  name="delete" class="custom-icon" @tap="deleteShare" data-id="{{item.shareId}}"/>
                         </view>
 
                         <view catchtap="handlerFavoriteClick" data-item="{{item}}" data-index="{{index}}">
@@ -127,7 +127,7 @@
         }
         deleteShare(e){
             let that = this;
-            let delShareId = e.currentTarget.dataset.shareId;
+            let delShareId = e.currentTarget.dataset.id;
             wx.showModal({
                 title: '提示',
                 content: '确定要删除吗？',
@@ -146,6 +146,8 @@
                                         icon:'success',
                                         duration:2000
                                     })
+                                    //刷新页面
+                                    that.getShareList();
                                 }
                                 else {
                                     console.log("删除失败");
@@ -298,7 +300,6 @@
             let that = this
             // that.onLoad()
             that.getShareList();
-
         }
 
 
