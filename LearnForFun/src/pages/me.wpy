@@ -152,31 +152,44 @@ export default class Me extends wepy.page {
   delAccount(){
     let that = this
 
-    // /api/user/delete/{userId}
-    that.userRequest(
-        '/api/user/delete/'+that.schoolNum ,'get',
-        {
-            
-        }, function(res) {
-          if(res.data == "success") {
-              console.log("注销成功!");
-              wx.showModal({
-                  title: '提示',
-                  content:'成功注销账号！',
-              })
-              wx.clearStorage()
-              
+    wx.showModal({
+      title: '提示',
+      content: '注销账号会删除所有数据，确认注销账号吗？',
+      cancelText:'取消',
+      confirmText:'仍要注销',
+          success (res) {
+            if (res.confirm) {
+              // /api/user/delete/{userId}
+              that.userRequest(
+                  '/api/user/delete/'+that.schoolNum ,'get',
+                  {
+                      
+                  }, function(res) {
+                    if(res.data == "success") {
+                        console.log("注销成功!");
+                        wx.showModal({
+                            title: '提示',
+                            content:'成功注销账号！',
+                        })
+                        wx.clearStorage()
+                    }
+                    else {
+                        console.log("注销失败");
+                        wx.showModal({
+                            title: '提示',
+                            content:'注销失败！',
+                            showCancel: false
+                        })
+                    }
+                  }
+                )
+            } else if (res.cancel) {
+              console.log('用户点击取消')
+            }
           }
-          else {
-              console.log("注销失败");
-              wx.showModal({
-                  title: '提示',
-                  content:'注销失败！',
-                  showCancel: false
-              })
-          }
-        }
-      )
+      })
+
+    
   }
 
 
