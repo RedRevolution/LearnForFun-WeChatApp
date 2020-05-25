@@ -266,19 +266,9 @@ export default class groupInfo extends wepy.page {
 
     showGroupMember(){
       let that = this
-      let auth = wepy.getStorageSync("auth"+that.groupId)
-      if(auth == "administrator") {
-        wx.navigateTo({
+      wx.navigateTo({
           url:'/pages/groupMemberList?groupId='+that.groupId
-        })
-      } else {
-        wx.showModal({
-          title: '提示',
-          content:'只有群管理员才可以查看群成员',
-          showCancel: false,
-          confirmText:'我知道了'
-        })
-      }
+      })
       
     }
     
