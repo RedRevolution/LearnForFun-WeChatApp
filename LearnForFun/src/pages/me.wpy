@@ -91,6 +91,10 @@
 
         <van-cell title="问题反馈" is-link  link-type="navigateTo"
               url="/pages/feedback" icon="question-o" label="通知管理端"/>
+        <van-goods-action>
+          
+          <van-goods-action-button text="注销账号" @tap="delAccount" />
+        </van-goods-action>
         
       </view>
     </view>
@@ -143,6 +147,36 @@ export default class Me extends wepy.page {
       that.openId = wepy.getStorageSync('openid')
       console.log("点击进到me页面："+ that.realName + ", 学号：" + that.schoolNum + ", openid: " + that.openId);
 
+  }
+
+  delAccount(){
+    let that = this
+
+    // /api/user/delete/{userId}
+    that.userRequest(
+        '/api/user/delete/'+that.schoolNum ,'get',
+        {
+            
+        }, function(res) {
+          if(res.data == "success") {
+              console.log("注销成功!");
+              wx.showModal({
+                  title: '提示',
+                  content:'成功注销账号！',
+              })
+              wx.clearStorage()
+              
+          }
+          else {
+              console.log("注销失败");
+              wx.showModal({
+                  title: '提示',
+                  content:'注销失败！',
+                  showCancel: false
+              })
+          }
+        }
+      )
   }
 
 

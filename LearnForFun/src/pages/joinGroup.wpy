@@ -164,6 +164,12 @@ export default class joinGroup extends wepy.page {
                 title: '提示',
                 content: '你已经加入过这个群了',
               })
+            } else if (res.data =="nonexist") {
+              console.log(res)
+              wx.showModal({
+                title: '提示',
+                content: '该群不存在，请检查ID',
+              })
             } else {
               console.log(res)
               wx.showModal({
