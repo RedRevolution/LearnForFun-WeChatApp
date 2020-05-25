@@ -651,12 +651,14 @@
                             }, function(res) {
                                 if(res.data == "success") {
                                     console.log("成功删除一条分享!");
-                                    wx.navigateBack()
                                     wx.showToast({
                                         title: '删除成功' ,
                                         icon:'success',
-                                        duration:2000
+                                        duration:1500
                                     })
+                                    setTimeout(function () {
+                                        wx.navigateBack()
+                                    },1500)
                                 }
                                 else {
                                     console.log("删除失败");

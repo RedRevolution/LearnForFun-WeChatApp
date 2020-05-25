@@ -1,13 +1,17 @@
 <style lang="less">
+    @import "../templates/nodata/nodata.wxss";
 
 </style>
 <template>
+    <import src="../templates/nodata/nodata.wxml" />
+
     <view style="text-align: center">
         <van-cell title="{{groupName}}">
 
         </van-cell>
     </view>
     <view>
+        <view wx:if="{{sharelist.length>0}}">
         <repeat for="{{sharelist}}" item="item" key="index">
             <block wx:if="{{item.shareId[0]=='F'}}">
                 <view>
@@ -55,6 +59,11 @@
                 <!--</van-cell>-->
             </block>
         </repeat>
+        </view>
+        <view wx:else>
+            <template is="jiangqie_nodata" />
+        </view>
+    </view>
     </view>
 
 </template>

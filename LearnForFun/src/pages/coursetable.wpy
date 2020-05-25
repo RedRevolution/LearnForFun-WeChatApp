@@ -232,12 +232,14 @@
             }, function(res) {
                 console.log("查看课表进入function res" + res.data)
                 if(res.data.length == 0) { // 返回数据分类讨论情况
-                    wepy.showModal({
+                    //bug记录：不能用wepy.showModal
+                    wx.showModal({
                         title: '提示',
-                        content: '你还没有导入课表哦～点击确定去“我的”页面统一认证登录',
+                        content: '你还没有导入课表哦～\n去进行统一认证登录吧！',
+                        confirmText:'跳转登录',
                         success (res) {
                             if (res.confirm) {
-                                console.log('用户点击确定')
+                                console.log('用户点击跳转登录')
                                 wx.navigateTo({ // 不能用 redirectTo
                                     url: '/pages/beihangLogin'
                                 })

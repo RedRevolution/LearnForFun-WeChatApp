@@ -80,13 +80,15 @@
                         console.log(res)
                         if(res.data == "success") {
                             console.log("成功添加一条日程!");
-
-                            wx.navigateBack()
+                            // wx.navigateBack()
                             wx.showToast({
                                 title: '创建成功' ,
                                 icon:'success',
-                                duration:2000
+                                duration:1500
                             })
+                            setTimeout(function () {
+                                wx.navigateBack()
+                            }, 1500)
                         }
                         else{
                             console.log("创建日程失败！");

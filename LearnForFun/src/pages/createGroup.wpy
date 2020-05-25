@@ -83,28 +83,36 @@ export default class createGroup extends wepy.page {
           }, function(res) {  
            
             if(res.data =="success") {
-              console.log("成功创建一个自创群组!")
-              wx.showModal({
-                title: '提示',
-                content: '成功创建一个群组！回到主页即可查看',
-                cancelText:'好的',
-                confirmText:'返回首页',
-                success (res) {
-                  if (res.confirm) {
-                    console.log('用户点击返回首页')
-                    wepy.switchTab({
-                      url: '/pages/index'
-                    })
-                  } else if (res.cancel) {
-                    console.log('用户点击好的')
-                  }
-                }
-              })
+              console.log("成功创建一个自创群组!");
+                wx.showToast({
+                    title: '创建成功' ,
+                    icon:'success',
+                    duration:1500
+                })
+                setTimeout(function () {
+                    wx.navigateBack()
+                }, 1500)
+              // wx.showModal({
+              //   title: '提示',
+              //   content: '成功创建一个群组！回到主页即可查看',
+              //   cancelText:'好的',
+              //   confirmText:'返回首页',
+              //   success (res) {
+              //     if (res.confirm) {
+              //       console.log('用户点击返回首页')
+              //       wepy.switchTab({
+              //         url: '/pages/index'
+              //       })
+              //     } else if (res.cancel) {
+              //       console.log('用户点击好的')
+              //     }
+              //   }
+              // })
               
             } else {
               wx.showModal({
                 title: '提示',
-                content: '创建群组失败！请检查网络',
+                content: '创建群组失败！',
                 success (res) {
                   if (res.confirm) {
                     console.log('用户点击确定')

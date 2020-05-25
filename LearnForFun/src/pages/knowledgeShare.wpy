@@ -1,13 +1,15 @@
 <style lang="less">
+    @import "../templates/nodata/nodata.wxss";
 
 </style>
 <template>
+    <import src="../templates/nodata/nodata.wxml" />
     <view style="text-align: center">
         <van-cell title="{{groupName}}">
 
         </van-cell>
     </view>
-    <view>
+    <block wx:if="{{sharelist.length>0}}">
         <repeat for="{{sharelist}}" item="item">
             <block wx:if="{{item.shareId[0]=='K'}}">
                 <van-cell title="{{item.topic}}" size="large" use-label-slot
@@ -18,20 +20,10 @@
                 </van-cell>
             </block>
         </repeat>
-    </view>
-
-    <!--<van-cell value="前往查看" size="large" icon="orders-o" is-link>-->
-    <!--<view slot="title">-->
-    <!--<view class="van-cell-text">知识模块1</view>-->
-    <!--<van-tag plain color="#ff9f43">仅支持txt</van-tag>-->
-    <!--</view>-->
-    <!--</van-cell>-->
-    <!--<van-cell value="前往查看" size="large" icon="cluster-o" is-link>-->
-    <!--<view slot="title">-->
-    <!--<view class="van-cell-text">知识模块2</view>-->
-    <!--<van-tag plain color="#ff9f43">暂不能做富文本</van-tag>-->
-    <!--</view>-->
-    <!--</van-cell>-->
+    </block>
+    <block wx:else>
+        <template is="jiangqie_nodata" />
+    </block>
 
 </template>
 <script>

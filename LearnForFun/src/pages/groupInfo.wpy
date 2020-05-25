@@ -169,22 +169,33 @@ export default class groupInfo extends wepy.page {
                     groupId:that.groupId
                   }, function(res) {
                     if(res.data == 'success') {
-                      wx.showModal({
-                        title: '提示',
-                        content: '已经解散该群',
-                        cancelText:'好的',
-                        confirmText:'返回首页',
-                        success (res) {
-                          if (res.confirm) {
-                            console.log('用户点击返回首页')
-                            wepy.switchTab({
-                              url: '/pages/index'
-                            })
-                          } else if (res.cancel) {
-                            console.log('用户点击好的')
-                          }
-                        }
+                      wx.showToast({
+                        title: '解散成功' ,
+                        icon:'success',
+                        duration:1500
                       })
+                      setTimeout(function () {
+                        wx.switchTab({
+                          url: '/pages/index'
+
+                        })
+                      }, 1500)
+                      // wx.showModal({
+                      //   title: '提示',
+                      //   content: '已经解散该群',
+                      //   cancelText:'好的',
+                      //   confirmText:'返回首页',
+                      //   success (res) {
+                      //     if (res.confirm) {
+                      //       console.log('用户点击返回首页')
+                      //       wepy.switchTab({
+                      //         url: '/pages/index'
+                      //       })
+                      //     } else if (res.cancel) {
+                      //       console.log('用户点击好的')
+                      //     }
+                      //   }
+                      // })
                     } else {
                       wx.showToast({
                         title: '解散失败，请稍后再试',

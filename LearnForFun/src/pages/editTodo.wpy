@@ -119,18 +119,21 @@
                     '/api/user/timetable/modify','post',
                     {
                         content:that.content,
-                        deadline:that.endDate+'T'+that.endTime+':00',
+                        deadline:that.endDate+' '+that.endTime,
                         userId:that.userId,
                         id:that.editId
 
                     }, function(res) {
                         if(res.data == "success") {
                             console.log("成功修改日程!");
-
-                            wx.navigateBack()
-                            wx.showToast({ title: '修改成功' ,
-                                icon:'success'
+                            wx.showToast({
+                                title: '修改成功' ,
+                                icon:'success',
+                                duration:1500
                             })
+                            setTimeout(function () {
+                                wx.navigateBack()
+                            },1500)
                         }
                         else if(res.data == "error") {
                             console.log("修改日程失败！");
@@ -165,11 +168,15 @@
                             }, function(res) {
                                 if(res.data == "success") {
                                     console.log("成功删除一条日程!");
-                                    wx.showModal({
-                                        title: '提示',
-                                        content:'成功删除！',
+                                    wx.showToast({
+                                        title: '删除成功' ,
+                                        icon:'success',
+                                        duration:1500
                                     })
-                                    wx.navigateBack();
+                                    setTimeout(function () {
+                                        wx.navigateBack();
+
+                                    },1500)
                                 }
                                 else {
                                     console.log("删除日程失败");
