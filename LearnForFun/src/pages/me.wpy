@@ -91,10 +91,13 @@
 
         <van-cell title="问题反馈" is-link  link-type="navigateTo"
               url="/pages/feedback" icon="question-o" label="通知管理端"/>
-        <van-goods-action>
-          
-          <van-goods-action-button text="注销账号" @tap="delAccount" />
-        </van-goods-action>
+
+        <block wx:if="{{schoolNum}}">      
+          <van-goods-action>
+            
+            <van-goods-action-button text="注销账号" @tap="delAccount" />
+          </van-goods-action>
+        </block>
         
       </view>
     </view>
@@ -167,11 +170,20 @@ export default class Me extends wepy.page {
                   }, function(res) {
                     if(res.data == "success") {
                         console.log("注销成功!");
-                        wx.showModal({
-                            title: '提示',
-                            content:'成功注销账号！',
+                        wx.showToast({
+                          title: '注销成功',
+                          icon: 'success',
+                          duration: 2000
                         })
                         wx.clearStorage()
+                        that.avatarUrl = ''
+                        that.schoolNum = ''
+                        that.realName = ''
+                        that.nickName = ''
+                        
+                        wx.switchTab({
+                          url: '/pages/index'
+                        })
                     }
                     else {
                         console.log("注销失败");
@@ -183,6 +195,7 @@ export default class Me extends wepy.page {
                     }
                   }
                 )
+                
             } else if (res.cancel) {
               console.log('用户点击取消')
             }

@@ -21,9 +21,7 @@
         autosize
         size="large"
         label="问题反馈"
-        icon="question-o"
         placeholder="你想跟趣学管理员说什么呢～"
-        bind:click-icon="onClickIcon"
         @input="inputFeedback"
     />
     </van-cell-group>

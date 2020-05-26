@@ -234,7 +234,8 @@
 
     getSysMsg(){
       let that = this
-      that.userRequest(
+      if (that.schoolNum) {
+        that.userRequest(
           '/api/sys/message/' + that.schoolNum,'get',
           {
             
@@ -242,6 +243,7 @@
             console.log("返回的res是 " + res)
             if(res.data) { // 是官方群组 .groupId[0]=='O'
               console.log("有系统消息！是 " + res.data)
+            
               that.sysMsg = res.data
               that.$apply()
             } else {
@@ -250,6 +252,26 @@
             }      
           }
         )
+      } else {
+        that.userRequest(
+          '/api/sys/message/undefined' ,'get',
+          {
+            
+          }, function(res) {  
+            console.log("返回的res是 " + res)
+            if(res.data) { // 是官方群组 .groupId[0]=='O'
+              console.log("有系统消息！是 " + res.data)
+            
+              that.sysMsg = res.data
+              that.$apply()
+            } else {
+              console.log("暂未获取到系统消息")
+              
+            }      
+          }
+        )
+      }
+      
     }
 
     async onLoad() {

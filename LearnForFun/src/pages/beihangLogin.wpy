@@ -60,7 +60,7 @@
         crawler(){
             let that = this
             wx.showLoading({
-                title: '请稍等～',
+                title: '请稍等～大约需要十几秒',
             })
             console.log('待提交userId'+that.userId)
             console.log('待提交usr'+that.usr+' 待提交pwd'+that.pwd)
@@ -76,7 +76,9 @@
                     if(res.data =="success") {
                         wx.hideLoading();
                         console.log("统一认证成功，已获取课表和加入官方课程群组")
-                        wx.navigateBack()
+                        wx.switchTab({
+                          url: '/pages/me'
+                        })
                         wx.showModal({
                             title:'提示',
                             content: '已成功获取课表并加入官方群组，请前往相应页面查看',
@@ -92,6 +94,7 @@
                             showCancel: false
                         })
                     } else {
+                        wx.hideLoading();
                         wx.showModal({
                             title: '登录失败' ,
                             content:'网络不太好，请稍后再试',
@@ -111,6 +114,8 @@
 
         onShow() {
             let that = this
+            that.userId = wepy.getStorageSync("schoolNum");
+            console.log("学号："+that.userId)
            
         }
 
