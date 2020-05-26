@@ -129,19 +129,26 @@ export default class addMember extends wepy.page {
                 }, function(res) {
                     if (res.data == 'success') {
                         console.log("加成员返回消息 " + res.data)
-                        wx.showModal({
-                            title: '提示',
-                            content:that.realName + '已经成功添加',
-                            confirmText:'返回',
-                            success (res) {
-                                if (res.confirm) {
-                                    console.log('用户点击返回')
-                                    wx.navigateBack()
-                                } else if (res.cancel) {
-                                    console.log('用户点击取消')
-                                }
-                            }
+                        wx.showToast({ title: '添加成功' ,
+                            icon:'success',
+                            duration:1500
                         })
+                        setTimeout(function () {
+                            wx.navigateBack()
+                        },1500)
+                        // wx.showModal({
+                        //     title: '提示',
+                        //     content:that.realName + '已经成功添加',
+                        //     confirmText:'返回',
+                        //     success (res) {
+                        //         if (res.confirm) {
+                        //             console.log('用户点击返回')
+                        //             wx.navigateBack()
+                        //         } else if (res.cancel) {
+                        //             console.log('用户点击取消')
+                        //         }
+                        //     }
+                        // })
                     } else if (res.data == 'exist') {
                         console.log("该用户已经存在于这个群")
                         wx.showModal({

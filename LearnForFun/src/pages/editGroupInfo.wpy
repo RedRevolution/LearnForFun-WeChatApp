@@ -107,10 +107,14 @@
                     }, function(res) {
                         if(res.data == "success") {
                             console.log("成功修改群组信息!");
-                            wx.navigateBack()
+
                             wx.showToast({ title: '修改成功' ,
-                                icon:'success'
+                                icon:'success',
+                                duration:1500
                             })
+                            setTimeout(function () {
+                                wx.navigateBack()
+                            },1500)
                         }
                         else{
                             wx.navigateBack()
