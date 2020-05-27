@@ -235,10 +235,14 @@ import { transition } from '../components/vant/mixins/transition';
             duration: 2000
           })
         } else {
-        that.scrollTop =  that.scrollTop + 1000
+          // 尝试转码sendmsg：
+          // 尝试编码emoji，使得服务器不要炸掉！
+          sendmsg = that.utf16toEntities(that.say)
+
+          that.scrollTop =  that.scrollTop + 1000
           that.chats = that.chats.concat([{
             time: that.chatFormatTime(), 
-            text: sendmsg,
+            text: that.say,
             name: that.realName
           }])
           that.userRequest(
@@ -247,9 +251,10 @@ import { transition } from '../components/vant/mixins/transition';
 
             }, function(res) {
                 console.log("小趣说：" + res.data)
+                let reply = that.entitiesToUtf16(res.data)
                 that.chats = that.chats.concat([{
                     time: that.chatFormatTime(), 
-                    text: res.data,
+                    text: reply,
                     name: "小趣"
                 }])
                 that.$apply()
@@ -326,6 +331,9 @@ import { transition } from '../components/vant/mixins/transition';
     onUnload(){
       
     }
+
+       
+    
 
   }
 </script>

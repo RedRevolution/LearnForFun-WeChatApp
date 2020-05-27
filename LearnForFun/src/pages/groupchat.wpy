@@ -360,9 +360,10 @@
             // res.data 为 "名字: 消息前有一个空格", 所以这里需要用英文冒号切割一下字符串
             let tmpName = res.data.split(":")
             console.log('发言人名字为' + tmpName[0] + '如果是自己，则不用再在弹框中显示了')
+            let recContent = that.entitiesToUtf16(tmpName[1])
             that.chats = that.chats.concat([{
                 createBy: that.chatFormatTime(), 
-                content: '' + tmpName[1],
+                content: recContent,
                 userName: tmpName[0]
             }])
             that.$apply()
@@ -387,6 +388,13 @@
     handleSendMessage() {
       const that = this
       console.log('尝试向服务器发送消息：' + that.say)
+      // 尝试编码emoji
+      that.say = that.utf16toEntities(that.say)
+      that.$apply()
+
+
+
+
       // 要先检查是否还是连通的才可以发送消息, wx是否换成wepy
       // 链接失败显示
       wx.onSocketError(function (res) {
@@ -429,6 +437,10 @@
            let reverse = res.data.reverse()
            that.lastMsgId = reverse[0].id
            console.log("最早一条消息id是: " + that.lastMsgId + ", 内容为: " + reverse[0].content)
+           // 解码（循环解码）
+           for (let i = 0; i < reverse.length; i++) {
+             reverse[i].content = that.entitiesToUtf16(reverse[i].content);
+           }
            that.chats = reverse
            that.$apply()
            that.scrollTop = that.scrollTop + 1000*res.data.length // 保持在最底端
@@ -512,6 +524,9 @@
               wx.stopPullDownRefresh()
               if (res.data.length != 0) {
                   reverse = res.data.reverse()  // 倒序数组
+                  for (let i = 0; i < reverse.length; i++) {
+                    reverse[i].content = that.entitiesToUtf16(reverse[i].content);
+                  }
                   wx.stopPullDownRefresh()
               } else {
                   console.log('没有更早的消息记录了')
@@ -578,6 +593,8 @@
         console.log('WebSocket 已关闭！')
       })
     }
+
+    
 
   }
 </script>
