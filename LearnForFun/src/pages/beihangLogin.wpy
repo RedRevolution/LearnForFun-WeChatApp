@@ -60,7 +60,7 @@
         crawler(){
             let that = this
             wx.showLoading({
-                title: '请稍等～大约需要十几秒',
+                title: '请稍等～',
             })
             console.log('待提交userId'+that.userId)
             console.log('待提交usr'+that.usr+' 待提交pwd'+that.pwd)
@@ -70,9 +70,6 @@
                 '/api/user/course/'+that.userId+'/'+that.usr+'/'+that.pwd,'get',
                 {
                 },function (res) {
-                    setTimeout(function () {
-                        wx.hideLoading()
-                    }, 60000)
                     if(res.data =="success") {
                         wx.hideLoading();
                         console.log("统一认证成功，已获取课表和加入官方课程群组")
