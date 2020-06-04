@@ -318,12 +318,20 @@
                             // console.log("提取出weekday: " + weekday)
                         } else if (type == 3 && that.isDigit(ele)) { // 
                             startTime = ele - '0'   // ascii 转化为数字
-
+                            // 可能是两位数
+                            if (that.isDigit(str[i+1])) {
+                                let low_digit = str[i+1] - '0'
+                                startTime = low_digit + startTime*10  // 十位数加上个位数
+                            }
                             while (str[i+1] != '/') {
                                 i++;
                             }
                             // 下一个是 / 那么当前就是这节课的最后一个数
                             let endTime = str[i] - '0'
+                            if (that.isDigit(str[i-1])) {
+                                let high_bit = str[i-1] - '0'
+                                endTime = endTime + high_bit*10
+                            }
                             duration = endTime-startTime+1;
                             i++;
                             type = 4;
