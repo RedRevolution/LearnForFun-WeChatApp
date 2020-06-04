@@ -53,6 +53,7 @@
             endDate: '',
             endTime: '',
             userId: '',
+            buttonClicked: false
         }
         addTodo() {
             let that = this;
@@ -68,6 +69,10 @@
                 })
             }
             else{
+                wx.showLoading({
+                    title: '加载中',
+                    mask: true
+                });
                 that.userRequest(
                     '/api/user/timetable/add','post',
                     {
@@ -78,19 +83,27 @@
 
                     }, function(res) {
                         console.log(res)
+
                         if(res.data == "success") {
+                            wx.hideLoading();
                             console.log("成功添加一条日程!");
-                            // wx.navigateBack()
-                            wx.showToast({
-                                title: '创建成功' ,
-                                icon:'success',
-                                duration:1500
-                            })
+                            wx.navigateBack()
+                            // wx.showToast({
+                            //     title: '创建成功' ,
+                            //     icon:'success',
+                            //     duration:1500
+                            // })
                             setTimeout(function () {
-                                wx.navigateBack()
-                            }, 1500)
+                                wx.showToast({
+                                    title: '创建成功' ,
+                                    icon:'success',
+                                    duration:1500
+                                })
+                                // wx.navigateBack()
+                            }, 10)
                         }
                         else{
+                            wx.hideLoading();
                             console.log("创建日程失败！");
                             wx.showModal({
                                 title: '创建失败',
