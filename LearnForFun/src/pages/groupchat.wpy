@@ -320,7 +320,6 @@
     startSocket() {
       wx.connectSocket({
         url: 'wss://learn.wsscloud.cn/webSocket/' + this.groupId
-        // {groupId}测试时群号暂时使用123456
         
       })
       console.log("即将启动一个socket，人员：" + this.realName)

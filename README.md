@@ -8,6 +8,8 @@
 
 
 
+更新记录
+
 - 2020.4.22 01:18更新：创建了原生小程序，底部有导航栏Tarbar分为四块 (DM)
   - 备注：若使用WePY框架（建议），该项目可能需要重新创建，但是文件结构大致可以按以下内容理解
 - 2020.4.29 14:00更新：WePY框架程序，分页4Tabbar，引入了vant-weapp UI组件 (DM)
@@ -97,7 +99,7 @@
 5. [基于wepy开发的仿微信聊天界面小程序](https://github.com/wepyjs/wepy-wechat-demo)
 6. [茄酱开源小程序](https://www.jiangqie.com/docs/kaiyuan/id1)
 
-#### 强烈推荐参考的wepy开发的小程序：
+#### 推荐参考的wepy开发的小程序：
 
 - [微信服装商城 - 分为9个branch相当于可以一步一步学，结构清晰](https://github.com/weimingwill/fashion-mall)
 - [深大的树洞2.0  ](https://github.com/jas0ncn/szushudong)
@@ -120,7 +122,7 @@ WxCommon.js里已经写好域名和微信API函数，并封装成：
 ```javascript
 let that = this
 that.userRequest(
- '/api/user','post',   // '/api/user'是小红给的url，'post'是方法
+ '/api/user','post',   // '/api/user'是后端给的url，'post'是方法
  {
     openId: that.openId, 	//提供给后端的数据，左侧字段必须和数据库里一样
     userId: that.schoolNum, // 右侧字段是当前页面的数据,在data里
@@ -200,19 +202,6 @@ that.userRequest(
 - SSL证书已经配置
 - 
 
-
-
-------
-【下面是腾讯IM的信息，暂时不用了】
-
-将SDKAppID和密钥粘贴到指定位置：
-
-SDKAppID：1400362697
-
-密钥：80f2b4560bf4d2bebf4e33a6b199cb41b9c6742dbf8d070e71e38d9db0bb018b
-
-![img](https://sqimg.qq.com/qq_product_operations/tentcent_cloud/minp.png)
-
 1. 配置 `SDKAPPID` 和 `SECRETKEY`，获取方式参考：[密钥获取方法](https://cloud.tencent.com/document/product/269/36838#.E6.AD.A5.E9.AA.A41.EF.BC.9A.E5.88.9B.E5.BB.BA.E5.BA.94.E7.94.A8)
 
    - 打开 `/debug/GeneraterUserSig.js` 文件
@@ -230,9 +219,9 @@ SDKAppID：1400362697
 
 ----
 
-### UI组件 
+## 5. UI组件 
 
-#### 1：Vant-weapp(漂亮的UI组件)🌟🌟
+### Vant-weapp
 
 [Vant Weapp - 轻量、可靠的小程序 UI 组件库使用文档](https://youzan.github.io/vant-weapp/#/intro)
 
@@ -242,16 +231,4 @@ SDKAppID：1400362697
 
 
 
-### 自定义组件：Component（暂不理会）
 
-
-
-### 云函数：cloudfunctions文件夹（暂不理会）
-
-
-
-## 3. 部署云数据库
-
-现阶段直接用云开发？
-
-![image-20200421233518643](https://tva1.sinaimg.cn/large/007S8ZIlgy1ge1t9li4p1j318e0u0ajx.jpg)
